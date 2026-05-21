@@ -1,0 +1,67 @@
+﻿src/pages/admin/AdminPROTracking.tsx(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(options: DefinedInitialDataOptions<unknown, Error, unknown, string[]>, queryClient?: QueryClient | undefined): DefinedUseQueryResult<unknown, Error>', gave the following error.
+    Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'QueryFunction<unknown, string[]>'.
+      Types of parameters 'filters' and 'context' are incompatible.
+        Type '{ client: QueryClient; queryKey: string[]; signal: AbortSignal; meta: Record<string, unknown> | undefined; pageParam?: unknown; direction?: unknown; }' has no properties in common with type '{ sector?: string | undefined; division?: string | undefined; }'.
+  Overload 2 of 3, '(options: UndefinedInitialDataOptions<Client[], Error, Client[], string[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'unique symbol | QueryFunction<Client[], string[], never> | undefined'.
+      Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'QueryFunction<Client[], string[], never>'.
+        Types of parameters 'filters' and 'context' are incompatible.
+          Type '{ client: QueryClient; queryKey: string[]; signal: AbortSignal; meta: Record<string, unknown> | undefined; pageParam?: unknown; direction?: unknown; }' has no properties in common with type '{ sector?: string | undefined; division?: string | undefined; }'.
+  Overload 3 of 3, '(options: UseQueryOptions<Client[], Error, Client[], string[]>, queryClient?: QueryClient | undefined): UseQueryResult<Client[], Error>', gave the following error.
+    Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'unique symbol | QueryFunction<Client[], string[], never> | undefined'.
+      Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'QueryFunction<Client[], string[], never>'.
+        Types of parameters 'filters' and 'context' are incompatible.
+          Type '{ client: QueryClient; queryKey: string[]; signal: AbortSignal; meta: Record<string, unknown> | undefined; pageParam?: unknown; direction?: unknown; }' has no properties in common with type '{ sector?: string | undefined; division?: string | undefined; }'.
+src/pages/admin/ClientDetails.tsx(193,17): error TS2339: Property 'contractType' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(205,102): error TS2551: Property 'Name' does not exist on type 'Client'. Did you mean 'name'?
+src/pages/admin/ClientDetails.tsx(207,97): error TS2339: Property 'Company' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(207,115): error TS2339: Property 'company' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(208,37): error TS2339: Property 'contractType' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(228,73): error TS2551: Property 'Email' does not exist on type 'Client'. Did you mean 'email'?
+src/pages/admin/ClientDetails.tsx(232,73): error TS2551: Property 'Phone' does not exist on type 'Client'. Did you mean 'phone'?
+src/pages/admin/ClientDetails.tsx(236,73): error TS2339: Property 'Company' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(293,89): error TS2339: Property 'qid' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(297,89): error TS2339: Property 'crNumber' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(301,89): error TS2339: Property 'computerCard' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(312,45): error TS2339: Property 'licenses' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(312,64): error TS2339: Property 'licenses' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(313,48): error TS2339: Property 'licenses' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(338,79): error TS2339: Property 'contractType' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(342,79): error TS2339: Property 'startDate' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(346,79): error TS2339: Property 'renewalDate' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(348,45): error TS2339: Property 'agreementUrl' does not exist on type 'Client'.
+src/pages/admin/ClientDetails.tsx(413,105): error TS2339: Property 'startDate' does not exist on type 'Client'.
+src/pages/admin/Clients.tsx(21,5): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(options: DefinedInitialDataOptions<Client[], Error, Client[], readonly unknown[]>, queryClient?: QueryClient | undefined): DefinedUseQueryResult<...>', gave the following error.
+    Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'QueryFunction<Client[], readonly unknown[]>'.
+      Types of parameters 'filters' and 'context' are incompatible.
+        Type '{ client: QueryClient; queryKey: readonly unknown[]; signal: AbortSignal; meta: Record<string, unknown> | undefined; pageParam?: unknown; direction?: unknown; }' has no properties in common with type '{ sector?: string | undefined; division?: string | undefined; }'.
+  Overload 2 of 3, '(options: UndefinedInitialDataOptions<Client[], Error, Client[], readonly unknown[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'unique symbol | QueryFunction<Client[], readonly unknown[], never> | undefined'.
+      Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'QueryFunction<Client[], readonly unknown[], never>'.
+        Types of parameters 'filters' and 'context' are incompatible.
+          Type '{ client: QueryClient; queryKey: readonly unknown[]; signal: AbortSignal; meta: Record<string, unknown> | undefined; pageParam?: unknown; direction?: unknown; }' has no properties in common with type '{ sector?: string | undefined; division?: string | undefined; }'.
+  Overload 3 of 3, '(options: UseQueryOptions<Client[], Error, Client[], readonly unknown[]>, queryClient?: QueryClient | undefined): UseQueryResult<Client[], Error>', gave the following error.
+    Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'unique symbol | QueryFunction<Client[], readonly unknown[], never> | undefined'.
+      Type '(filters?: { sector?: string; division?: string; }) => Promise<Client[]>' is not assignable to type 'QueryFunction<Client[], readonly unknown[], never>'.
+        Types of parameters 'filters' and 'context' are incompatible.
+          Type '{ client: QueryClient; queryKey: readonly unknown[]; signal: AbortSignal; meta: Record<string, unknown> | undefined; pageParam?: unknown; direction?: unknown; }' has no properties in common with type '{ sector?: string | undefined; division?: string | undefined; }'.
+src/pages/admin/Clients.tsx(36,35): error TS2339: Property 'map' does not exist on type 'never[] | NoInfer<TQueryFnData>'.
+  Property 'map' does not exist on type 'NoInfer<TQueryFnData>'.
+src/pages/admin/Clients.tsx(53,29): error TS2339: Property 'map' does not exist on type 'never[] | NoInfer<TQueryFnData>'.
+  Property 'map' does not exist on type 'NoInfer<TQueryFnData>'.
+src/pages/admin/CreateProject.tsx(300,22): error TS2304: Cannot find name 'DollarSign'.
+src/pages/admin/Users.tsx(2,20): error TS6133: 'useEffect' is declared but its value is never read.
+src/pages/admin/Users.tsx(2,31): error TS6133: 'useRef' is declared but its value is never read.
+src/pages/admin/Users.tsx(4,30): error TS6133: 'AlertTriangle' is declared but its value is never read.
+src/pages/admin/Users.tsx(4,45): error TS6133: 'Check' is declared but its value is never read.
+src/pages/admin/Users.tsx(4,52): error TS6133: 'X' is declared but its value is never read.
+src/pages/auth/Login.tsx(7,21): error TS6196: 'User' is declared but never used.
+src/pages/auth/Login.tsx(78,21): error TS6133: 'token' is declared but its value is never read.
+src/pages/pm/CreateProject.tsx(3,10): error TS6133: 'useQuery' is declared but its value is never read.
+src/pages/pm/CreateProject.tsx(12,1): error TS6133: 'userService' is declared but its value is never read.
+src/pages/pm/CreateProject.tsx(14,30): error TS6196: 'Project' is declared but never used.
+src/pages/pm/CreateProject.tsx(17,11): error TS6196: 'FormState' is declared but never used.
+src/pages/pm/EditProject.tsx(10,24): error TS6196: 'ProjectStatus' is declared but never used.
+src/services/apiMock.ts(2,1): error TS6133: 'User' is declared but its value is never read.
