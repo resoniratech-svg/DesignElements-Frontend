@@ -183,18 +183,6 @@ function CreateUser() {
             </div>
           )}
 
-          <div>
-            <label className="block text-sm mb-1 text-gray-600">Status</label>
-            <select
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
 
           <div className="pt-4">
             <button

@@ -221,18 +221,6 @@ function EditUser() {
                             </div>
                         )}
 
-                        <div>
-                            <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Account Status</label>
-                            <select
-                                name="status"
-                                value={form.status}
-                                onChange={handleChange}
-                                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-white"
-                            >
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div className="pt-6 border-t border-slate-50 flex gap-4">
