@@ -81,7 +81,7 @@ export default function AdminDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-                        {activeDivision === "all" ? " Resonira Technologies Super Admin Dashboard" : `${currentDivision?.label} Dashboard`}
+                        {activeDivision === "all" ? "Super Admin Dashboard" : `${currentDivision?.label} Dashboard`}
                     </h1>
                     <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
                         {activeDivision === "all" ? "Full system overview — real-time analytics from all sectors." : `Overview for the ${currentDivision?.label} operations.`}

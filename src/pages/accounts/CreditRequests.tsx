@@ -5,7 +5,7 @@ import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
 import ApprovalBadge from "../../components/ApprovalBadge";
 import { creditRequestService } from "../../services/creditRequestService";
-import { Plus, Trash2, Eye, Edit, Landmark, DollarSign, Clock } from "lucide-react";
+import { Plus, Trash2, Eye, Edit, Landmark, Coins, Clock } from "lucide-react";
 import { useDivision } from "../../context/DivisionContext";
 
 function CreditRequests() {
@@ -152,7 +152,7 @@ function CreditRequests() {
           value={`QAR ${totalApproved.toLocaleString(undefined, {
             minimumFractionDigits: 2,
           })}`}
-          icon={<DollarSign size={20} className="text-emerald-500" />}
+          icon={<Coins size={20} className="text-emerald-500" />}
           onClick={() => setStatusFilter("approved")}
         />
         <StatCard
