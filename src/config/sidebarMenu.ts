@@ -1,7 +1,6 @@
 import {
   LayoutDashboard,
   Users,
-  Settings,
   FileText,
   CreditCard,
   Folder,
@@ -133,7 +132,6 @@ export const sidebarMenu: SidebarSection[] = [
       { label: "Users", path: "/users", icon: Users },
 
       { label: "Permissions", path: "/permissions", icon: ShieldCheck },
-      { label: "System Settings", path: "/admin/settings", icon: Settings },
     ],
   },
 ];

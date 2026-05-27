@@ -13,7 +13,6 @@ import ProtectedRoute from "./ProtectedRoute";
 
 // Pages
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import Settings from "../pages/admin/Settings";
 import AccountsDashboard from "../pages/accounts/AccountsDashboard";
 import PMDashboard from "../pages/pm/PMDashboard";
 import Users from "../pages/admin/Users";
@@ -109,7 +108,6 @@ function AppRoutes() {
         {/* Dashboards (Role-based Base) */}
         <Route element={<ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/settings" element={<Settings />} />
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["ACCOUNTS"]} />}>
           <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
