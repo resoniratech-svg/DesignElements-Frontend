@@ -100,12 +100,6 @@ function CreateClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check mandatory fields
-    if (!form.name || !form.qid || !form.crNumber || !form.computerCard || licenses.some(l => !l.number)) {
-      alert("Please fill in all mandatory fields: Contact Person, QID, CR, Computer Card, and at least one License.");
-      return;
-    }
-
     let uploadedDocs: any[] = [];
     let qidDocUrl = "";
     let crDocUrl = "";
@@ -214,9 +208,8 @@ function CreateClient() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person *</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
                   <input
-                    required
                     name="name"
                     value={form.name}
                     onChange={handleChange}
@@ -249,9 +242,8 @@ function CreateClient() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone *</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
                   <input
-                    required
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
@@ -266,9 +258,8 @@ function CreateClient() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Qatar ID (QID) *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Qatar ID (QID)</label>
                     <input
-                      required
                       name="qid"
                       value={form.qid}
                       onChange={handleChange}
@@ -285,9 +276,8 @@ function CreateClient() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">CR Number *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">CR Number</label>
                     <input
-                      required
                       name="crNumber"
                       value={form.crNumber}
                       onChange={handleChange}
@@ -304,9 +294,8 @@ function CreateClient() {
 
                 <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Computer Card *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Computer Card</label>
                     <input
-                      required
                       name="computerCard"
                       value={form.computerCard}
                       onChange={handleChange}
@@ -323,7 +312,7 @@ function CreateClient() {
 
                 <div className="col-span-2 space-y-4">
                   <div className="flex justify-between items-center">
-                    <label className="block text-sm font-medium text-slate-700">Licenses *</label>
+                    <label className="block text-sm font-medium text-slate-700">Licenses</label>
                     <button 
                       type="button" 
                       onClick={addLicense}
@@ -345,9 +334,8 @@ function CreateClient() {
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">License No. *</label>
+                        <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">License No.</label>
                         <input
-                          required
                           value={license.number}
                           onChange={(e) => handleLicenseChange(index, "number", e.target.value)}
                           className="w-full border border-slate-200 p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500"

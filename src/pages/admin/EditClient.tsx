@@ -238,9 +238,8 @@ function EditClient() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
               <input
-                required
                 name="name"
                 value={form.name}
                 onChange={handleChange}
@@ -272,9 +271,8 @@ function EditClient() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Phone *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
               <input
-                required
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
@@ -434,7 +432,7 @@ function EditClient() {
 
             <div className="col-span-2 space-y-4 pt-4 border-t border-slate-50">
               <div className="flex justify-between items-center">
-                <label className="block text-sm font-bold text-slate-800">Licenses *</label>
+                <label className="block text-sm font-bold text-slate-800">Licenses</label>
                 <button type="button" onClick={addLicense} className="text-brand-600 text-xs font-bold hover:underline">
                   + Add Another License
                 </button>
@@ -454,7 +452,6 @@ function EditClient() {
                   <div>
                     <label className="block text-[10px] text-slate-400 font-bold uppercase mb-1">Number</label>
                     <input
-                      required
                       value={license.number}
                       onChange={(e) => handleLicenseChange(index, "number", e.target.value)}
                       className="w-full border border-slate-200 p-2 rounded-lg text-sm"
