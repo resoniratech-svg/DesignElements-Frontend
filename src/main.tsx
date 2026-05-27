@@ -10,6 +10,12 @@ import { LanguageProvider } from "./context/LanguageContext";
 import { EmployeeProvider } from "./context/EmployeeContext";
 import { seedDataIfEmpty } from "./utils/seedData";
 import "./index.css";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+
+dayjs.extend(relativeTime);
+dayjs.extend(isSameOrBefore);
 
 // Ensure initial data exists for the dashboards
 const MIGRATION_VERSION = "1.1";

@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import PageLoader from "../../components/PageLoader";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { proService } from "../../services/proService";
