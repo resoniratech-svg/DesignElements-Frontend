@@ -183,6 +183,7 @@ export default function CreateBOQ() {
                         onChange={handleSectorChange}
                         allowedIds={allowedSectors}
                         showAll={false}
+                        disabled={isEdit}
                     />
                 </div>
 
@@ -205,6 +206,7 @@ export default function CreateBOQ() {
                             onChange={handleClientChange}
                             division={selectedSector}
                             placeholder="Choose a Client..."
+                            disabled={isEdit}
                         />
                     </div>
 
