@@ -263,11 +263,13 @@ const AddEditLead: React.FC = () => {
                     onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
                   >
                     <option value="">Select Specialist</option>
-                    {users.map((u: any) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name} ({u.role ? u.role.replace('_', ' ') : 'USER'})
-                      </option>
-                    ))}
+                    {users
+                      .filter((u: any) => (u.role || '').toUpperCase() !== 'CLIENT')
+                      .map((u: any) => (
+                        <option key={u.id} value={u.id}>
+                          {u.name} ({u.role ? u.role.replace('_', ' ') : 'USER'})
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
