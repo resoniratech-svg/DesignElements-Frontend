@@ -200,7 +200,6 @@ function EditUser() {
                             >
                                 <option value="SUPER_ADMIN">Super Admin</option>
                                 <option value="PROJECT_MANAGER">Project Manager</option>
-                                <option value="CLIENT">Client</option>
                             </select>
                         </div>
 
