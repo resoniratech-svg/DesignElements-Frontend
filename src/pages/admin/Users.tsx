@@ -19,8 +19,8 @@ function Users() {
   };
 
   const { data: users = [], isLoading } = useQuery({
-    queryKey: ["users", activeDivision],
-    queryFn: () => userService.getUsers(activeDivision === "all" ? undefined : { sector: activeDivision }),
+    queryKey: ["users"],
+    queryFn: () => userService.getUsers(),
   });
 
   const handleDelete = async () => {
@@ -48,7 +48,13 @@ function Users() {
   const adminUsers = users.filter((u: any) => u.role === "SUPER_ADMIN" || u.role === "ACCOUNTS");
   const staffUsers = users.filter((u: any) => {
     const isClient = u.role === "CLIENT";
-    return (u.role !== "SUPER_ADMIN" && u.role !== "ACCOUNTS") && !isClient;
+    const isStaff = u.role !== "SUPER_ADMIN" && u.role !== "ACCOUNTS" && !isClient;
+    if (!isStaff) return false;
+    
+    if (activeDivision === "all") return true;
+    
+    const userSector = u.sector || u.division || "";
+    return userSector.toLowerCase() === activeDivision.toLowerCase();
   });
 
   return (
