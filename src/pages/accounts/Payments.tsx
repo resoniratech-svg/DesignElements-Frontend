@@ -5,7 +5,7 @@ import PageHeader from "../../components/PageHeader";
 import StatusBadge from "../../components/StatusBadge";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";
-import { Receipt, Download, Search, Filter, Eye } from "lucide-react";
+import { Receipt, Download, Search, Filter, Eye, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { financeService } from "../../services/financeService";
 import PageLoader from "../../components/PageLoader";
@@ -123,7 +123,7 @@ function Payments() {
                 <td className="px-6 py-4">
                   <StatusBadge status={p.status || "Pending"} />
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 flex items-center gap-2">
                   <Link 
                     to={`/invoice-details/${p.dbId || p.id}`}
                     className="p-2 bg-slate-50 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all inline-flex items-center gap-2"
@@ -131,6 +131,25 @@ function Payments() {
                     <Eye size={16} />
                     <span className="text-[10px] font-bold uppercase">View</span>
                   </Link>
+                  {p.status?.toUpperCase() === "PAID" && (
+                    (() => {
+                      const hasDN = p.delivery_note && p.delivery_note.trim() !== "";
+                      return (
+                        <Link
+                          to={hasDN ? `/delivery-note/${p.dbId || p.id}` : `/edit-delivery-note/${p.dbId || p.id}`}
+                          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit transition-colors ${
+                            hasDN
+                              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
+                          }`}
+                          title={hasDN ? "View Delivery Note" : "Create Delivery Note"}
+                        >
+                          <FileText size={12} />
+                          {hasDN ? 'View DN' : 'Create DN'}
+                        </Link>
+                      );
+                    })()
+                  )}
                 </td>
               </tr>
             ))}

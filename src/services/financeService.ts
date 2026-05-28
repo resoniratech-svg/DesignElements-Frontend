@@ -53,7 +53,8 @@ export const financeService = {
        amount: p.total_amount || p.total || p.amount || 0,
        date: p.invoice_date || p.date || p.created_at?.split('T')[0] || '',
        division: p.division || p.branch,
-       status: p.status
+       status: p.status,
+       delivery_note: p.delivery_note || p.deliveryNote
     })) : [];
   },
 
