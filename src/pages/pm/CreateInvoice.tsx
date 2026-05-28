@@ -60,7 +60,9 @@ export default function CreateInvoice() {
         return isPM && user?.division ? [user.division.toUpperCase()] : [];
     }, [isPM, user]);
 
-    const [items, setItems] = useState<InvoiceItem[]>([]);
+    const [items, setItems] = useState<InvoiceItem[]>([
+        { id: "default-item-1", description: "", quantity: 1, unitPrice: 0, amount: 0 }
+    ]);
 
     // 1. Fetch invoice if editing
     const { data: invoice, isLoading: isFetching } = useQuery<Invoice>({
