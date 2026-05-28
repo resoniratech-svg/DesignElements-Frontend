@@ -397,6 +397,7 @@ export default function CreateQuotation() {
                         onChange={handleDivisionChange}
                         allowedIds={allowedSectors}
                         showAll={false}
+                        disabled={isEditing}
                     />
 
                     {/* Header Details */}
@@ -437,6 +438,7 @@ export default function CreateQuotation() {
                                     onChange={handleClientChange}
                                     division={form.division}
                                     placeholder="Search client..."
+                                    disabled={isEditing}
                                 />
                             </div>
                             <FormInput
