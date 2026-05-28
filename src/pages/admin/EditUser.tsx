@@ -196,7 +196,8 @@ function EditUser() {
                                 name="role"
                                 value={form.role}
                                 onChange={handleChange}
-                                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-white"
+                                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-slate-50 cursor-not-allowed text-slate-500"
+                                disabled
                             >
                                 <option value="SUPER_ADMIN">Super Admin</option>
                                 <option value="PROJECT_MANAGER">Project Manager</option>
@@ -210,8 +211,9 @@ function EditUser() {
                                     name="division"
                                     value={form.division}
                                     onChange={handleChange}
-                                    className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-white"
+                                    className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none bg-slate-50 cursor-not-allowed text-slate-500"
                                     required
+                                    disabled
                                 >
 
                                     <option value="trading">Trading Sector</option>
