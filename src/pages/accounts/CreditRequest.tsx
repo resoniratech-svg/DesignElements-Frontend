@@ -219,8 +219,10 @@ function CreditRequest() {
                     }));
                   }}
                   required
-                  className="border rounded-lg px-3 py-2 w-full outline-none focus:ring-2 focus:ring-brand-500 transition-shadow bg-white"
-                  disabled={isLoadingClients}
+                  className={`border rounded-lg px-3 py-2 w-full outline-none focus:ring-2 focus:ring-brand-500 transition-shadow ${
+                    isEditing ? "bg-slate-50 cursor-not-allowed text-slate-500 font-medium" : "bg-white"
+                  }`}
+                  disabled={isLoadingClients || isEditing}
                 >
                   <option value="">{isLoadingClients ? "Loading clients..." : "-- Select a Client --"}</option>
                   {filteredClients.map((client: any) => {
