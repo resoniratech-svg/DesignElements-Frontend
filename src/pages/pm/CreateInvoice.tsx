@@ -364,6 +364,7 @@ export default function CreateInvoice() {
                         onChange={handleDivisionChange}
                         allowedIds={allowedSectors}
                         showAll={false}
+                        disabled={isEditing}
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-slate-50">
@@ -397,6 +398,7 @@ export default function CreateInvoice() {
                                     onChange={handleClientChange}
                                     division={form.division!}
                                     placeholder="Search client..."
+                                    disabled={isEditing}
                                 />
                                 {form.clientId ? (
                                     <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">
