@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { boqService } from "../../services/boqService";
-import { userService } from "../../services/userService";
+import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
 import { useAuth } from "../../context/AuthContext";
 import PageHeader from "../../components/PageHeader";
 import FormInput from "../../components/forms/FormInput";
@@ -90,21 +90,13 @@ export default function CreateBOQ() {
         }
     }, [isEdit, existingBOQResponse]);
 
-    const { data: clients = [], isLoading: isLoadingClients } = useQuery({
-        queryKey: ["users", "CLIENT", selectedSector],
-
-        queryFn: async () => {
-            const allUsers = await userService.getUsers({
-                role: "CLIENT"
-            });
-
-            return allUsers.filter(
-                c =>
-                    c.division?.toUpperCase() ===
-                    selectedSector.toUpperCase()
-            );
-        }
-    });
+    const handleClientChange = (clientName: string, clientId?: string, clientData?: any) => {
+        setForm(prev => ({
+            ...prev,
+            client_id: clientId || "",
+            client_name: clientData ? (clientData.contactPerson && clientData.contactPerson !== "N/A" ? `${clientData.contactPerson} (${clientData.name})` : clientData.name) : clientName
+        }));
+    };
 
     const handleSectorChange = (id: DivisionId | "all") => {
         const sectorToSet = id === "all"
@@ -123,19 +115,10 @@ export default function CreateBOQ() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        if (name === "client") {
-            const selectedClient = clients.find(c => c.id.toString() === value);
-            setForm(prev => ({
-                ...prev,
-                client_id: value,
-                client_name: selectedClient ? selectedClient.name : ""
-            }));
-        } else {
-            setForm(prev => ({
-                ...prev,
-                [name]: value
-            }));
-        }
+        setForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const updateItem = (index: number, field: keyof BOQItem, value: string | number) => {
@@ -156,9 +139,7 @@ export default function CreateBOQ() {
         e.preventDefault();
         const payload = {
             project_name: form.project,
-            client_name: clients.find(
-                c => c.id.toString() === form.client_id
-            )?.name || "",
+            client_name: form.client_name,
             client_id: form.client_id ? parseInt(form.client_id) : null,
             status: form.status,
             total_amount: parseFloat(form.totalAmount) || 0,
@@ -219,24 +200,12 @@ export default function CreateBOQ() {
 
                     <div className="col-span-2 md:col-span-1">
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Client Name *</label>
-                        <select
-                            name="client"
-                            value={form.client_id}
-                            onChange={handleChange}
-                            className="w-full border border-slate-200 rounded-lg px-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 hover:border-slate-300 transition-all outline-none font-medium text-slate-700 shadow-sm"
-                            required
-                        >
-                            <option value="">Choose a Client...</option>
-                            {isLoadingClients ? (
-                                <option disabled>Synchronizing client list...</option>
-                            ) : clients.length === 0 ? (
-                                <option disabled>No clients found in this sector</option>
-                            ) : (
-                                clients.map((c) => (
-                                    <option key={c.id} value={c.id}>{c.name} {c.company_name ? `(${c.company_name})` : ''}</option>
-                                ))
-                            )}
-                        </select>
+                        <ClientAutocomplete
+                            value={form.client_name}
+                            onChange={handleClientChange}
+                            division={selectedSector}
+                            placeholder="Choose a Client..."
+                        />
                     </div>
 
 
