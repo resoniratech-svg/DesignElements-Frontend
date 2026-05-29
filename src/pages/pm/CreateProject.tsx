@@ -66,10 +66,28 @@ function CreateProject() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    if (name === "startDate") {
+      setForm((prev: any) => {
+        const nextForm = { ...prev, [name]: value };
+        if (prev.endDate && value > prev.endDate) {
+          nextForm.endDate = value;
+        }
+        return nextForm;
+      });
+    } else if (name === "endDate") {
+      setForm((prev: any) => {
+        if (prev.startDate && value < prev.startDate) {
+          return { ...prev, endDate: prev.startDate };
+        }
+        return { ...prev, [name]: value };
+      });
+    } else {
+      setForm({
+        ...form,
+        [name]: value
+      });
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,6 +256,7 @@ function CreateProject() {
               name="endDate"
               value={form.endDate}
               onChange={handleChange}
+              min={form.startDate}
             />
 
             <div>

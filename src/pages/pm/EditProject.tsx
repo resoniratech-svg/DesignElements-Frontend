@@ -74,10 +74,28 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+        if (name === "startDate") {
+            setForm(prev => {
+                const nextForm = { ...prev, [name]: value };
+                if (prev.endDate && value > prev.endDate) {
+                    nextForm.endDate = value;
+                }
+                return nextForm;
+            });
+        } else if (name === "endDate") {
+            setForm(prev => {
+                if (prev.startDate && value < prev.startDate) {
+                    return { ...prev, endDate: prev.startDate };
+                }
+                return { ...prev, [name]: value };
+            });
+        } else {
+            setForm({
+                ...form,
+                [name]: value
+            });
+        }
     };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,6 +227,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                             name="endDate"
                             value={form.endDate}
                             onChange={handleChange}
+                            min={form.startDate}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-brand-500 outline-none"
                         />
                     </div>
