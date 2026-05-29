@@ -1,4 +1,4 @@
-import { UserCircle, LogOut, ChevronDown, Menu } from "lucide-react";
+import { LogOut, ChevronDown, Menu } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -166,13 +166,6 @@ function Navbar({ onToggleSidebar }: NavbarProps) {
                 <p className="text-xs text-gray-400 mt-0.5">{user?.email}</p>
               </div>
               <div className="p-2">
-                <button
-                  onClick={() => { setProfileOpen(false); navigate("/profile"); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-surface-muted transition-colors cursor-pointer"
-                >
-                  <UserCircle size={16} />
-                  My Profile
-                </button>
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
