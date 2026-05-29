@@ -66,12 +66,17 @@ export default function CreateBOQ() {
     useEffect(() => {
         if (isEdit && existingBOQResponse?.data) {
             const boq = existingBOQResponse.data;
+            
+            let loadedStatus = (boq.status || boq.Status || "UNPAID").toUpperCase();
+            if (loadedStatus === "PENDING") loadedStatus = "UNPAID";
+            if (loadedStatus === "PARTIAL") loadedStatus = "DUE";
+
             setForm({
                 project: boq.project_name || "",
                 client_name: boq.client_name || "",
                 client_id: boq.client_id?.toString() || "",
                 sector: boq.sector?.toUpperCase() || "TRADING",
-                status: boq.status || boq.Status || "UNPAID",
+                status: loadedStatus,
                 totalAmount: boq.total_amount?.toString() || "0",
                 date: boq.date
                     ? new Date(boq.date)
@@ -137,6 +142,21 @@ export default function CreateBOQ() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Form Validation
+        if (!form.client_name.trim() || !form.client_id) {
+            alert("Please select a valid Client from the dropdown list.");
+            return;
+        }
+        if (!form.project.trim()) {
+            alert("Project Name is a mandatory field.");
+            return;
+        }
+        if (items.length === 0 || !items[0].description.trim()) {
+            alert("Please add at least one line item with a description.");
+            return;
+        }
+
         const payload = {
             project_name: form.project,
             client_name: form.client_name,

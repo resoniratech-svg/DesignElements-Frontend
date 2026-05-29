@@ -1,6 +1,6 @@
 import type { DivisionId } from "../constants/divisions";
 
-export type InvoiceStatus = "Paid" | "Unpaid" | "Partial" | "Overdue";
+export type InvoiceStatus = "Paid" | "Unpaid" | "Partial" | "Overdue" | "Due";
 
 export interface InvoiceItem {
   id: string;

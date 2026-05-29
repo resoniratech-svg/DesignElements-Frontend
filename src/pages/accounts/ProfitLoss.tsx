@@ -2,61 +2,166 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { TrendingUp, BookOpen, Download } from "lucide-react";
+import { TrendingUp, BookOpen, Download, Loader2 } from "lucide-react";
 import { useDivision } from "../../context/DivisionContext";
 import { exportToCSV } from "../../utils/exportUtils";
 import { DIVISIONS } from "../../constants/divisions";
+import { financeService } from "../../services/financeService";
+
+const getYyyyMmDd = (dateVal: any): string => {
+  if (!dateVal) return "";
+  const str = String(dateVal).trim();
+  const match = str.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]}`;
+  }
+  try {
+    const d = new Date(str);
+    if (isNaN(d.getTime())) return "";
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  } catch {
+    return "";
+  }
+};
 
 function ProfitLoss() {
   const { activeDivision } = useDivision();
   const [invoices, setInvoices] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setInvoices(JSON.parse(localStorage.getItem("trek_invoices") || "[]"));
-    setExpenses(JSON.parse(localStorage.getItem("trek_expenses") || "[]"));
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [invRes, expRes] = await Promise.all([
+          financeService.getInvoices(undefined, 1, 1000),
+          financeService.getExpenses()
+        ]);
+        setInvoices(invRes.data || []);
+        setExpenses(expRes || []);
+      } catch (err) {
+        console.error("Failed to fetch P&L data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
-
-
   const filteredInvoices = useMemo(() => {
-    return activeDivision === "all" 
-      ? invoices 
-      : invoices.filter((i: any) => {
-          const iDiv = (i.branch || i.division || "").toLowerCase();
-          return iDiv === activeDivision.toLowerCase();
-        });
+    return invoices.filter((i: any) => {
+      // 1. Division filter
+      if (activeDivision !== "all") {
+        const branch = (i.division || i.branch || "").toLowerCase();
+        if (branch !== activeDivision.toLowerCase()) return false;
+      }
+      
+      // 2. Status filter
+      const stat = (i.approval_status || i.approvalStatus || i.status || "").toLowerCase();
+      return stat === "approved" || stat === "paid" || !stat;
+    });
   }, [invoices, activeDivision]);
 
   const filteredExpenses = useMemo(() => {
-    return activeDivision === "all" 
-      ? expenses 
-      : expenses.filter((e: any) => {
-          const eDiv = (e.referenceType || e.division || "general").toLowerCase();
-          return eDiv === activeDivision.toLowerCase();
-        });
+    return expenses.filter((e: any) => {
+      // 1. Division filter
+      if (activeDivision !== "all") {
+        const hasAlloc = e.allocations?.some((a: any) => a.division?.toLowerCase() === activeDivision.toLowerCase());
+        if (!hasAlloc) return false;
+      }
+      
+      // 2. Status filter
+      const stat = (e.approval_status || e.approvalStatus || e.status || "").toLowerCase();
+      return stat === "approved" || stat === "paid" || stat === "completed" || stat === "pending_approval" || !stat;
+    });
   }, [expenses, activeDivision]);
 
-  const totalRevenue = useMemo(() => filteredInvoices.filter((i: any) => i.approvalStatus === "approved" || !i.approvalStatus).reduce((sum, inv) => sum + parseFloat(inv.total || inv.amount || 0), 0), [filteredInvoices]);
-  const totalExpenses = useMemo(() => filteredExpenses.filter((e: any) => e.approvalStatus === "approved" || !e.approvalStatus).reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0), [filteredExpenses]);
+  const totalRevenue = useMemo(() => filteredInvoices.reduce((sum, inv) => sum + parseFloat(inv.total_amount || inv.total || inv.amount || 0), 0), [filteredInvoices]);
+  const totalExpenses = useMemo(() => {
+    return filteredExpenses.reduce((sum, exp) => {
+      if (activeDivision !== "all") {
+        const alloc = exp.allocations?.find((a: any) => a.division?.toLowerCase() === activeDivision.toLowerCase());
+        return sum + parseFloat(alloc?.amount || 0);
+      } else {
+        return sum + parseFloat(exp.total_amount || exp.amount || 0);
+      }
+    }, 0);
+  }, [filteredExpenses, activeDivision]);
   const netProfit = totalRevenue - totalExpenses;
 
-  const pendingRevenue = useMemo(() => filteredInvoices.filter((i: any) => i.approvalStatus === "pending").reduce((sum, inv) => sum + parseFloat(inv.total || inv.amount || 0), 0), [filteredInvoices]);
-  const pendingExpenses = useMemo(() => filteredExpenses.filter((e: any) => e.approvalStatus === "pending").reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0), [filteredExpenses]);
+  const pendingInvoices = useMemo(() => {
+    return invoices.filter((i: any) => {
+      if (activeDivision !== "all") {
+        const branch = (i.division || i.branch || "").toLowerCase();
+        if (branch !== activeDivision.toLowerCase()) return false;
+      }
+      const stat = (i.approval_status || i.approvalStatus || i.status || "").toLowerCase();
+      return stat === "pending" || stat === "unpaid";
+    });
+  }, [invoices, activeDivision]);
+
+  const pendingExpenses = useMemo(() => {
+    return expenses.filter((e: any) => {
+      if (activeDivision !== "all") {
+        const hasAlloc = e.allocations?.some((a: any) => a.division?.toLowerCase() === activeDivision.toLowerCase());
+        if (!hasAlloc) return false;
+      }
+      const stat = (e.approval_status || e.approvalStatus || e.status || "").toLowerCase();
+      return stat === "pending" || stat === "pending_approval";
+    });
+  }, [expenses, activeDivision]);
+
+  const pendingRevenue = useMemo(() => pendingInvoices.reduce((sum, inv) => sum + parseFloat(inv.total_amount || inv.total || inv.amount || 0), 0), [pendingInvoices]);
+  const pendingExpensesAmt = useMemo(() => {
+    return pendingExpenses.reduce((sum, exp) => {
+      if (activeDivision !== "all") {
+        const alloc = exp.allocations?.find((a: any) => a.division?.toLowerCase() === activeDivision.toLowerCase());
+        return sum + parseFloat(alloc?.amount || 0);
+      } else {
+        return sum + parseFloat(exp.total_amount || exp.amount || 0);
+      }
+    }, 0);
+  }, [pendingExpenses, activeDivision]);
 
   // Taxation calculations
-  const outputVAT = useMemo(() => filteredInvoices.filter((i: any) => i.approvalStatus === "approved" || !i.approvalStatus).reduce((sum, inv) => sum + parseFloat(inv.taxAmount || 0), 0), [filteredInvoices]);
-  const inputVAT = useMemo(() => filteredExpenses.filter((e: any) => e.approvalStatus === "approved" || !e.approvalStatus).reduce((sum, exp) => sum + parseFloat(exp.taxAmount || 0), 0), [filteredExpenses]);
+  const outputVAT = useMemo(() => filteredInvoices.reduce((sum, inv) => sum + parseFloat(inv.tax_amount || inv.taxAmount || 0), 0), [filteredInvoices]);
+  const inputVAT = useMemo(() => {
+    return filteredExpenses.reduce((sum, exp) => {
+      const tax = parseFloat(exp.tax_amount || exp.taxAmount || 0);
+      if (activeDivision !== "all") {
+        const alloc = exp.allocations?.find((a: any) => a.division?.toLowerCase() === activeDivision.toLowerCase());
+        const pct = parseFloat(alloc?.percentage || 0) / 100;
+        return sum + (tax * pct);
+      } else {
+        return sum + tax;
+      }
+    }, 0);
+  }, [filteredExpenses, activeDivision]);
   const netVAT = outputVAT - inputVAT;
 
   const divisionBreakdown = useMemo(() => {
     return DIVISIONS.map(div => {
-      const mappedDiv = div.id;
-      const divInvoices = invoices.filter(i => (i.branch || i.division || "").toLowerCase() === mappedDiv && (i.approvalStatus === "approved" || !i.approvalStatus));
-      const divExpenses = expenses.filter(e => (e.referenceType || e.division || "").toLowerCase() === mappedDiv && (e.approvalStatus === "approved" || !e.approvalStatus));
+      const mappedDiv = div.id.toLowerCase();
+      const divInvoices = invoices.filter(i => {
+        const branch = (i.division || i.branch || "").toLowerCase();
+        const stat = (i.approval_status || i.approvalStatus || i.status || "").toLowerCase();
+        return branch === mappedDiv && (stat === "approved" || stat === "paid" || !stat);
+      });
+      const divExpenses = expenses.filter(e => {
+        const hasAlloc = e.allocations?.some((a: any) => a.division?.toLowerCase() === mappedDiv);
+        const stat = (e.approval_status || e.approvalStatus || e.status || "").toLowerCase();
+        return hasAlloc && (stat === "approved" || stat === "paid" || stat === "completed" || stat === "pending_approval" || !stat);
+      });
       
-      const revenue = divInvoices.reduce((s, i) => s + parseFloat(i.total || 0), 0);
-      const exps = divExpenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+      const revenue = divInvoices.reduce((s, i) => s + parseFloat(i.total_amount || i.total || i.amount || 0), 0);
+      const exps = divExpenses.reduce((s, e) => {
+        const alloc = e.allocations?.find((a: any) => a.division?.toLowerCase() === mappedDiv);
+        return s + parseFloat(alloc?.amount || 0);
+      }, 0);
       
       return {
         name: div.label,
@@ -68,19 +173,51 @@ function ProfitLoss() {
   }, [invoices, expenses]);
 
   const chartData = useMemo(() => {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    return months.map(month => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return months.map((month, idx) => {
       const monthIncome = filteredInvoices
-        .filter(inv => ((inv.date || "").includes(month) || inv.month === month) && (inv.approvalStatus === "approved" || !inv.approvalStatus))
-        .reduce((sum, inv) => sum + parseFloat(inv.total || inv.amount || 0), 0);
+        .filter(inv => {
+          const itemDate = inv.invoice_date || inv.date || inv.created_at;
+          const dateStr = getYyyyMmDd(itemDate);
+          if (!dateStr) return false;
+          const itemYear = Number(dateStr.substring(0, 4));
+          const itemMonth = Number(dateStr.substring(5, 7)) - 1;
+          return itemMonth === idx && itemYear === 2026;
+        })
+        .reduce((sum, inv) => sum + parseFloat(inv.total_amount || inv.total || inv.amount || 0), 0);
+
       const monthExpense = filteredExpenses
-        .filter(exp => ((exp.date || "").includes(month) || exp.month === month) && (exp.approvalStatus === "approved" || !exp.approvalStatus))
-        .reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0);
+        .filter(exp => {
+          const itemDate = exp.date || exp.created_at;
+          const dateStr = getYyyyMmDd(itemDate);
+          if (!dateStr) return false;
+          const itemYear = Number(dateStr.substring(0, 4));
+          const itemMonth = Number(dateStr.substring(5, 7)) - 1;
+          return itemMonth === idx && itemYear === 2026;
+        })
+        .reduce((sum, exp) => {
+          if (activeDivision !== "all") {
+            const alloc = exp.allocations?.find((a: any) => a.division?.toLowerCase() === activeDivision.toLowerCase());
+            return sum + parseFloat(alloc?.amount || 0);
+          } else {
+            return sum + parseFloat(exp.total_amount || exp.amount || 0);
+          }
+        }, 0);
+
       return { name: month, Revenue: monthIncome, Expenses: monthExpense };
     });
-  }, [filteredInvoices, filteredExpenses]);
+  }, [filteredInvoices, filteredExpenses, activeDivision]);
 
   const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
+
+  if (loading) {
+    return (
+      <div className="p-12 flex flex-col items-center justify-center gap-4 text-slate-400 min-h-[400px]">
+        <Loader2 size={48} className="animate-spin text-brand-600" />
+        <p className="text-lg font-medium">Generating P&L Report...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-12 p-6">
@@ -108,7 +245,7 @@ function ProfitLoss() {
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
           <p className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Total Expenses</p>
           <p className="text-3xl font-bold text-gray-900">QAR {totalExpenses.toLocaleString()}</p>
-          {pendingExpenses > 0 && <p className="text-xs text-amber-600 mt-2 font-medium">+{pendingExpenses.toLocaleString()} pending</p>}
+          {pendingExpensesAmt > 0 && <p className="text-xs text-amber-600 mt-2 font-medium">+{pendingExpensesAmt.toLocaleString()} pending</p>}
         </div>
 
         <div className={`p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:shadow-xl transition-shadow text-white ${netProfit >= 0 ? "bg-brand-600" : "bg-rose-600"}`}>
@@ -119,7 +256,7 @@ function ProfitLoss() {
 
         <div className="bg-slate-900 p-6 rounded-2xl shadow-lg relative overflow-hidden group hover:shadow-xl transition-shadow text-white">
           <p className="text-sm font-medium text-slate-400 mb-2 uppercase tracking-wider">Projected Position</p>
-          <p className="text-3xl font-bold text-emerald-400">QAR {(netProfit + pendingRevenue - pendingExpenses).toLocaleString()}</p>
+          <p className="text-3xl font-bold text-emerald-400">QAR {(netProfit + pendingRevenue - pendingExpensesAmt).toLocaleString()}</p>
           <div className="mt-4 pt-4 border-t border-slate-800">
             <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter mb-1">Taxation Summary</p>
             <p className="text-xs font-medium text-slate-300">Net VAT: QAR {netVAT.toLocaleString()}</p>
@@ -139,7 +276,8 @@ function ProfitLoss() {
                   <th className="px-6 py-4 font-semibold">Division</th>
                   <th className="px-6 py-4 font-semibold text-right">Revenue</th>
                   <th className="px-6 py-4 font-semibold text-right">Expenses</th>
-                  <th className="px-6 py-4 font-semibold text-right">Profit/Loss</th>
+                  <th className="px-6 py-4 font-semibold text-right">Profit</th>
+                  <th className="px-6 py-4 font-semibold text-right">Loss</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -148,8 +286,11 @@ function ProfitLoss() {
                     <td className="px-6 py-4 text-sm font-bold text-slate-800">{div.name}</td>
                     <td className="px-6 py-4 text-sm text-right text-emerald-600 font-medium">QAR {div.revenue.toLocaleString()}</td>
                     <td className="px-6 py-4 text-sm text-right text-rose-600 font-medium">QAR {div.expenses.toLocaleString()}</td>
-                    <td className={`px-6 py-4 text-sm text-right font-black ${div.profit >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
-                        QAR {div.profit.toLocaleString()}
+                    <td className="px-6 py-4 text-sm text-right font-black text-emerald-700">
+                      {div.profit >= 0 ? `QAR ${div.profit.toLocaleString()}` : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-right font-black text-rose-700">
+                      {div.profit < 0 ? `QAR ${Math.abs(div.profit).toLocaleString()}` : "-"}
                     </td>
                   </tr>
                 ))}

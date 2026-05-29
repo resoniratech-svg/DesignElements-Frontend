@@ -10,12 +10,13 @@ import { useAuth } from "../../context/AuthContext";
 import { useActivity } from "../../context/ActivityContext";
 import type { DivisionId } from "../../constants/divisions";
 import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { quotationService } from "../../services/quotationService";
 import type { QuotationItem } from "../../types/pm";
 
 export default function CreateQuotation() {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const params = useParams();
     const editId = params.id;
     const isEditing = !!editId;
@@ -365,6 +366,11 @@ export default function CreateQuotation() {
                         notes: form.intro_text
                     });
                 }
+            }
+
+            queryClient.invalidateQueries({ queryKey: ["quotations"] });
+            if (isEditing && editId) {
+                queryClient.invalidateQueries({ queryKey: ["quotation", editId] });
             }
 
             const activityMessage = isApproved

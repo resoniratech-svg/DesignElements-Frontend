@@ -104,9 +104,19 @@ function EditClient() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
+    const { name, value } = e.target;
+    setForm(prev => {
+      const nextForm = { ...prev, [name]: value };
+      if (name === "startDate") {
+        if (nextForm.renewalDate && value && nextForm.renewalDate < value) {
+          nextForm.renewalDate = value;
+        }
+      } else if (name === "renewalDate") {
+        if (nextForm.startDate && value && value < nextForm.startDate) {
+          nextForm.renewalDate = nextForm.startDate;
+        }
+      }
+      return nextForm;
     });
   };
 
@@ -191,8 +201,8 @@ function EditClient() {
         crNumber: form.crNumber,
         computerCard: form.computerCard,
         contractType: form.contractType,
-        startDate: form.startDate,
-        renewalDate: form.renewalDate,
+        startDate: form.startDate ? form.startDate : null,
+        renewalDate: form.renewalDate ? form.renewalDate : null,
         qidDocUrl,
         crDocUrl,
         computerCardDocUrl,
@@ -418,6 +428,7 @@ function EditClient() {
                     name="renewalDate"
                     value={form.renewalDate}
                     onChange={handleChange}
+                    min={form.startDate}
                     className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white"
                   />
                 </div>

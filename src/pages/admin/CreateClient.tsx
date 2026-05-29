@@ -71,9 +71,18 @@ function CreateClient() {
       value = value.replace(/[^0-9]/g, "");
     }
 
-    setForm({
-      ...form,
-      [name]: value
+    setForm(prev => {
+      const nextForm = { ...prev, [name]: value };
+      if (name === "startDate") {
+        if (nextForm.renewalDate && value && nextForm.renewalDate < value) {
+          nextForm.renewalDate = value;
+        }
+      } else if (name === "renewalDate") {
+        if (nextForm.startDate && value && value < nextForm.startDate) {
+          nextForm.renewalDate = nextForm.startDate;
+        }
+      }
+      return nextForm;
     });
   };
 
@@ -165,8 +174,8 @@ function CreateClient() {
         qid: form.qid,
         cr_number: form.crNumber,
         computer_card: form.computerCard,
-        start_date: form.startDate,
-        renewal_date: form.renewalDate,
+        start_date: form.startDate ? form.startDate : null,
+        renewal_date: form.renewalDate ? form.renewalDate : null,
         contract_type: form.contractType,
         licenses: updatedLicenses.filter(l => l.number),
         documents: uploadedDocs,
@@ -427,6 +436,7 @@ function CreateClient() {
                         name="renewalDate"
                         value={form.renewalDate}
                         onChange={handleChange}
+                        min={form.startDate}
                         className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white"
                       />
                     </div>

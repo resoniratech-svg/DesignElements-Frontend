@@ -193,8 +193,39 @@ export default function CreateInvoice() {
     });
 
     const handleFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const name = e.target.name;
         const value = e.target.type === "number" ? Number(e.target.value) : e.target.value;
-        setForm({ ...form, [e.target.name]: value });
+
+        if (name === "status") {
+            setForm(prev => {
+                const nextForm = { ...prev, status: value as InvoiceStatus };
+                if (value === "Unpaid") {
+                    nextForm.advance = 0;
+                } else if (value === "Due") {
+                    if (prev.advance === totals.total || prev.status === "Paid") {
+                        nextForm.advance = 0;
+                    }
+                } else if (value === "Paid") {
+                    nextForm.advance = totals.total;
+                }
+                return nextForm;
+            });
+        } else if (name === "advance") {
+            const adv = Number(value) || 0;
+            setForm(prev => {
+                const nextForm = { ...prev, advance: adv };
+                if (adv >= totals.total) {
+                    nextForm.status = "Paid";
+                } else if (adv > 0) {
+                    nextForm.status = "Due";
+                } else {
+                    nextForm.status = "Unpaid";
+                }
+                return nextForm;
+            });
+        } else {
+            setForm({ ...form, [name]: value });
+        }
     };
 
     const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
