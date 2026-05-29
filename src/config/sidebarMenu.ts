@@ -5,7 +5,8 @@ import {
   CreditCard,
   Folder,
   ClipboardList,
-  Receipt,
+  ScrollText,
+  Coins,
   BarChart2,
   CheckSquare,
   BookOpen,
@@ -73,7 +74,7 @@ export const sidebarMenu: SidebarSection[] = [
     items: [
       { label: "BOQ", path: "/boq", icon: ClipboardList },
       { label: "Quotations", path: "/quotations", icon: FileText },
-      { label: "Invoices", path: "/invoices", icon: Receipt },
+      { label: "Invoices", path: "/invoices", icon: ScrollText },
     ],
   },
 
@@ -85,7 +86,7 @@ export const sidebarMenu: SidebarSection[] = [
       { label: "Credit Control", path: "/credit-control", icon: CreditCard },
 
       { label: "Payments", path: "/payments", icon: CreditCard },
-      { label: "Expenses", path: "/expenses", icon: Receipt },
+      { label: "Expenses", path: "/expenses", icon: Coins },
       { label: "Credit Request", path: "/credit-requests", icon: CreditCard },
       { label: "General Ledger", path: "/ledger", icon: BookOpen },
     ],
