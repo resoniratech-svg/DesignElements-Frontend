@@ -192,8 +192,6 @@ function CreditRequests() {
             <option value="all">All Statuses</option>
             <option value="approved">Approved</option>
             <option value="pending">Pending</option>
-            <option value="due">Due</option>
-            <option value="rejected">Rejected</option>
           </select>
         </div>
 
