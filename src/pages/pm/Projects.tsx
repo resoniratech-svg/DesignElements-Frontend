@@ -18,6 +18,7 @@ function Projects() {
   const { logActivity } = useActivity();
   const { activeDivision } = useDivision();
   const [displayLimit] = useState(1000);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // 1. Fetch data using React Query
   const { data, isLoading } = useQuery({
@@ -27,6 +28,11 @@ function Projects() {
   });
 
   const projects = data?.data || [];
+
+  const filteredProjects = projects.filter((item) => {
+    if (statusFilter === "all") return true;
+    return item.status?.toUpperCase() === statusFilter.toUpperCase();
+  });
 
   // 2. Delete mutation
   const deleteMutation = useMutation({
@@ -39,7 +45,7 @@ function Projects() {
   });
 
   const handleExport = () => {
-    const dataForExport = projects.map((p) => ({
+    const dataForExport = filteredProjects.map((p) => ({
       "Project Name": p.name || p.projectName,
       "Client": p.client,
       "Budget": p.budget,
@@ -72,7 +78,7 @@ function Projects() {
     }
   };
 
-  const tableData = projects.map((item) => ({
+  const tableData = filteredProjects.map((item) => ({
     ...item,
     "Project": item.name || item.projectName,
     "Client": item.client_name || item.client,
@@ -167,6 +173,18 @@ function Projects() {
           <DataTable 
             columns={columns} 
             data={tableData} 
+            extraFilters={
+              <select
+                className="bg-slate-50 border-none rounded-lg text-xs py-1.5 pl-3 pr-8 focus:ring-1 focus:ring-brand-500 outline-none"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            }
           />
         )}
       </div>

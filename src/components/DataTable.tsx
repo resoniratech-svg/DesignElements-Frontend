@@ -8,6 +8,7 @@ interface Props<T> {
   hasMore?: boolean;
   isLoadingMore?: boolean;
   hideSearch?: boolean;
+  extraFilters?: React.ReactNode;
 }
 
 function DataTable<T extends Record<string, any>>({ 
@@ -16,7 +17,8 @@ function DataTable<T extends Record<string, any>>({
   onViewMore, 
   hasMore = false,
   isLoadingMore = false,
-  hideSearch = false 
+  hideSearch = false,
+  extraFilters
 }: Props<T>) {
   const [search, setSearch] = useState("");
 
@@ -32,15 +34,18 @@ function DataTable<T extends Record<string, any>>({
       {/* Search & Toolbar */}
       {!hideSearch && (
         <div className="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center bg-surface-muted border border-gray-100 px-3 py-2 rounded-lg w-full sm:w-72 focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-50 transition-all">
-            <Search size={15} className="text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search records..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent outline-none px-2 text-sm w-full text-gray-700 placeholder:text-gray-400"
-            />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center bg-surface-muted border border-gray-100 px-3 py-2 rounded-lg w-full sm:w-72 focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-50 transition-all">
+              <Search size={15} className="text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search records..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="bg-transparent outline-none px-2 text-sm w-full text-gray-700 placeholder:text-gray-400"
+              />
+            </div>
+            {extraFilters}
           </div>
           <p className="text-xs text-gray-400 font-medium">
             Showing {filteredData.length} records
