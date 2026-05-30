@@ -15,6 +15,7 @@ function Invoices() {
     const queryClient = useQueryClient();
     const { logActivity } = useActivity();
     const { activeDivision } = useDivision();
+    const [statusFilter, setStatusFilter] = useState("all");
 
     const [displayLimit] = useState(1000);
 
@@ -26,6 +27,11 @@ function Invoices() {
     });
 
     const invoices = invoiceResponse?.data || [];
+
+    const filteredInvoices = (invoices as Invoice[]).filter((inv) => {
+        if (statusFilter === "all") return true;
+        return inv.status?.toUpperCase() === statusFilter.toUpperCase();
+    });
 
     // 2. Mutations
     const updateStatusMutation = useMutation({
@@ -60,7 +66,7 @@ function Invoices() {
         }
     };
 
-    const tableData = (invoices as any[]).map((invoice) => ({
+    const tableData = (filteredInvoices as any[]).map((invoice) => ({
         ...invoice,
         "Invoice No": invoice.invoice_number || invoice.invoiceNo,
         "Client": invoice.client_name || invoice.company_name || invoice.client || "N/A",
@@ -169,6 +175,18 @@ function Invoices() {
                     <DataTable 
                         columns={columns} 
                         data={tableData} 
+                        extraFilters={
+                            <select
+                                className="bg-slate-50 border-none rounded-lg text-xs py-1.5 pl-3 pr-8 focus:ring-1 focus:ring-brand-500 outline-none"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            >
+                                <option value="all">All Status</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Unpaid">Unpaid</option>
+                                <option value="Due">Due</option>
+                            </select>
+                        }
                     />
                 )}
             </div>
