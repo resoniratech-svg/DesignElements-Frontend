@@ -14,6 +14,7 @@ import { exportToCSV } from "../../utils/exportUtils";
 function Payments() {
   const { activeDivision } = useDivision();
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const { data: payments = [], isLoading } = useQuery({
     queryKey: ["payments"],
@@ -25,6 +26,10 @@ function Payments() {
       ? payments 
       : payments.filter((p: any) => p.division === activeDivision);
 
+    if (statusFilter !== "all") {
+      result = result.filter((p: any) => p.status?.toUpperCase() === statusFilter.toUpperCase());
+    }
+
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter((p: any) => 
@@ -34,7 +39,7 @@ function Payments() {
       );
     }
     return result;
-  }, [payments, activeDivision, searchQuery]);
+  }, [payments, activeDivision, searchQuery, statusFilter]);
 
   const handleExport = () => {
     const dataToExport = filteredPayments.map((p: any) => ({
@@ -73,15 +78,27 @@ function Payments() {
 
       {/* Filters & Search */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-        <div className="relative w-full sm:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search by ID, client or invoice..." 
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-96">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by ID, client or invoice..." 
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <select
+            className="bg-slate-50 border border-slate-100 rounded-lg text-xs py-2 pl-3 pr-8 focus:ring-2 focus:ring-brand-500 outline-none transition-all cursor-pointer"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Due">Due</option>
+          </select>
         </div>
         <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
           <Filter size={16} />
