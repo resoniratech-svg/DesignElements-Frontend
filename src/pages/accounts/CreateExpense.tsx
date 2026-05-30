@@ -331,7 +331,7 @@ function CreateExpense() {
                   className="no-spinner"
                 />
 
-                {isEditing && user?.role === "SUPER_ADMIN" && (
+                {user?.role === "SUPER_ADMIN" && (
                   <div className="flex flex-col gap-1">
                     <label className="text-sm font-semibold text-slate-500 uppercase">Status</label>
                     <select
