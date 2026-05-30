@@ -10,6 +10,7 @@ import { Plus, Trash2, Eye, Edit, Coins, Clock, FileText } from "lucide-react";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";
 import type { Expense } from "../../types/finance";
+import ApprovalBadge from "../../components/ApprovalBadge";
 
 const DIVISION_FILTERS = [
   { value: "all", label: "All Divisions" },
@@ -126,6 +127,7 @@ function Expenses() {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}`,
+      Status: <ApprovalBadge status={expense.approvalStatus as any} />,
       "Receipt Doc": expense.attachment ? (
         <a
           href={getUploadUrl(expense.attachment)}
@@ -215,6 +217,7 @@ function Expenses() {
     "Vendor",
     "Payment Method",
     "Amount",
+    "Status",
     "Receipt Doc",
     "Actions",
   ];
