@@ -26,6 +26,7 @@ function BOQ() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { activeDivision } = useDivision();
+  const [statusFilter, setStatusFilter] = useState("all");
   
   // Keep local state for display limit only
 
@@ -39,6 +40,13 @@ function BOQ() {
   });
 
   const boqs = boqResponse?.data?.data || boqResponse?.data || [];
+
+  const filteredBoqs = useMemo(() => {
+    return boqs.filter((item: any) => {
+      if (statusFilter === "all") return true;
+      return item.status?.toUpperCase() === statusFilter.toUpperCase();
+    });
+  }, [boqs, statusFilter]);
 
   const deleteMutation = useMutation({
     mutationFn: boqService.deleteBOQ,
@@ -54,7 +62,7 @@ function BOQ() {
   };
 
   const tableData = useMemo<BOQTableData[]>(() => {
-    return boqs.map((item: any) => {
+    return filteredBoqs.map((item: any) => {
       const division = getDivisionById(item.sector || item.division);
       return {
         "ID": item.boq_number || item.id,
@@ -86,7 +94,7 @@ function BOQ() {
         )
       };
     });
-  }, [boqs, activeDivision]);
+  }, [filteredBoqs, activeDivision]);
 
   if (isLoading) return <div className="p-6">Loading BOQs...</div>;
 
@@ -110,6 +118,18 @@ function BOQ() {
         <DataTable 
           columns={columns} 
           data={tableData} 
+          extraFilters={
+            <select
+              className="bg-slate-50 border-none rounded-lg text-xs py-1.5 pl-3 pr-8 focus:ring-1 focus:ring-brand-500 outline-none"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid</option>
+              <option value="Due">Due</option>
+            </select>
+          }
         />
       </div>
     </div>
