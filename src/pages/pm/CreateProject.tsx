@@ -82,6 +82,12 @@ function CreateProject() {
         }
         return { ...prev, [name]: value };
       });
+    } else if (name === "budget") {
+      const numericValue = value.replace(/[^0-9]/g, "");
+      setForm({
+        ...form,
+        [name]: numericValue
+      });
     } else {
       setForm({
         ...form,

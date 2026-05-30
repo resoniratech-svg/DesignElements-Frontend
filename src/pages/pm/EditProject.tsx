@@ -90,6 +90,12 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                 }
                 return { ...prev, [name]: value };
             });
+        } else if (name === "budget") {
+            const numericValue = value.replace(/[^0-9]/g, "");
+            setForm(prev => ({
+                ...prev,
+                [name]: numericValue
+            }));
         } else {
             setForm({
                 ...form,
