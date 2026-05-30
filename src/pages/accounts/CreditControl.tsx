@@ -107,8 +107,8 @@ export default function CreditControl() {
           title="Pending Payments"
           value={`QAR ${summary?.pendingPayments ? summary.pendingPayments.toLocaleString() : '0'}`}
           icon={<TrendingUp size={20} className="text-amber-500" />}
-          onClick={() => setStatusFilter("PENDING")}
-          className={statusFilter === "PENDING" ? "ring-2 ring-brand-500" : ""}
+          onClick={() => setStatusFilter("UNPAID")}
+          className={statusFilter === "UNPAID" ? "ring-2 ring-brand-500" : ""}
         />
         <StatCard
           title="Due Invoices"
@@ -181,8 +181,7 @@ export default function CreditControl() {
                 >
                   <option value="all">All Status</option>
                   <option value="PAID">Paid</option>
-                  <option value="PARTIAL">Partial</option>
-                  <option value="PENDING">Unpaid</option>
+                  <option value="UNPAID">Unpaid</option>
                   <option value="DUE">Due</option>
                 </select>
               </div>
@@ -278,20 +277,11 @@ export default function CreditControl() {
                       )
                     );
 
-                  } else if (
-                    statusFilter === "PENDING" ||
-                    statusFilter === "UNPAID"
-                  ) {
+                  } else if (statusFilter === "UNPAID") {
 
                     exportInvoices = invoices.filter(i =>
-                      i.status?.toUpperCase() === 'PENDING' ||
-                      i.status?.toUpperCase() === 'UNPAID'
-                    );
-
-                  } else if (statusFilter === "PARTIAL") {
-
-                    exportInvoices = invoices.filter(i =>
-                      i.status?.toUpperCase() === 'PARTIAL'
+                      i.status?.toUpperCase() === 'UNPAID' ||
+                      i.status?.toUpperCase() === 'PENDING'
                     );
 
                   } else if (statusFilter === "PAID") {
