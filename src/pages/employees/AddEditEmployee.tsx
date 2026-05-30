@@ -86,6 +86,21 @@ export default function AddEditEmployee() {
         const newDocs = [...(prev.documents || [])];
         if (newDocs[index]) {
             newDocs[index] = { ...newDocs[index], [field]: value };
+            
+            // Chronological auto-adjuster logic
+            if (field === "issueDate") {
+                const issueVal = String(value);
+                const expiryVal = String(newDocs[index].expiryDate || "");
+                if (expiryVal && issueVal > expiryVal) {
+                    newDocs[index].expiryDate = issueVal;
+                }
+            } else if (field === "expiryDate") {
+                const expiryVal = String(value);
+                const issueVal = String(newDocs[index].issueDate || "");
+                if (expiryVal && issueVal && expiryVal < issueVal) {
+                    newDocs[index].issueDate = expiryVal;
+                }
+            }
         }
         return { ...prev, documents: newDocs };
     });
@@ -328,11 +343,11 @@ export default function AddEditEmployee() {
                             placeholder="Enter number"
                         />
                     </div>
-                    <div className="space-y-1.5">
+                     <div className="space-y-1.5">
                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Issue Date</label>
                         <input 
                             type="date"
-                            value={doc.issueDate}
+                            value={doc.issueDate ? doc.issueDate.split(/[T ]/)[0] : ""}
                             onChange={(e) => handleDocChange(idx, 'issueDate', e.target.value)}
                             className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500/10"
                         />
@@ -341,7 +356,8 @@ export default function AddEditEmployee() {
                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Expiry Date</label>
                         <input 
                             type="date"
-                            value={doc.expiryDate}
+                            value={doc.expiryDate ? doc.expiryDate.split(/[T ]/)[0] : ""}
+                            min={doc.issueDate ? doc.issueDate.split(/[T ]/)[0] : undefined}
                             onChange={(e) => handleDocChange(idx, 'expiryDate', e.target.value)}
                             className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500/10"
                         />
