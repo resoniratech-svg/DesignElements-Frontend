@@ -132,7 +132,13 @@ function FileUploader({
   };
 
   const removeFile = (index: number) => {
-    setUploadingFiles(prev => prev.filter((_, i) => i !== index));
+    const updated = uploadingFiles.filter((_, i) => i !== index);
+    setUploadingFiles(updated);
+    if (onUpload) {
+      const remainingFiles = updated.map(f => f.file);
+      const remainingUrls = updated.map(f => f.url).filter((url): url is string => !!url);
+      onUpload(remainingFiles, remainingUrls);
+    }
   };
 
   return (

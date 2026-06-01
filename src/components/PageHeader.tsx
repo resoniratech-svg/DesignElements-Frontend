@@ -20,7 +20,7 @@ function PageHeader({ title, subtitle, buttonText, buttonLink, action, showBack 
         {showBack && (
           <button
             onClick={() => navigate(-1)}
-            className="p-2 -ml-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 flex-shrink-0"
+            className="p-2 -ml-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 flex-shrink-0 print:hidden"
             title="Go Back"
           >
             <ArrowLeft size={18} />
@@ -36,7 +36,7 @@ function PageHeader({ title, subtitle, buttonText, buttonLink, action, showBack 
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 print:hidden">
         {action && <div>{action}</div>}
 
         {buttonText && buttonLink && (

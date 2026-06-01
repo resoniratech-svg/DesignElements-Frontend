@@ -527,19 +527,20 @@ function CreateExpense() {
                       : []
                   }
                   onUpload={(files: any[], urls: string[]) => {
-
                     if (urls.length > 0) {
-
                       setForm(prev => ({
                         ...prev,
                         attachment: urls[0]
                       }));
-
                     } else if (files.length > 0) {
-
                       setForm(prev => ({
                         ...prev,
                         attachment: files[0].name
+                      }));
+                    } else {
+                      setForm(prev => ({
+                        ...prev,
+                        attachment: ""
                       }));
                     }
                   }}

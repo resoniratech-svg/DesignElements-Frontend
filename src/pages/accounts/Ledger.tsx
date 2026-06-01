@@ -131,7 +131,7 @@ export default function Ledger() {
 
         const formatDate = (dateStr: string) => {
             if (!dateStr) return "";
-            return dateStr.split("T")[0];
+            return dateStr.split("T")[0].split(" ")[0];
         };
 
         const getExpenseAmount = (exp: any) => {
@@ -276,7 +276,9 @@ export default function Ledger() {
         return ledgerData.filter(e => {
             const matchesSearch = (e.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (e.reference || "").toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesType = typeFilter === "All" ? true : e.type === typeFilter;
+            const matchesType = typeFilter === "All" 
+                ? true 
+                : String(e.type).toLowerCase() === String(typeFilter).toLowerCase();
             return matchesSearch && matchesType;
         });
     }, [ledgerData, searchTerm, typeFilter]);

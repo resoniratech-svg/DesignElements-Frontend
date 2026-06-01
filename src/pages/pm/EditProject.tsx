@@ -139,11 +139,8 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
             start_date: form.startDate || null,
             end_date: form.endDate || null,
             division: form.division || null,
+            uploaded_document: uploadedDoc || null,
         };
-
-        if (uploadedDoc) {
-            payload.uploaded_document = uploadedDoc;
-        }
 
         updateMutation.mutate(payload);
     };
