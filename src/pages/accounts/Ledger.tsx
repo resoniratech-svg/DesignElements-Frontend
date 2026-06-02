@@ -158,15 +158,21 @@ export default function Ledger() {
             return 0;
         };
 
-        // Add Invoices
+        // Add Invoices (only approved/non-pending ones)
         filteredInvoices.forEach((inv: any) => {
 
             const invoiceStatus =
                 String(inv.status || "").toLowerCase();
+            const approvalStatus =
+                String(inv.approval_status || inv.approvalStatus || "").toLowerCase();
 
+            // Skip cancelled, draft, and pending invoices
+            // Pending invoices are handled separately below
             if (
                 invoiceStatus !== "cancelled" &&
-                invoiceStatus !== "draft"
+                invoiceStatus !== "draft" &&
+                approvalStatus !== "pending" &&
+                approvalStatus !== "pending_approval"
             ) {
 
                 entries.push({
@@ -239,7 +245,7 @@ export default function Ledger() {
             const approvalStatus = (inv.approval_status || inv.approvalStatus || "").toLowerCase();
             if (approvalStatus === "pending" || approvalStatus === "pending_approval") {
                 processed.push({
-                    id: inv.id,
+                    id: `pending-inv-${inv.id}`,
                     date: formatDate(inv.invoice_date || inv.date || inv.created_at),
                     type: "Income",
                     description: `[PENDING] Invoice for ${inv.client_name || inv.client || 'Client'}`,
@@ -256,7 +262,7 @@ export default function Ledger() {
             const approvalStatus = (exp.approval_status || exp.approvalStatus || "").toLowerCase();
             if (approvalStatus === "pending" || approvalStatus === "pending_approval") {
                 processed.push({
-                    id: exp.id,
+                    id: `pending-exp-${exp.id}`,
                     date: formatDate(exp.date || exp.created_at),
                     type: "Expense",
                     description: `[PENDING] ${exp.description || exp.expenseName || exp.category}`,
@@ -351,11 +357,14 @@ export default function Ledger() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {finalLedger.map((entry) => (
+                            {finalLedger.map((entry, index) => (
                                 <tr
-                                    key={entry.id}
+                                    key={`${entry.id}-${index}`}
                                     className="hover:bg-brand-50/50 transition-colors cursor-pointer group"
-                                    onClick={() => navigate(entry.type === 'Income' ? `/invoice-details/${entry.id}` : `/expense-details/${entry.id}`)}
+                                    onClick={() => {
+                                        const realId = String(entry.id).replace(/^pending-(inv|exp)-/, '');
+                                        navigate(entry.type === 'Income' ? `/invoice-details/${realId}` : `/expense-details/${realId}`);
+                                    }}
                                 >
                                     <td className="px-6 py-4 text-sm text-slate-600 group-hover:text-brand-700 font-medium">{entry.date}</td>
                                     <td className="px-6 py-4">
