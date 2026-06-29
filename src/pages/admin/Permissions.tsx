@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PageHeader from "../../components/PageHeader";
 import { sidebarMenu } from "../../config/sidebarMenu";
-import { getDynamicPermissions, saveDynamicPermissions, type PermissionsData } from "../../utils/permissions";
+import { getDynamicPermissions, saveDynamicPermissions, fetchAndSyncPermissions, type PermissionsData } from "../../utils/permissions";
 import { Save, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
 import type { Role } from "../../types/user";
 
@@ -14,15 +14,29 @@ export default function Permissions() {
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    // Initialize permissions state from localStorage or defaults
-    const savedPerms = getDynamicPermissions();
-    const initial: PermissionsData = {};
+    const loadPermissions = async () => {
+      // First populate with local cached values for instant rendering
+      const cachedPerms = getDynamicPermissions();
+      const initial: PermissionsData = {};
+      sidebarMenu.forEach((section) => {
+        initial[section.section] = cachedPerms[section.section] || section.roles;
+      });
+      setPermissions(initial);
 
-    sidebarMenu.forEach((section) => {
-      initial[section.section] = savedPerms[section.section] || section.roles;
-    });
+      // Then fetch fresh values from database to ensure accuracy
+      try {
+        const freshPerms = await fetchAndSyncPermissions();
+        const updated: PermissionsData = {};
+        sidebarMenu.forEach((section) => {
+          updated[section.section] = freshPerms[section.section] || section.roles;
+        });
+        setPermissions(updated);
+      } catch (error) {
+        console.error("Failed to load permissions from database", error);
+      }
+    };
 
-    setPermissions(initial);
+    loadPermissions();
   }, []);
 
   const handleToggle = (sectionName: string, role: Role) => {
