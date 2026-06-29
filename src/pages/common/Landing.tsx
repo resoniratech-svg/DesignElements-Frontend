@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   BarChart3, Users, FileText, CreditCard, Briefcase, ShoppingBag,
-  Building2, Shield, Globe, Phone, Mail, MapPin,
+  Building2, Globe, Phone, Mail, MapPin,
   ChevronRight, ArrowRight, Layers, PieChart, ClipboardList, Receipt,
   Facebook, Twitter, Linkedin, Instagram
 } from "lucide-react";
