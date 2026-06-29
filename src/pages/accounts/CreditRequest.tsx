@@ -274,7 +274,6 @@ function CreditRequest() {
               >
                 <option value="pending">PENDING</option>
                 <option value="approved">APPROVED</option>
-                <option value="due">DUE</option>
               </select>
             </div>
           </div>
