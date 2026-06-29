@@ -235,10 +235,9 @@ export default function Landing() {
             </motion.p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { icon: <Globe size={24} />, title: "Company Formation", desc: "Complete company setup, registration, and licensing services in Qatar.", gradient: "from-blue-500 to-blue-700" },
-              { icon: <Shield size={24} />, title: "PRO Services", desc: "Public Relations Officer services for visa processing, permits, and government liaisons.", gradient: "from-indigo-500 to-indigo-700" },
               { icon: <Building2 size={24} />, title: "Contracting Services", desc: "Interior fit-out, glass works, steel fabrication, and construction project management.", gradient: "from-violet-500 to-violet-700" },
               { icon: <ShoppingBag size={24} />, title: "Trading Services", desc: "Import/export, product sourcing, inventory management, and distribution.", gradient: "from-purple-500 to-purple-700" },
             ].map((svc, i) => (
