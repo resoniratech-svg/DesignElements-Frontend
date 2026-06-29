@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
 import { ROLE_DASHBOARD_MAP } from "../../types/user";
 import type { Role } from "../../types/user";
-import { LogIn, Mail, Lock, AlertCircle, X } from "lucide-react";
+import { LogIn, Mail, Lock, AlertCircle, X, ArrowLeft } from "lucide-react";
 
 /** ─── Toast Notification Component ───────────────────── */
 function Toast({
@@ -167,9 +167,18 @@ export default function Login() {
             <div className="bg-white rounded-lg shadow-float p-8 border border-gray-100 mb-6">
               {/* Header */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  Welcome back
-                </h2>
+                <div className="flex items-center gap-2.5 mb-1">
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600 -ml-1"
+                    title="Go back"
+                  >
+                    <ArrowLeft size={20} />
+                  </button>
+                  <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                    Welcome back
+                  </h2>
+                </div>
                 <p className="text-sm text-gray-500 mt-1">
                   Sign in to your account to continue
                 </p>
