@@ -1,5 +1,6 @@
 import { sidebarMenu, type SidebarSection } from "../config/sidebarMenu";
 import type { Role } from "../types/user";
+import apiClient from "../api/client";
 
 export interface PermissionsData {
     [sectionName: string]: Role[];
@@ -20,10 +21,33 @@ export function getDynamicPermissions(): PermissionsData {
     return {};
 }
 
-export function saveDynamicPermissions(permissions: PermissionsData) {
-    localStorage.setItem("trek_permissions", JSON.stringify(permissions));
-    // Dispatch a custom event so the Sidebar re-renders immediately
-    window.dispatchEvent(new Event(PERMISSIONS_CHANGED_EVENT));
+export async function fetchAndSyncPermissions(): Promise<PermissionsData> {
+    try {
+        const response = await apiClient.get("/permissions");
+        const permissions = response.data.data as PermissionsData;
+        localStorage.setItem("trek_permissions", JSON.stringify(permissions));
+        // Trigger sidebar update
+        window.dispatchEvent(new Event(PERMISSIONS_CHANGED_EVENT));
+        return permissions;
+    } catch (error) {
+        console.error("Failed to fetch permissions from database:", error);
+        return getDynamicPermissions(); // fallback to local cache
+    }
+}
+
+export async function saveDynamicPermissions(permissions: PermissionsData): Promise<boolean> {
+    try {
+        // Update local storage immediately for instant UI feedback
+        localStorage.setItem("trek_permissions", JSON.stringify(permissions));
+        window.dispatchEvent(new Event(PERMISSIONS_CHANGED_EVENT));
+
+        // Sync with PostgreSQL database
+        await apiClient.put("/permissions", permissions);
+        return true;
+    } catch (error) {
+        console.error("Failed to save permissions to database:", error);
+        throw error;
+    }
 }
 
 export function getAuthorizedSidebarSections(userRole: Role | undefined): SidebarSection[] {

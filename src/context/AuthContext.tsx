@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 import { authService } from "../services/authService";
+import { fetchAndSyncPermissions } from "../utils/permissions";
 
 interface AuthContextType {
   user: User | null;
@@ -41,6 +42,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   }, []);
+
+  // Sync permissions from database when authenticated
+  useEffect(() => {
+    if (user) {
+      fetchAndSyncPermissions();
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider

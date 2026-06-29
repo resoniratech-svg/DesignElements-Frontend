@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PageHeader from "../../components/PageHeader";
 import { sidebarMenu } from "../../config/sidebarMenu";
 import { getDynamicPermissions, saveDynamicPermissions, type PermissionsData } from "../../utils/permissions";
-import { Save, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Save, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
 import type { Role } from "../../types/user";
 
 const ROLES: Role[] = ["SUPER_ADMIN", "PROJECT_MANAGER"];
@@ -10,6 +10,8 @@ const ROLES: Role[] = ["SUPER_ADMIN", "PROJECT_MANAGER"];
 export default function Permissions() {
   const [permissions, setPermissions] = useState<PermissionsData>({});
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     // Initialize permissions state from localStorage or defaults
@@ -42,10 +44,18 @@ export default function Permissions() {
     });
   };
 
-  const handleSave = () => {
-    saveDynamicPermissions(permissions);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSave = async () => {
+    setSaving(true);
+    setErrorMsg("");
+    try {
+      await saveDynamicPermissions(permissions);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to save permissions to server");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -62,12 +72,19 @@ export default function Permissions() {
               Permissions saved — sidebar updated!
             </div>
           )}
+          {errorMsg && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm font-semibold">
+              <AlertCircle size={16} />
+              {errorMsg}
+            </div>
+          )}
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2.5 rounded-lg hover:bg-brand-700 transition shadow-lg shadow-brand-200 font-bold"
+            disabled={saving}
+            className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2.5 rounded-lg hover:bg-brand-700 transition shadow-lg shadow-brand-200 font-bold disabled:opacity-50"
           >
             <Save size={18} />
-            Save Changes
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
