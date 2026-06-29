@@ -2,13 +2,15 @@ import { createContext, useContext, useState, useCallback, useEffect } from "rea
 import type { ReactNode } from "react";
 import type { User } from "../types/user";
 import { authService } from "../services/authService";
-import { fetchAndSyncPermissions } from "../utils/permissions";
+import { fetchAndSyncPermissions, type PermissionsData } from "../utils/permissions";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (user: User) => void;
   logout: () => void;
+  permissions: PermissionsData;
+  refreshPermissions: () => Promise<PermissionsData>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,6 +24,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return null;
     }
   });
+
+  const [permissions, setPermissions] = useState<PermissionsData>({});
+
+  const refreshPermissions = useCallback(async () => {
+    try {
+      const data = await fetchAndSyncPermissions();
+      setPermissions(data);
+      return data;
+    } catch (error) {
+      console.error("Failed to refresh permissions:", error);
+      return {};
+    }
+  }, []);
 
   const login = useCallback((userData: User) => {
     setUser(userData);
@@ -39,6 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("API logout failed", e);
     }
     setUser(null);
+    setPermissions({});
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   }, []);
@@ -46,9 +62,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Sync permissions from database when authenticated
   useEffect(() => {
     if (user) {
-      fetchAndSyncPermissions();
+      refreshPermissions();
+    } else {
+      setPermissions({});
     }
-  }, [user]);
+  }, [user, refreshPermissions]);
 
   return (
     <AuthContext.Provider
@@ -57,6 +75,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: !!user,
         login,
         logout,
+        permissions,
+        refreshPermissions,
       }}
     >
       {children}

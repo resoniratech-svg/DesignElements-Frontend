@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function ProtectedRoute({ allowedRoles, requiredSections }: Props) {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, permissions } = useAuth();
 
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
@@ -22,7 +22,7 @@ export default function ProtectedRoute({ allowedRoles, requiredSections }: Props
   if (requiredSections && requiredSections.length > 0) {
     // SUPER_ADMIN has broad access, but we still filter by authorizedSections 
     // to respect the manual removals (like Inventory)
-    const authorizedSections = getAuthorizedSidebarSections(user.role);
+    const authorizedSections = getAuthorizedSidebarSections(user.role, permissions);
     
     // User Management is always open for SUPER_ADMIN
     if (user.role === "SUPER_ADMIN" && requiredSections.includes("User Management")) {

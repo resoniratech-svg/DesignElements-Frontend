@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import PageHeader from "../../components/PageHeader";
 import { sidebarMenu } from "../../config/sidebarMenu";
-import { getDynamicPermissions, saveDynamicPermissions, fetchAndSyncPermissions, type PermissionsData } from "../../utils/permissions";
+import { saveDynamicPermissions, type PermissionsData } from "../../utils/permissions";
 import { Save, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
 import type { Role } from "../../types/user";
+import { useAuth } from "../../context/AuthContext";
 
 const ROLES: Role[] = ["SUPER_ADMIN", "PROJECT_MANAGER"];
 
 export default function Permissions() {
+  const { refreshPermissions } = useAuth();
   const [permissions, setPermissions] = useState<PermissionsData>({});
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -15,29 +17,20 @@ export default function Permissions() {
 
   useEffect(() => {
     const loadPermissions = async () => {
-      // First populate with local cached values for instant rendering
-      const cachedPerms = getDynamicPermissions();
-      const initial: PermissionsData = {};
-      sidebarMenu.forEach((section) => {
-        initial[section.section] = cachedPerms[section.section] || section.roles;
-      });
-      setPermissions(initial);
-
-      // Then fetch fresh values from database to ensure accuracy
       try {
-        const freshPerms = await fetchAndSyncPermissions();
-        const updated: PermissionsData = {};
+        const freshPerms = await refreshPermissions();
+        const initial: PermissionsData = {};
         sidebarMenu.forEach((section) => {
-          updated[section.section] = freshPerms[section.section] || section.roles;
+          initial[section.section] = freshPerms[section.section] || section.roles;
         });
-        setPermissions(updated);
+        setPermissions(initial);
       } catch (error) {
         console.error("Failed to load permissions from database", error);
       }
     };
 
     loadPermissions();
-  }, []);
+  }, [refreshPermissions]);
 
   const handleToggle = (sectionName: string, role: Role) => {
     setPermissions((prev) => {
@@ -63,6 +56,7 @@ export default function Permissions() {
     setErrorMsg("");
     try {
       await saveDynamicPermissions(permissions);
+      await refreshPermissions(); // Immediately refetch permissions from API to update AuthContext state and Sidebar
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err: any) {

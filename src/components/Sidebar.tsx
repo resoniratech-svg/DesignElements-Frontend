@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getAuthorizedSidebarSections, PERMISSIONS_CHANGED_EVENT } from "../utils/permissions";
+import { getAuthorizedSidebarSections } from "../utils/permissions";
 import { X, ChevronRight } from "lucide-react";
 
 interface SidebarProps {
@@ -10,16 +9,8 @@ interface SidebarProps {
 
 function Sidebar({ onClose }: SidebarProps) {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, permissions } = useAuth();
   const userRole = user?.role;
-
-  // Force re-render when permissions change
-  const [, setPermVersion] = useState(0);
-  useEffect(() => {
-    const handler = () => setPermVersion(v => v + 1);
-    window.addEventListener(PERMISSIONS_CHANGED_EVENT, handler);
-    return () => window.removeEventListener(PERMISSIONS_CHANGED_EVENT, handler);
-  }, []);
 
   return (
     <aside className="print:hidden w-[260px] h-screen bg-sidebar flex flex-col border-r border-sidebar-border relative">
@@ -61,7 +52,7 @@ function Sidebar({ onClose }: SidebarProps) {
 
       {/* ─── Navigation Menu ───────────────────────────── */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        {getAuthorizedSidebarSections(userRole).map((section, i) => (
+        {getAuthorizedSidebarSections(userRole, permissions).map((section, i) => (
           <div key={i}>
             <p className="text-[10px] text-slate-500 uppercase tracking-[0.1em] font-semibold mb-2 px-3">
               {section.section}
