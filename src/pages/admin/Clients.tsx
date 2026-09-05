@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DataTable from "../../components/DataTable";
 import { Link, useNavigate } from "react-router-dom";
-import { Download, Trash2, Eye, Plus, Edit2, Loader2 } from "lucide-react";
+import { Download, Trash2, Eye, Plus, Edit2, Loader2, AlertTriangle, X } from "lucide-react";
 import PageLoader from "../../components/PageLoader";
 import { exportToCSV } from "../../utils/exportUtils";
 import { useDivision } from "../../context/DivisionContext";
@@ -15,6 +15,7 @@ function Clients() {
   const queryClient = useQueryClient();
   const { activeDivision } = useDivision();
   const [displayLimit] = useState(1000);
+  const [warningModal, setWarningModal] = useState<{ open: boolean; message: string } | null>(null);
 
   // 1. Fetch data using React Query (Aligned with Client Service)
   const { data, isLoading } = useQuery({
@@ -39,6 +40,13 @@ function Clients() {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       // Force immediate refetch of the list
       queryClient.refetchQueries({ queryKey: ["clients", activeDivision] });
+    },
+    onError: (err: any) => {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to delete client. Please ensure all linked connections are cleared first.";
+      setWarningModal({ open: true, message: errorMsg });
     }
   });
 
@@ -139,6 +147,55 @@ function Clients() {
           />
         )}
       </div>
+
+      {/* Linked Connections Warning Modal */}
+      {warningModal?.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-md w-full overflow-hidden animate-scaleUp">
+            {/* Modal Header */}
+            <div className="p-6 bg-amber-50 border-b border-amber-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-amber-500 text-white rounded-xl shadow-md shadow-amber-500/20">
+                  <AlertTriangle size={22} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-800">Cannot Delete Client</h3>
+                  <p className="text-xs text-amber-700 font-semibold">Active Linked Connections Detected</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setWarningModal(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-amber-100/50 rounded-lg transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-slate-700 leading-relaxed">
+                {warningModal.message}
+              </p>
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600 space-y-1">
+                <p className="font-bold text-slate-700">💡 What you can do:</p>
+                <p>1. Open the linked module (Projects, Invoices, BOQ, or Quotations).</p>
+                <p>2. Reassign those records to another client or delete them.</p>
+                <p>3. Return here to delete this client entity cleanly.</p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+              <button
+                onClick={() => setWarningModal(null)}
+                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm rounded-xl transition shadow-md shadow-slate-900/10 cursor-pointer"
+              >
+                Understood
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

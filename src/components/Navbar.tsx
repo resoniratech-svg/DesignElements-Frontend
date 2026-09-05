@@ -45,7 +45,7 @@ function Navbar({ onToggleSidebar }: NavbarProps) {
   const isDocumentsPage = location.pathname.includes("documents");
   const isSupportPage = location.pathname.includes("support");
   const isSettingsPage = location.pathname.includes("settings");
-  const isDashboardPage = location.pathname === "/dashboard" || location.pathname === "/admin/dashboard";
+  const isDashboardPage = location.pathname.includes("dashboard");
 
   const isProjectsModule = location.pathname.startsWith("/projects") ||
                            location.pathname.startsWith("/create-project") ||
