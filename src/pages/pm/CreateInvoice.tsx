@@ -534,10 +534,10 @@ export default function CreateInvoice() {
                                         <input className="w-full border-none focus:ring-0" placeholder="Item description" value={item.description} onChange={e => handleItemChange(idx, "description", e.target.value)} required />
                                     </td>
                                     <td className="p-2">
-                                        <input type="number" min="1" className="w-full border-none text-center focus:ring-0 no-spinner" value={item.quantity} onChange={e => handleItemChange(idx, "quantity", parseInt(e.target.value))} required />
+                                        <input type="number" step="any" min="0" className="w-full border-none text-center focus:ring-0 no-spinner" value={item.quantity} onChange={e => handleItemChange(idx, "quantity", e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)} required />
                                     </td>
                                     <td className="p-2">
-                                        <input type="number" min="0" className="w-full border-none text-right focus:ring-0 no-spinner" value={item.unitPrice} onChange={e => handleItemChange(idx, "unitPrice", parseFloat(e.target.value))} required />
+                                        <input type="number" step="any" min="0" className="w-full border-none text-right focus:ring-0 no-spinner" value={item.unitPrice} onChange={e => handleItemChange(idx, "unitPrice", e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)} required />
                                     </td>
                                     <td className="p-2 text-right font-medium">QAR {item.amount.toLocaleString()}</td>
                                     <td className="p-2">

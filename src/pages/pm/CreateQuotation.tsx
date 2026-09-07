@@ -256,13 +256,15 @@ export default function CreateQuotation() {
         });
     };
 
-    const handleItemChange = (index: number, field: keyof QuotationItem, value: string | number) => {
+    const handleItemChange = (index: number, field: keyof QuotationItem, value: any) => {
         const newItems = [...items];
         const updatedItem = { ...newItems[index], [field]: value };
 
         // Recalculate item amount
         if (field === 'quantity' || field === 'unitPrice') {
-            updatedItem.amount = Number(updatedItem.quantity) * Number(updatedItem.unitPrice);
+            const q = parseFloat(String(updatedItem.quantity)) || 0;
+            const p = parseFloat(String(updatedItem.unitPrice)) || 0;
+            updatedItem.amount = q * p;
         }
 
         newItems[index] = updatedItem;
@@ -309,11 +311,13 @@ export default function CreateQuotation() {
         // Calculate totals
         const calculatedItems = items.map(item => ({
             ...item,
-            amount: Number(item.quantity) * Number(item.unitPrice)
+            quantity: parseFloat(String(item.quantity)) || 0,
+            unitPrice: parseFloat(String(item.unitPrice)) || 0,
+            amount: (parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)
         }));
 
         const totalAmount = calculatedItems.reduce((sum, item) => sum + item.amount, 0);
-        const netTotal = totalAmount * (1 - Number(form.discount) / 100);
+        const netTotal = totalAmount * (1 - (parseFloat(String(form.discount)) || 0) / 100);
         const isApproved = user?.role === "SUPER_ADMIN";
 
         const submissionData: any = {
@@ -550,9 +554,10 @@ export default function CreateQuotation() {
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">QTY</label>
                                         <input
                                             type="number"
-                                            min="1"
+                                            step="any"
+                                            min="0"
                                             value={item.quantity}
-                                            onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value) || 0)}
+                                            onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                                             className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md no-spinner"
                                             required
                                         />
@@ -572,9 +577,10 @@ export default function CreateQuotation() {
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Unit Price</label>
                                         <input
                                             type="number"
+                                            step="any"
                                             min="0"
                                             value={item.unitPrice}
-                                            onChange={(e) => handleItemChange(index, "unitPrice", parseFloat(e.target.value) || 0)}
+                                            onChange={(e) => handleItemChange(index, "unitPrice", e.target.value)}
                                             className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md no-spinner"
                                             required
                                         />
@@ -582,7 +588,7 @@ export default function CreateQuotation() {
                                     <div className="w-32">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total</label>
                                         <div className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-md text-slate-600 font-medium text-right">
-                                            {(item.quantity * item.unitPrice).toLocaleString()}
+                                            {((parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     </div>
                                     <div className="pt-6">
@@ -604,22 +610,23 @@ export default function CreateQuotation() {
                         <div className="w-64 space-y-3">
                             <div className="flex justify-between items-center text-sm font-medium text-slate-600">
                                 <span>Subtotal</span>
-                                <span>{items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0).toLocaleString()}</span>
+                                <span>{items.reduce((sum, item) => sum + ((parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm font-medium text-slate-600">
                                 <span>Discount (%)</span>
                                 <input
                                     type="number"
+                                    step="any"
                                     min="0"
                                     max="100"
                                     value={form.discount}
-                                    onChange={(e) => setForm({ ...form, discount: parseFloat(e.target.value) || 0 })}
+                                    onChange={(e) => setForm({ ...form, discount: e.target.value === "" ? 0 : parseFloat(e.target.value) || 0 })}
                                     className="w-24 px-2 py-1 text-right bg-slate-50 border border-slate-200 rounded-md no-spinner"
                                 />
                             </div>
                             <div className="flex justify-between items-center text-lg font-black text-slate-900 pt-2 border-t">
                                 <span>Net Total</span>
-                                <span>{(items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) * (1 - form.discount / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} QAR</span>
+                                <span>{(items.reduce((sum, item) => sum + ((parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)), 0) * (1 - (parseFloat(String(form.discount)) || 0) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} QAR</span>
                             </div>
                         </div>
                     </div>

@@ -295,9 +295,11 @@ export default function CreateBOQ() {
                                             <td className="p-2">
                                                 <input
                                                     type="number"
+                                                    step="any"
+                                                    min="0"
                                                     className="w-full border-none focus:ring-0 text-center text-sm bg-transparent no-spinner"
                                                     value={item.quantity}
-                                                    onChange={(e) => updateItem(index, "quantity", parseFloat(e.target.value))}
+                                                    onChange={(e) => updateItem(index, "quantity", e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)}
                                                 />
                                             </td>
                                             <td className="p-2">
@@ -310,9 +312,11 @@ export default function CreateBOQ() {
                                             <td className="p-2">
                                                 <input
                                                     type="number"
+                                                    step="any"
+                                                    min="0"
                                                     className="w-full border-none focus:ring-0 text-right text-sm bg-transparent no-spinner"
                                                     value={item.rate}
-                                                    onChange={(e) => updateItem(index, "rate", parseFloat(e.target.value))}
+                                                    onChange={(e) => updateItem(index, "rate", e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)}
                                                 />
                                             </td>
                                             <td className="p-2 text-right font-bold text-slate-800">
