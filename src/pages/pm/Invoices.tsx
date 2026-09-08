@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable";
 import StatusBadge from "../../components/StatusBadge";
-import { Eye, Trash2, Plus, ArrowLeft, Edit, Loader2, Printer, FileText } from "lucide-react";
+import { Trash2, Plus, ArrowLeft, Edit, Loader2, FileText } from "lucide-react";
 import { useActivity } from "../../context/ActivityContext";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";

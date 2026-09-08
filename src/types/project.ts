@@ -20,6 +20,8 @@ export interface Project {
   client_name?: string; // Added for compatibility
   clientCompany?: string;
   client_company?: string;
+  company?: string;
+  company_name?: string;
   division: DivisionId;
   branch?: string; // Legacy
   status: ProjectStatus;

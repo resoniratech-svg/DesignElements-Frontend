@@ -352,14 +352,14 @@ export default function CreateQuotation() {
         try {
             if (isEditing && editId) {
                 const res = await quotationService.updateQuotation(editId, submissionData);
-                const newQtnNo = res?.data?.qtn_number || form.quoteId;
+                const newQtnNo = (res as any)?.qtn_number || (res as any)?.data?.qtn_number || form.quoteId;
                 const activityMessage = isApproved
                     ? `Created Quotation Revision ${newQtnNo}`
                     : `Created Quotation Revision ${newQtnNo} (Pending Approval)`;
                 logActivity(activityMessage, "project", "/quotations", newQtnNo);
             } else {
                 const res = await quotationService.createQuotation(submissionData);
-                const createdQtnNo = res?.data?.qtn_number || form.quoteId;
+                const createdQtnNo = (res as any)?.qtn_number || (res as any)?.data?.qtn_number || form.quoteId;
 
                 // If not admin, request approval
                 if (!isApproved) {
