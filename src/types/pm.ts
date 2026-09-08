@@ -2,6 +2,10 @@ import type { DivisionId } from "../constants/divisions";
 import type { ApprovalStatus } from "./approvals";
 
 export interface QuotationItem {
+  itemCode?: string;
+  item_code?: string;
+  itemName?: string;
+  item_name?: string;
   description: string;
   quantity: number;
   unit: string;

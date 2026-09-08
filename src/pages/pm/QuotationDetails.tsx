@@ -179,6 +179,8 @@ export default function QuotationDetails() {
                             <thead>
                                 <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
                                     <th className="border border-slate-400 px-2 py-2 text-center w-16">Sr. No.</th>
+                                    <th className="border border-slate-400 px-2 py-2 text-center w-28">Item Code</th>
+                                    {quotation?.selected_format === 'quotation3' && <th className="border border-slate-400 px-3 py-2 text-left w-36">Item</th>}
                                     <th className="border border-slate-400 px-3 py-2 text-left">{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
                                     {quotation?.selected_format === 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-40">Ref Photo</th>}
                                     <th className="border border-slate-400 px-2 py-2 text-center w-16">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
@@ -193,6 +195,14 @@ export default function QuotationDetails() {
                                         <td className="border border-slate-400 px-2 py-3 text-center align-top font-bold">
                                             {item.customSrNo || (idx + 1).toString().padStart(2, '0')}
                                         </td>
+                                        <td className="border border-slate-400 px-2 py-3 text-center align-top font-bold text-slate-700">
+                                            {item.itemCode || item.item_code || "-"}
+                                        </td>
+                                        {quotation?.selected_format === 'quotation3' && (
+                                            <td className="border border-slate-400 px-3 py-3 align-top font-bold text-black">
+                                                {item.itemName || item.item_name || "-"}
+                                            </td>
+                                        )}
                                         <td className="border border-slate-400 px-3 py-3 align-top whitespace-pre-wrap leading-relaxed">
                                             {item.description}
                                         </td>
@@ -222,7 +232,7 @@ export default function QuotationDetails() {
                                 {/* Total Row */}
                                 <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
                                     <td className="border border-slate-400 px-3 py-2 uppercase" colSpan={1}>Total</td>
-                                    <td className="border border-slate-400 px-3 py-2 text-center italic text-[11px]" colSpan={4}>
+                                    <td className="border border-slate-400 px-3 py-2 text-center italic text-[11px]" colSpan={quotation?.selected_format === 'quotation3' ? 6 : 5}>
                                         {numberToWords(netTotal).toUpperCase()}
                                     </td>
                                     <td className="border border-slate-400 px-3 py-2 text-right text-black bg-white">

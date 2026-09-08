@@ -1,6 +1,10 @@
 import api from "./api";
 
 export interface QuotationItem {
+  itemCode?: string;
+  item_code?: string;
+  itemName?: string; // Added for Q3
+  item_name?: string; // Added for compatibility
   description: string;
   quantity: number;
   unit: string; // Added
