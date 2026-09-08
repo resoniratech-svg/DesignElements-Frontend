@@ -78,67 +78,81 @@ function Projects() {
     }
   };
 
-  const tableData = filteredProjects.map((item) => ({
-    ...item,
-    "Project": item.name || item.projectName,
-    "Client": item.client_name || item.client,
-    "Sector": item.division ? item.division.toUpperCase() : "N/A",
-    "Budget": item.budget || item.contract_value,
-    "Manager": item.manager,
-    "Start Date": item.startDate || "-",
-    "End Date": item.endDate || "-",
-    "Status": <StatusBadge status={item.status || "Pending"} />,
-    "Docs": (
-      <div className="flex flex-wrap gap-1">
-        {item.uploadedDocument && (
-          <button
-            onClick={() => downloadFile({ 
-              name: `${item.name || item.projectName || 'project'}_document`, 
-              data: item.uploadedDocument 
-            })}
-            className="p-1.5 bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded border border-blue-100 transition-all flex items-center justify-center"
-            title="Download Project Document"
-          >
-            <FileText size={12} />
-          </button>
-        )}
-        {item.documents && item.documents.length > 0 ? (
-          item.documents.map((doc: any, idx: number) => (
-            <button
-              key={doc.id || idx}
-              onClick={() => downloadFile(doc)}
-              className="p-1.5 bg-slate-50 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded border border-slate-100 transition-all flex items-center justify-center"
-              title={`Download ${doc.name}`}
-            >
-              <Paperclip size={12} />
-            </button>
-          ))
-        ) : !item.uploadedDocument && (
-          <span className="text-[10px] text-slate-300 italic">None</span>
-        )}
-      </div>
-    ),
-    "Actions": (
-      <div className="flex gap-2">
-        <Link to={`/edit-project/${item.id}`} className="p-1 text-slate-400 hover:text-amber-600 transition-colors">
-          <Edit size={16} />
-        </Link>
-        <button
-          onClick={() => handleDelete(item.id, item.name || item.projectName)}
-          className="p-1 text-slate-400 hover:text-red-600 transition-colors"
-          disabled={deleteMutation.isPending}
-        >
-          {deleteMutation.isPending && deleteMutation.variables === item.id ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Trash2 size={16} />
-          )}
-        </button>
-      </div>
-    )
-  }));
+  const tableData = filteredProjects.map((item) => {
+    const clientName = item.client_name || item.client;
+    const clientCompany = item.client_company || item.company_name || item.company;
+    
+    let clientDisplay = "-";
+    if (clientCompany && clientName) {
+      clientDisplay = `${clientCompany} (${clientName})`;
+    } else if (clientCompany) {
+      clientDisplay = clientCompany;
+    } else if (clientName) {
+      clientDisplay = clientName;
+    }
 
-  const columns = ["Project", "Client", "Sector", "Budget", "Manager", "Start Date", "End Date", "Status", "Docs", "Actions"];
+    return {
+      ...item,
+      "Project": item.name || item.projectName,
+      "Client Company": clientDisplay,
+      "Sector": item.division ? item.division.toUpperCase() : "N/A",
+      "Budget": item.budget || item.contract_value,
+      "Manager": item.manager,
+      "Start Date": item.startDate || "-",
+      "End Date": item.endDate || "-",
+      "Status": <StatusBadge status={item.status || "Pending"} />,
+      "Docs": (
+        <div className="flex flex-wrap gap-1">
+          {item.uploadedDocument && (
+            <button
+              onClick={() => downloadFile({ 
+                name: `${item.name || item.projectName || 'project'}_document`, 
+                data: item.uploadedDocument 
+              })}
+              className="p-1.5 bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded border border-blue-100 transition-all flex items-center justify-center"
+              title="Download Project Document"
+            >
+              <FileText size={12} />
+            </button>
+          )}
+          {item.documents && item.documents.length > 0 ? (
+            item.documents.map((doc: any, idx: number) => (
+              <button
+                key={doc.id || idx}
+                onClick={() => downloadFile(doc)}
+                className="p-1.5 bg-slate-50 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded border border-slate-100 transition-all flex items-center justify-center"
+                title={`Download ${doc.name}`}
+              >
+                <Paperclip size={12} />
+              </button>
+            ))
+          ) : !item.uploadedDocument && (
+            <span className="text-[10px] text-slate-300 italic">None</span>
+          )}
+        </div>
+      ),
+      "Actions": (
+        <div className="flex gap-2">
+          <Link to={`/edit-project/${item.id}`} className="p-1 text-slate-400 hover:text-amber-600 transition-colors">
+            <Edit size={16} />
+          </Link>
+          <button
+            onClick={() => handleDelete(item.id, item.name || item.projectName)}
+            className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+            disabled={deleteMutation.isPending}
+          >
+            {deleteMutation.isPending && deleteMutation.variables === item.id ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Trash2 size={16} />
+            )}
+          </button>
+        </div>
+      )
+    };
+  });
+
+  const columns = ["Project", "Client Company", "Sector", "Budget", "Manager", "Start Date", "End Date", "Status", "Docs", "Actions"];
 
   const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
 
