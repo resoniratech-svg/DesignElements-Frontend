@@ -34,6 +34,7 @@ export default function DeliveryNoteDetails() {
                         id: inv.id,
                         invoiceNo: inv.invoice_number,
                         client: inv.client_name || inv.client,
+                        clientCompany: inv.client_company || inv.company_name || inv.company,
                         address: inv.address,
                         tel: inv.contact_number || inv.tel, // using contact_number if available
                         attn: "PROCUREMENT DEPARTMENT", // Hardcoded for DN layout
@@ -152,7 +153,18 @@ export default function DeliveryNoteDetails() {
                             {/* Left Column */}
                             <div className="w-1/2 flex flex-col justify-between">
                                 <div className="border border-black p-2 text-[11px] h-32 flex flex-col font-bold font-serif leading-tight">
-                                    <div className="uppercase mb-1">{invoice.client}</div>
+                                    {invoice.clientCompany ? (
+                                        <>
+                                            <div className="uppercase mb-0.5">{invoice.clientCompany}</div>
+                                            {invoice.client && (
+                                                <div className="text-[10px] text-gray-700 font-semibold mb-1">
+                                                    Attn: <span className="uppercase">{invoice.client}</span>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="uppercase mb-1">{invoice.client}</div>
+                                    )}
                                     {invoice.address ? invoice.address.split(',').map((line: string, idx: number) => (
                                         <div key={idx}>{line.trim()}</div>
                                     )) : (
