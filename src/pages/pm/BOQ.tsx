@@ -9,13 +9,13 @@ import { boqService } from "../../services/boqService";
 import { getDivisionById } from "../../constants/divisions";
 import { useDivision } from "../../context/DivisionContext";
 
-const columns = ["ID", "Project", "Sector", "Client", "Total Amount", "Status", "Date", "Actions"];
+const columns = ["ID", "Project", "Sector", "Client Company", "Total Amount", "Status", "Date", "Actions"];
 
 interface BOQTableData {
   ID: string;
   Project: string;
   Sector: React.ReactNode;
-  Client: string;
+  "Client Company": string;
   "Total Amount": string | number;
   Status: React.ReactNode;
   Date: string;
@@ -64,6 +64,19 @@ function BOQ() {
   const tableData = useMemo<BOQTableData[]>(() => {
     return filteredBoqs.map((item: any) => {
       const division = getDivisionById(item.sector || item.division);
+      
+      const clientName = item.client_name;
+      const clientCompany = item.client_company;
+      
+      let clientDisplay = "-";
+      if (clientCompany && clientName) {
+        clientDisplay = `${clientCompany} (${clientName})`;
+      } else if (clientCompany) {
+        clientDisplay = clientCompany;
+      } else if (clientName) {
+        clientDisplay = clientName;
+      }
+
       return {
         "ID": item.boq_number || item.id,
         "Project": item.project_name,
@@ -72,7 +85,7 @@ function BOQ() {
             {division.label.replace(" Sector", "")}
           </span>
         ),
-        "Client": item.client_name,
+        "Client Company": clientDisplay,
         "Total Amount": `QAR ${Number(item.total_amount).toLocaleString()}`,
         "Date": new Date(item.date).toLocaleDateString(),
         "Status": <StatusBadge status={item.status} />,
