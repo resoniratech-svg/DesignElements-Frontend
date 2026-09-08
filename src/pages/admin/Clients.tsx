@@ -72,10 +72,10 @@ function Clients() {
 
   const tableData = clients.map((item: any) => ({
     ...item,
-    "Name": item.contactPerson || "N/A",
-    "Email": item.email || "N/A",
+    "Company": item.name || item.company_name || item.company || "N/A",
+    "Name": item.contactPerson || item.contact_person || item.client_name || item.name || "N/A",
     "Phone": item.phone || "N/A",
-    "Company": item.name || "N/A",
+    "Email": item.email || "N/A",
     "Sector": item.division || item.sector || "N/A",
     Actions: (
       <div className="flex gap-2">
@@ -142,7 +142,7 @@ function Clients() {
           <PageLoader message="Synchronizing CRM Database..." />
         ) : (
           <DataTable 
-            columns={["Name", "Email", "Phone", "Company", "Sector", "Actions"]} 
+            columns={["Company", "Name", "Phone", "Email", "Sector", "Actions"]} 
             data={tableData} 
           />
         )}
