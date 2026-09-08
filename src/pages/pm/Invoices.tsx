@@ -68,15 +68,7 @@ function Invoices() {
 
     const tableData = (filteredInvoices as any[]).map((invoice) => ({
         ...invoice,
-        "Invoice No": (
-            <Link
-                to={`/invoice-details/${invoice.id}`}
-                className="font-bold text-brand-600 hover:text-brand-800 hover:underline transition-colors"
-                title="View Invoice"
-            >
-                {invoice.invoice_number || invoice.invoiceNo}
-            </Link>
-        ),
+        "Invoice No": invoice.invoice_number || invoice.invoiceNo,
         "Client": invoice.client_name || invoice.company_name || invoice.client || "N/A",
         "Sector": (
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
@@ -91,7 +83,7 @@ function Invoices() {
         "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
         "Status": <StatusBadge status={invoice.status} />,
         "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
-        "Delivered Invoice": (
+        "Delivery Note": (
             invoice.status?.toUpperCase() === "PAID" ? (
                 (() => {
                     const hasDN = invoice.delivery_note && invoice.delivery_note.trim() !== "";
@@ -114,11 +106,16 @@ function Invoices() {
         ),
         "Actions": (
             <div className="flex gap-2 items-center">
+                <Link
+                    to={`/invoice-details/${invoice.id}`}
+                    title="View Invoice"
+                    className="px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
+                >
+                    <FileText size={12} />
+                    Invoice
+                </Link>
                 <Link to={`/edit-invoice/${invoice.id}`} title="Edit" className="p-1 text-slate-400 hover:text-brand-600 transition-colors">
                     <Edit size={16} />
-                </Link>
-                <Link to={`/invoice-details/${invoice.id}?print=true`} title="Print" className="p-1 text-slate-400 hover:text-brand-600 transition-colors">
-                    <Printer size={16} />
                 </Link>
                 {invoice.status?.toUpperCase() !== "PAID" && (
                     <button
@@ -144,7 +141,7 @@ function Invoices() {
         )
     }));
 
-    const columns = ["Invoice No", "Client", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Delivered Invoice", "Actions"];
+    const columns = ["Invoice No", "Client", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Delivery Note", "Actions"];
 
     const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
     const pageTitle = activeDivision === "all" ? "All Sales Invoices" : `${currentDivision?.label} Invoices`;
