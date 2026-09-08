@@ -17,6 +17,7 @@ export interface Invoice {
   id: string;
   invoiceNo: string;
   client: string;
+  clientCompany?: string;
   customerCode?: string;
   clientId?: string;
   status: InvoiceStatus;

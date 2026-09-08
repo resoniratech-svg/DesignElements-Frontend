@@ -85,6 +85,8 @@ export default function InvoiceDetails() {
 
                         client: inv.client_name || inv.client,
 
+                        clientCompany: inv.client_company || inv.company_name || inv.company,
+
                         customerCode: inv.customer_code,
 
                         clientId: inv.client_id,
@@ -253,7 +255,18 @@ export default function InvoiceDetails() {
                             {/* Left Column */}
                             <div className="w-1/2 flex flex-col justify-between">
                                 <div className="border border-black p-2 text-[11px] h-32 flex flex-col font-bold font-serif leading-tight">
-                                    <div className="uppercase mb-1">{invoice.client}</div>
+                                    {invoice.clientCompany ? (
+                                        <>
+                                            <div className="uppercase mb-0.5">{invoice.clientCompany}</div>
+                                            {invoice.client && (
+                                                <div className="text-[10px] text-gray-700 font-semibold mb-1">
+                                                    Attn: <span className="uppercase">{invoice.client}</span>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="uppercase mb-1">{invoice.client}</div>
+                                    )}
                                     {invoice.address ? invoice.address.split(',').map((line, idx) => (
                                         <div key={idx}>{line.trim()}</div>
                                     )) : (
