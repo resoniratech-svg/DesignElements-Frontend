@@ -9,6 +9,8 @@ function mapProject(row: any): Project {
     name: row.project_name || row.name || row.projectName || "",
     client: row.client_name || row.client || "",
     clientName: row.client_name || row.clientName || "",
+    clientCompany: row.client_company || row.company_name || row.company || "",
+    client_company: row.client_company || row.company_name || row.company || "",
     division: row.division || row.branch || "contracting",
     branch: row.division || row.branch || "",
     status: row.status || "Pending",

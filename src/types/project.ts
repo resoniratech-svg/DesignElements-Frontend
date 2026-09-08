@@ -18,6 +18,8 @@ export interface Project {
   client: string;
   clientName?: string; // Compatibility
   client_name?: string; // Added for compatibility
+  clientCompany?: string;
+  client_company?: string;
   division: DivisionId;
   branch?: string; // Legacy
   status: ProjectStatus;
