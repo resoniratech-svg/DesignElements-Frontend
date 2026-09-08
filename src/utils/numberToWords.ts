@@ -1,10 +1,8 @@
-export function numberToWords(n: number): string {
-    if (n === 0) return "ZERO QAR ONLY";
+export function numberToWords(amount: number): string {
+    if (isNaN(amount) || amount === 0) return "ZERO QAR ONLY";
 
-    
     const ones = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"];
-    const tens = ["", "", "TWENTY", "THIRTY", "FOURTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"];   
-
+    const tens = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"];
 
     function convertTens(num: number): string {
         if (num < 20) return ones[num];
@@ -21,17 +19,37 @@ export function numberToWords(n: number): string {
         }
     }
 
-    let result = "";
-    if (n >= 1000000) {
-        result += convertHundreds(Math.floor(n / 1000000)) + " MILLION ";
-        n %= 1000000;
+    function convertWhole(num: number): string {
+        let n = Math.floor(num);
+        if (n === 0) return "ZERO";
+        let result = "";
+        if (n >= 1000000000) {
+            result += convertHundreds(Math.floor(n / 1000000000)) + " BILLION ";
+            n %= 1000000000;
+        }
+        if (n >= 1000000) {
+            result += convertHundreds(Math.floor(n / 1000000)) + " MILLION ";
+            n %= 1000000;
+        }
+        if (n >= 1000) {
+            result += convertHundreds(Math.floor(n / 1000)) + " THOUSAND ";
+            n %= 1000;
+        }
+        if (n > 0) {
+            result += convertHundreds(n);
+        }
+        return result.trim().replace(/\s+/g, ' ');
     }
-    if (n >= 1000) {
-        result += convertHundreds(Math.floor(n / 1000)) + " THOUSAND ";
-        n %= 1000;
+
+    const wholePart = Math.floor(Math.abs(amount));
+    const decimalPart = Math.round((Math.abs(amount) - wholePart) * 100);
+
+    let finalWords = wholePart > 0 ? convertWhole(wholePart) : "ZERO";
+    finalWords += " QAR";
+
+    if (decimalPart > 0) {
+        finalWords += " AND " + convertWhole(decimalPart) + " DIRHAMS";
     }
-    if (n > 0 || result === "") {
-        result += convertHundreds(n);
-    }
-    return result.trim().replace(/\s+/g, ' ') + " QAR ONLY";
+
+    return finalWords.trim().replace(/\s+/g, ' ') + " ONLY";
 }
