@@ -355,21 +355,33 @@ export default function CreateQuotation() {
 
         try {
             if (isEditing && editId) {
-                await quotationService.updateQuotation(editId, submissionData);
+                const res = await quotationService.updateQuotation(editId, submissionData);
+                const newQtnNo = res?.data?.qtn_number || form.quoteId;
+                const activityMessage = isApproved
+                    ? `Created Quotation Revision ${newQtnNo}`
+                    : `Created Quotation Revision ${newQtnNo} (Pending Approval)`;
+                logActivity(activityMessage, "project", "/quotations", newQtnNo);
             } else {
-                await quotationService.createQuotation(submissionData);
+                const res = await quotationService.createQuotation(submissionData);
+                const createdQtnNo = res?.data?.qtn_number || form.quoteId;
 
                 // If not admin, request approval
                 if (!isApproved) {
                     requestApproval({
                         type: "quotation",
-                        itemId: form.quoteId,
-                        itemNumber: form.quoteId,
+                        itemId: createdQtnNo,
+                        itemNumber: createdQtnNo,
                         division: form.division,
                         amount: netTotal,
                         notes: form.intro_text
                     });
                 }
+
+                const activityMessage = isApproved
+                    ? `Created Quotation ${createdQtnNo}`
+                    : `Created Quotation ${createdQtnNo} (Pending Approval)`;
+
+                logActivity(activityMessage, "project", "/quotations", createdQtnNo);
             }
 
             queryClient.invalidateQueries({ queryKey: ["quotations"] });
@@ -377,11 +389,6 @@ export default function CreateQuotation() {
                 queryClient.invalidateQueries({ queryKey: ["quotation", editId] });
             }
 
-            const activityMessage = isApproved
-                ? `${isEditing ? "Updated" : "Created"} Quotation ${form.quoteId}`
-                : `${isEditing ? "Updated" : "Created"} Quotation ${form.quoteId} (Pending Approval)`;
-
-            logActivity(activityMessage, "project", "/quotations", form.quoteId);
             navigate(`/quotations`);
         } catch (err: any) {
             console.error("ERROR SAVING QUOTATION:", err);
