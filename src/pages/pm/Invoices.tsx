@@ -66,82 +66,96 @@ function Invoices() {
         }
     };
 
-    const tableData = (filteredInvoices as any[]).map((invoice) => ({
-        ...invoice,
-        "Invoice No": invoice.invoice_number || invoice.invoiceNo,
-        "Client": invoice.client_name || invoice.company_name || invoice.client || "N/A",
-        "Sector": (
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                (invoice.division?.toLowerCase() === 'trading' || invoice.branch?.toLowerCase() === 'trading') ? 'bg-emerald-100 text-emerald-600' :
-                'bg-blue-100 text-blue-600'
-            }`}>
-                {invoice.division || invoice.branch || 'Contracting'}
-            </span>
-        ),
-        "Ref Type": invoice.ref_type || invoice.refType || "General",
-        "Ref No": invoice.ref_no || invoice.refNo || "-",
-        "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
-        "Status": <StatusBadge status={invoice.status} />,
-        "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
-        "Delivery Note": (
-            invoice.status?.toUpperCase() === "PAID" ? (
-                (() => {
-                    const hasDN = invoice.delivery_note && invoice.delivery_note.trim() !== "";
-                    return (
-                        <Link
-                            to={hasDN ? `/delivery-note/${invoice.id}` : `/edit-delivery-note/${invoice.id}`}
-                            className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit transition-colors ${
-                                hasDN
-                                    ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                                    : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
-                            }`}
-                            title={hasDN ? "View Delivery Note" : "Create Delivery Note"}
-                        >
-                            <FileText size={12} />
-                            {hasDN ? 'View DN' : 'Create DN'}
-                        </Link>
-                    );
-                })()
-            ) : null
-        ),
-        "Actions": (
-            <div className="flex gap-2 items-center">
-                <Link
-                    to={`/invoice-details/${invoice.id}`}
-                    title="View Invoice"
-                    className="px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
-                >
-                    <FileText size={12} />
-                    Invoice
-                </Link>
-                <Link to={`/edit-invoice/${invoice.id}`} title="Edit" className="p-1 text-slate-400 hover:text-brand-600 transition-colors">
-                    <Edit size={16} />
-                </Link>
-                {invoice.status?.toUpperCase() !== "PAID" && (
-                    <button
-                        onClick={() => toggleStatus(invoice.id!, invoice.status!, invoice.invoiceNo!)}
-                        className="p-1 px-2 text-xs font-semibold bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors disabled:opacity-50"
-                        disabled={updateStatusMutation.isPending}
-                    >
-                        {updateStatusMutation.isPending && updateStatusMutation.variables?.id === invoice.id ? "..." : "Mark Paid"}
-                    </button>
-                )}
-                <button
-                    onClick={() => handleDelete(invoice.id!, invoice.invoiceNo!)}
-                    className="p-1 text-slate-400 hover:text-red-600 transition-colors disabled:opacity-50"
-                    disabled={deleteMutation.isPending}
-                >
-                    {deleteMutation.isPending && deleteMutation.variables === invoice.id ? (
-                        <Loader2 size={16} className="animate-spin" />
-                    ) : (
-                        <Trash2 size={16} />
-                    )}
-                </button>
-            </div>
-        )
-    }));
+    const tableData = (filteredInvoices as any[]).map((invoice) => {
+        const clientName = invoice.client_name || invoice.client;
+        const clientCompany = invoice.client_company || invoice.company_name || invoice.company;
 
-    const columns = ["Invoice No", "Client", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Delivery Note", "Actions"];
+        let clientDisplay = "-";
+        if (clientCompany && clientName && clientCompany !== clientName) {
+            clientDisplay = `${clientCompany} (${clientName})`;
+        } else if (clientCompany) {
+            clientDisplay = clientCompany;
+        } else if (clientName) {
+            clientDisplay = clientName;
+        }
+
+        return {
+            ...invoice,
+            "Invoice No": invoice.invoice_number || invoice.invoiceNo,
+            "Client Company": clientDisplay,
+            "Sector": (
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                    (invoice.division?.toLowerCase() === 'trading' || invoice.branch?.toLowerCase() === 'trading') ? 'bg-emerald-100 text-emerald-600' :
+                    'bg-blue-100 text-blue-600'
+                }`}>
+                    {invoice.division || invoice.branch || 'Contracting'}
+                </span>
+            ),
+            "Ref Type": invoice.ref_type || invoice.refType || "General",
+            "Ref No": invoice.ref_no || invoice.refNo || "-",
+            "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
+            "Status": <StatusBadge status={invoice.status} />,
+            "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
+            "Delivery Note": (
+                invoice.status?.toUpperCase() === "PAID" ? (
+                    (() => {
+                        const hasDN = invoice.delivery_note && invoice.delivery_note.trim() !== "";
+                        return (
+                            <Link
+                                to={hasDN ? `/delivery-note/${invoice.id}` : `/edit-delivery-note/${invoice.id}`}
+                                className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit transition-colors ${
+                                    hasDN
+                                        ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                        : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
+                                }`}
+                                title={hasDN ? "View Delivery Note" : "Create Delivery Note"}
+                            >
+                                <FileText size={12} />
+                                {hasDN ? 'View DN' : 'Create DN'}
+                            </Link>
+                        );
+                    })()
+                ) : null
+            ),
+            "Actions": (
+                <div className="flex gap-2 items-center">
+                    <Link
+                        to={`/invoice-details/${invoice.id}`}
+                        title="View Invoice"
+                        className="px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
+                    >
+                        <FileText size={12} />
+                        Invoice
+                    </Link>
+                    <Link to={`/edit-invoice/${invoice.id}`} title="Edit" className="p-1 text-slate-400 hover:text-brand-600 transition-colors">
+                        <Edit size={16} />
+                    </Link>
+                    {invoice.status?.toUpperCase() !== "PAID" && (
+                        <button
+                            onClick={() => toggleStatus(invoice.id!, invoice.status!, invoice.invoiceNo!)}
+                            className="p-1 px-2 text-xs font-semibold bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors disabled:opacity-50"
+                            disabled={updateStatusMutation.isPending}
+                        >
+                            {updateStatusMutation.isPending && updateStatusMutation.variables?.id === invoice.id ? "..." : "Mark Paid"}
+                        </button>
+                    )}
+                    <button
+                        onClick={() => handleDelete(invoice.id!, invoice.invoiceNo!)}
+                        className="p-1 text-slate-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                        disabled={deleteMutation.isPending}
+                    >
+                        {deleteMutation.isPending && deleteMutation.variables === invoice.id ? (
+                            <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                            <Trash2 size={16} />
+                        )}
+                    </button>
+                </div>
+            )
+        };
+    });
+
+    const columns = ["Invoice No", "Client Company", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Delivery Note", "Actions"];
 
     const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
     const pageTitle = activeDivision === "all" ? "All Sales Invoices" : `${currentDivision?.label} Invoices`;
