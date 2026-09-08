@@ -104,6 +104,7 @@ function Quotations() {
       // Use the quotations fetched from backend
       return quotations.map((item: any) => ({
         id: item.id,
+        "Date": item.created_at ? new Date(item.created_at).toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : "-"),
         "Quote ID": item.qtn_number || item["Quote ID"] || item.id,
         "Format": (
           <span className={`px-2 py-0.5 rounded-lg text-[11px] font-black uppercase border ${item.selected_format === 'quotation3' ? 'bg-purple-50 text-purple-600 border-purple-200' :
@@ -113,8 +114,9 @@ function Quotations() {
             {item.selected_format ? item.selected_format.replace('quotation', 'Q ') : 'Q 1'}
           </span>
         ),
+        "Company": item.client_company || item.company_name || item.company || "-",
+        "Client": item.client_name || item.client || "-",
         "Project": item.project_name || item.project || "-",
-        "Client": item.client_name || item.client,
         "Sector": (
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${item.division?.toLowerCase() === 'trading' ? 'bg-emerald-100 text-emerald-600' :
               'bg-blue-100 text-blue-600'
@@ -122,7 +124,6 @@ function Quotations() {
             {item.division || 'Contracting'}
           </span>
         ),
-        "Date": item.created_at ? new Date(item.created_at).toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : "-"),
         "Actions": (
           <div className="flex gap-2">
             <Link to={`/quotation-details/${item.id || item["Quote ID"]}`} className="p-1 text-slate-400 hover:text-brand-600 transition-colors">
@@ -183,7 +184,7 @@ function Quotations() {
   const typeLabel = activeTab === "quotations" ? "Quotations" : "Invoices";
   const currentTitle = activeDivision === "all" ? `All ${typeLabel}` : `${currentDivision?.label} ${typeLabel}`;
 
-  const quoteColumns = ["Quote ID", "Format", "Project", "Client", "Sector", "Date", "Actions"];
+  const quoteColumns = ["Date", "Quote ID", "Format", "Company", "Client", "Project", "Sector", "Actions"];
   const invoiceColumns = ["Invoice No", "Client", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Actions"];
 
   return (
