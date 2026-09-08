@@ -207,11 +207,7 @@ export default function CreateQuotation() {
                 customerCode: found.client_id?.toString() || "",
                 quoteId: found.qtn_number || "",
                 status: found.status || found.Status || prev.status,
-                date: found.created_at
-                    ? found.created_at.split(/[T ]/)[0]
-                    : new Date()
-                        .toISOString()
-                        .split('T')[0],
+                date: new Date().toISOString().split('T')[0],
 
                 discount:
                     found.discount !== undefined &&

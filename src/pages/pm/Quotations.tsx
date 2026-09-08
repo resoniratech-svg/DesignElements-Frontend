@@ -122,7 +122,7 @@ function Quotations() {
             {item.division || 'Contracting'}
           </span>
         ),
-        "Expiry Date": item.valid_until ? new Date(item.valid_until).toLocaleDateString() : "-",
+        "Date": item.created_at ? new Date(item.created_at).toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : "-"),
         "Actions": (
           <div className="flex gap-2">
             <Link to={`/quotation-details/${item.id || item["Quote ID"]}`} className="p-1 text-slate-400 hover:text-brand-600 transition-colors">
@@ -183,7 +183,7 @@ function Quotations() {
   const typeLabel = activeTab === "quotations" ? "Quotations" : "Invoices";
   const currentTitle = activeDivision === "all" ? `All ${typeLabel}` : `${currentDivision?.label} ${typeLabel}`;
 
-  const quoteColumns = ["Quote ID", "Format", "Project", "Client", "Sector", "Expiry Date", "Actions"];
+  const quoteColumns = ["Quote ID", "Format", "Project", "Client", "Sector", "Date", "Actions"];
   const invoiceColumns = ["Invoice No", "Client", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Actions"];
 
   return (
