@@ -98,7 +98,16 @@ export default function QuotationDetails() {
 
                     {/* Client Information Block */}
                     <div className="mb-6 space-y-0.5 text-sm">
-                        <h2 className="font-black text-black uppercase">{quotation.client_name}</h2>
+                        {quotation.client_company ? (
+                            <>
+                                <h2 className="font-black text-black uppercase">{quotation.client_company}</h2>
+                                {quotation.client_name && (
+                                    <p className="font-bold text-slate-800 text-[13px]">Attn: <span className="uppercase">{quotation.client_name}</span></p>
+                                )}
+                            </>
+                        ) : (
+                            <h2 className="font-black text-black uppercase">{quotation.client_name}</h2>
+                        )}
                         <p className="text-slate-600 italic">Doha, Qatar,</p>
                         <p className="text-slate-600 font-medium">Mob: +974 {quotation.client_phone || 'XXXX XXXX'}</p>
                         <p className="text-brand-600 font-medium lowercase">Email: {quotation.client_email || 'client@example.com'}</p>
