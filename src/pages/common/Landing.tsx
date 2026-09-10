@@ -322,7 +322,7 @@ export default function Landing() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone size={14} className="text-blue-400 flex-shrink-0" />
-                  <span>+974 7171 6559</span>
+                  <span>+974 5023 4242</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Mail size={14} className="text-blue-400 flex-shrink-0" />

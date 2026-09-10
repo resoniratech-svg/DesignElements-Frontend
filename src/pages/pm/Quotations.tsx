@@ -156,7 +156,6 @@ function Quotations() {
           </span>
         ),
         "Ref Type": invoice.ref_type || invoice.refType || "General",
-        "Ref No": invoice.reference_number || invoice.ref_no || invoice.refNo || "-",
         "Amount": `QAR ${Number(invoice.total_amount || invoice.amount || 0).toLocaleString()}`,
         "Status": <StatusBadge status={invoice.status} />,
         "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
@@ -185,7 +184,7 @@ function Quotations() {
   const currentTitle = activeDivision === "all" ? `All ${typeLabel}` : `${currentDivision?.label} ${typeLabel}`;
 
   const quoteColumns = ["Date", "Quote ID", "Format", "Company", "Client", "Project", "Sector", "Actions"];
-  const invoiceColumns = ["Invoice No", "Client", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Actions"];
+  const invoiceColumns = ["Invoice No", "Client", "Sector", "Ref Type", "Amount", "Status", "Date", "Actions"];
 
   return (
     <>

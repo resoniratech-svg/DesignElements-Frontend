@@ -92,7 +92,6 @@ function Invoices() {
                 </span>
             ),
             "Ref Type": invoice.ref_type || invoice.refType || "General",
-            "Ref No": invoice.ref_no || invoice.refNo || "-",
             "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
             "Status": <StatusBadge status={invoice.status} />,
             "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
@@ -155,7 +154,7 @@ function Invoices() {
         };
     });
 
-    const columns = ["Invoice No", "Client Company", "Sector", "Ref Type", "Ref No", "Amount", "Status", "Date", "Delivery Note", "Actions"];
+    const columns = ["Invoice No", "Client Company", "Sector", "Ref Type", "Amount", "Status", "Date", "Delivery Note", "Actions"];
 
     const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
     const pageTitle = activeDivision === "all" ? "All Sales Invoices" : `${currentDivision?.label} Invoices`;
