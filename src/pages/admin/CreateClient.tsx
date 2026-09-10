@@ -217,13 +217,13 @@ function CreateClient() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Client Name</label>
                   <input
                     name="name"
                     value={form.name}
                     onChange={handleChange}
                     className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
-                    placeholder="Full Name"
+                    placeholder="Enter Client Name"
                   />
                 </div>
 

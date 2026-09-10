@@ -10,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useActivity } from "../../context/ActivityContext";
 import type { DivisionId } from "../../constants/divisions";
 import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
+import CompanyAutocomplete from "../../components/forms/CompanyAutocomplete";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { quotationService } from "../../services/quotationService";
 import type { QuotationItem } from "../../types/pm";
@@ -108,6 +109,7 @@ export default function CreateQuotation() {
         division: initialDivision,
         selectedFormat: initialFormat,
         project: "",
+        company: "",
         client: "",
         customerCode: "",
         quoteId: "",
@@ -139,6 +141,9 @@ export default function CreateQuotation() {
                 ...prev,
                 division,
                 selectedFormat: format,
+                company: "",
+                client: "",
+                customerCode: "",
                 ...defaults
             }));
         }
@@ -154,6 +159,7 @@ export default function CreateQuotation() {
                 ...prev,
                 division: divisionToSet,
                 selectedFormat: format,
+                company: "",
                 client: "",
                 customerCode: "",
                 ...defaults
@@ -203,6 +209,7 @@ export default function CreateQuotation() {
                 ...prev,
                 division: (found.division || "CONTRACTING") as DivisionId,
                 project: found.project_name || found.project || "",
+                company: found.client_company || found.company || "",
                 client: found.client_name || found.client || "",
                 customerCode: found.client_id?.toString() || "",
                 quoteId: found.qtn_number || "",
@@ -278,13 +285,24 @@ export default function CreateQuotation() {
         }
     };
 
-    const handleClientChange = async (name: string, clientId?: string) => {
+    const handleCompanyChange = async (companyName: string, clientId?: string, clientData?: any) => {
         if (!clientId) {
-            setForm({ ...form, client: name, customerCode: "", clientPhone: "", clientEmail: "" });
+            setForm(prev => ({ ...prev, company: companyName }));
             return;
         }
 
-        setForm({ ...form, client: name, customerCode: clientId });
+        const clientDisplayName = clientData?.contactPerson && clientData.contactPerson !== "N/A" 
+            ? clientData.contactPerson 
+            : (clientData?.name || "");
+
+        setForm(prev => ({
+            ...prev,
+            company: companyName,
+            client: clientDisplayName || prev.client,
+            customerCode: clientId,
+            clientPhone: clientData?.phone && clientData.phone !== "N/A" ? clientData.phone : prev.clientPhone,
+            clientEmail: clientData?.email && clientData.email !== "N/A" ? clientData.email : prev.clientEmail,
+        }));
 
         try {
             const { clientService } = await import("../../services/clientService");
@@ -292,8 +310,41 @@ export default function CreateQuotation() {
             if (details) {
                 setForm(prev => ({
                     ...prev,
-                    clientPhone: details.phone || "",
-                    clientEmail: details.email || ""
+                    clientPhone: details.phone || prev.clientPhone,
+                    clientEmail: details.email || prev.clientEmail,
+                    client: details.name || details.contactPerson || clientDisplayName || prev.client,
+                    company: details.companyName || companyName || prev.company
+                }));
+            }
+        } catch (err) {
+            console.error("Error fetching company client details:", err);
+        }
+    };
+
+    const handleClientChange = async (name: string, clientId?: string, clientData?: any) => {
+        if (!clientId) {
+            setForm(prev => ({ ...prev, client: name, customerCode: "", clientPhone: "", clientEmail: "" }));
+            return;
+        }
+
+        setForm(prev => ({
+            ...prev,
+            client: name,
+            customerCode: clientId,
+            company: clientData?.companyName || prev.company,
+            clientPhone: clientData?.phone && clientData.phone !== "N/A" ? clientData.phone : prev.clientPhone,
+            clientEmail: clientData?.email && clientData.email !== "N/A" ? clientData.email : prev.clientEmail,
+        }));
+
+        try {
+            const { clientService } = await import("../../services/clientService");
+            const details = await clientService.getClient(clientId);
+            if (details) {
+                setForm(prev => ({
+                    ...prev,
+                    company: details.companyName || prev.company,
+                    clientPhone: details.phone || prev.clientPhone,
+                    clientEmail: details.email || prev.clientEmail
                 }));
             }
         } catch (err) {
@@ -324,6 +375,7 @@ export default function CreateQuotation() {
             discount: form.discount,
             status: form.status,
             items: calculatedItems,
+            client_company: form.company,
             client_name: form.client,
             project_name: form.project,
             valid_until: new Date(new Date(form.date).getTime() + 15 * 24 * 60 * 60 * 1000).toISOString(),
@@ -436,7 +488,6 @@ export default function CreateQuotation() {
                                 value={form.quoteId}
                                 onChange={handleChange}
                                 placeholder="e.g. TRD-QUO-001 (or leave blank for auto)"
-                                disabled={isEditing}
                             />
                         </div>
 
@@ -445,6 +496,16 @@ export default function CreateQuotation() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Company Selection</label>
+                                <CompanyAutocomplete
+                                    value={form.company}
+                                    onChange={handleCompanyChange}
+                                    division={form.division}
+                                    placeholder="Search company..."
+                                    disabled={isEditing}
+                                />
+                            </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Client Selection *</label>
                                 <ClientAutocomplete
@@ -455,6 +516,9 @@ export default function CreateQuotation() {
                                     disabled={isEditing}
                                 />
                             </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-6">
                             <FormInput
                                 label="Customer Code"
                                 value={form.customerCode}
@@ -528,18 +592,6 @@ export default function CreateQuotation() {
                                             placeholder="e.g. ITM-001"
                                         />
                                     </div>
-                                    {form.selectedFormat === 'quotation3' && (
-                                        <div className="w-48">
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Item</label>
-                                            <input
-                                                type="text"
-                                                value={item.itemName || item.item_name || ""}
-                                                onChange={(e) => handleItemChange(index, "itemName", e.target.value)}
-                                                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm font-semibold"
-                                                placeholder="e.g. Carpet Tile"
-                                            />
-                                        </div>
-                                    )}
                                     <div className="flex-1">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                                             {form.selectedFormat === 'quotation3' ? 'Particulars' : 'Description (Particulars)'}
@@ -553,31 +605,6 @@ export default function CreateQuotation() {
                                             required
                                         />
                                     </div>
-                                    {form.selectedFormat === 'quotation3' && (
-                                        <div className="w-32">
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Ref Photo</label>
-                                            <div className="flex flex-col gap-2">
-                                                {item.image ? (
-                                                    <div className="relative group">
-                                                        <img src={item.image} alt="Ref" className="w-full h-16 object-cover rounded border border-slate-200" />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleItemChange(index, 'image', '')}
-                                                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            <Trash2 size={10} />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <label className="flex flex-col items-center justify-center w-full h-16 bg-white border border-dashed border-slate-300 rounded cursor-pointer hover:bg-slate-50">
-                                                        <Camera size={16} className="text-slate-400" />
-                                                        <span className="text-[10px] text-slate-500 mt-1">Upload</span>
-                                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(index, e)} />
-                                                    </label>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
                                     <div className="w-24">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">QTY</label>
                                         <input

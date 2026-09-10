@@ -76,7 +76,7 @@ export default function ClientDetails() {
                     <div className="flex items-start gap-3">
                         <div className="p-2 bg-slate-50 rounded-lg"><User size={16} className="text-slate-400" /></div>
                         <div>
-                            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Contact Person</p>
+                            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Client Name</p>
                             <p className="font-semibold text-slate-800 mt-0.5">{client.contactPerson || client.name || "N/A"}</p>
                         </div>
                     </div>

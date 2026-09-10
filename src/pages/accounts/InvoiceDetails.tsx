@@ -412,24 +412,9 @@ export default function InvoiceDetails() {
                                 </div>
                             </div>
 
-                            {/* Stamps and Signatures overlay */}
+                            {/* Signatures Area */}
                             <div className="w-[45%] relative p-2 flex flex-col justify-end items-end">
                                 <div className="flex flex-col items-center mr-6 z-10 relative mb-2">
-                                    {/* Stamp visualization */}
-                                    <div className="absolute -top-[110px] -left-[140px] w-[140px] h-[140px] border-2 border-blue-300 rounded-full flex flex-col items-center justify-center opacity-70 pointer-events-none rotate-[-15deg]">
-                                        <div className="absolute w-[120px] h-[120px] border border-blue-200 rounded-full"></div>
-                                        <div className="text-[7px] uppercase font-bold absolute top-3 w-full text-center tracking-widest text-blue-500 max-w-[100px]">Trading & Contracting W.L.L.</div>
-                                        <div className="text-[10px] uppercase font-bold text-center mt-3 border-b border-t border-blue-200 py-1 w-[90px] text-blue-600">Design Elements</div>
-                                        <div className="text-[7px] font-bold text-center mt-1 text-blue-500">C.R. No: 211686</div>
-                                        <div className="text-[7px] font-bold text-center text-blue-500">Doha - Qatar</div>
-                                    </div>
-                                    {/* Placeholder signature */}
-                                    <div className="absolute -top-[80px] -left-[80px] text-3xl font-signature text-[#4A3B72] opacity-90 rotate-[-20deg] select-none pointer-events-none">NTS</div>
-                                    <svg className="absolute -top-[60px] -left-[90px] w-20 h-20 text-[#4A3B72] opacity-80 rotate-[-10deg]" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                        <path d="M20,60 C40,50 60,30 80,40 S60,80 40,70" />
-                                        <path d="M40,70 L50,50" />
-                                    </svg>
-
                                     <div className="uppercase font-bold text-[11px] tracking-wider">RECEIVER SIGNATURE</div>
                                 </div>
                             </div>

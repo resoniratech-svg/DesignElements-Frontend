@@ -12,6 +12,7 @@ import DivisionTiles from "../../components/forms/DivisionTiles";
 import { useDivision } from "../../context/DivisionContext";
 import type { DivisionId } from "../../constants/divisions";
 import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
+import CompanyAutocomplete from "../../components/forms/CompanyAutocomplete";
 import { financeService } from "../../services/financeService";
 import type { Invoice, InvoiceItem, InvoiceStatus } from "../../types/finance";
 
@@ -32,6 +33,7 @@ export default function CreateInvoice() {
 
     const [form, setForm] = useState<Partial<Invoice>>({
         invoiceNo: "",
+        company: "",
         client: "",
         clientId: "",
         customerCode: "",
@@ -60,6 +62,22 @@ export default function CreateInvoice() {
         return isPM && user?.division ? [user.division.toUpperCase()] : [];
     }, [isPM, user]);
 
+    const INVOICE_TYPES = useMemo(() => [
+        "Credit",
+        "Cash",
+        "100% Advance payment",
+        "30 days credit",
+        "45 days credit",
+        "60 days credit",
+        "90 days credit",
+        "30 days PDC",
+        "45 days PDC",
+        "60 days PDC",
+        "90 days PDC"
+    ], []);
+
+    const [isCustomInvoiceType, setIsCustomInvoiceType] = useState(false);
+
     const [items, setItems] = useState<InvoiceItem[]>([
         { id: "default-item-1", description: "", quantity: 1, unitPrice: 0, amount: 0 }
     ]);
@@ -76,9 +94,15 @@ export default function CreateInvoice() {
         if (invoice) {
             const dataObj: any = (invoice as any).invoice || invoice;
             const itemsArr = (invoice as any).items || invoice.items || [];
+            const loadedInvType = dataObj.invoice_type || dataObj.invoiceType || "Credit";
+
+            if (loadedInvType && !INVOICE_TYPES.includes(loadedInvType)) {
+                setIsCustomInvoiceType(true);
+            }
 
             setForm({
                 invoiceNo: dataObj.invoice_number || dataObj.invoiceNo || "",
+                company: dataObj.client_company || dataObj.company || "",
                 client: dataObj.client_name || dataObj.client || "",
                 customerCode: dataObj.client_id || dataObj.clientId || "",
                 refType: dataObj.ref_type || dataObj.refType || "General",
@@ -228,6 +252,35 @@ export default function CreateInvoice() {
         }
     };
 
+    const handleInvoiceTypeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const val = e.target.value;
+        if (val === "CUSTOM") {
+            setIsCustomInvoiceType(true);
+            setForm(prev => ({ ...prev, invoiceType: "" }));
+            return;
+        }
+
+        setIsCustomInvoiceType(false);
+        let terms = form.creditTerms ?? 0;
+        if (val === "100% Advance payment" || val === "Cash") {
+            terms = 0;
+        } else if (val.includes("30 days")) {
+            terms = 30;
+        } else if (val.includes("45 days")) {
+            terms = 45;
+        } else if (val.includes("60 days")) {
+            terms = 60;
+        } else if (val.includes("90 days")) {
+            terms = 90;
+        }
+
+        setForm(prev => ({
+            ...prev,
+            invoiceType: val,
+            creditTerms: terms
+        }));
+    };
+
     const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
         const newItems = [...items];
         const item = { ...newItems[index], [field]: value };
@@ -266,6 +319,8 @@ export default function CreateInvoice() {
             taxRate: prev.taxRate,
 
             // RESET CLIENT DATA
+            company: "",
+
             client: "",
 
             clientId: undefined,
@@ -281,6 +336,23 @@ export default function CreateInvoice() {
         }));
     };
 
+    const handleCompanyChange = (companyName: string, clientId?: string, clientData?: any) => {
+        const clientDisplayName = clientData?.contactPerson && clientData.contactPerson !== "N/A" 
+            ? clientData.contactPerson 
+            : (clientData?.name || "");
+
+        setForm(prev => ({
+            ...prev,
+            company: companyName,
+            client: clientDisplayName || prev.client,
+            clientId: clientData?.userId?.toString() || clientId?.toString() || prev.clientId,
+            customerCode: clientId ? `CUST-${clientId}` : prev.customerCode,
+            contactNumber: clientData?.phone && clientData.phone !== "N/A" ? clientData.phone : prev.contactNumber,
+            address: clientData?.address && clientData.address !== "N/A" ? clientData.address : prev.address,
+            qid: clientData?.qid && clientData.qid !== "N/A" ? clientData.qid : prev.qid
+        }));
+    };
+
     const handleClientChange = (name: string, clientId?: string, clientData?: any) => {
         console.log("SELECTED CLIENT:", {
             clientId,
@@ -289,7 +361,9 @@ export default function CreateInvoice() {
         setForm(prev => ({
             ...prev,
             client: name,
+            company: clientData?.companyName || prev.company,
             clientId: clientData?.userId?.toString()
+                || clientId?.toString()
                 || "",
             customerCode: clientId ? `CUST-${clientId}` : "",
             contactNumber: clientData?.phone && clientData.phone !== "N/A" ? clientData.phone : prev.contactNumber,
@@ -329,9 +403,10 @@ export default function CreateInvoice() {
         }
 
         const invoiceData: any = {
-            invoice_number: isEditing ? form.invoiceNo : "",
+            invoice_number: form.invoiceNo ? form.invoiceNo.trim() : "",
             division: form.division,
             client_id: form.clientId ? Number(form.clientId) : null,
+            client_company: form.company,
             client_name: form.client,
             invoice_date: form.date,
             due_date: form.dueDate,
@@ -367,7 +442,7 @@ export default function CreateInvoice() {
             requestApproval({
                 type: "invoice",
                 itemId: `inv-${Date.now()}`,
-                itemNumber: form.invoiceNo!,
+                itemNumber: form.invoiceNo || "AUTO",
                 division: form.division!,
                 amount: totals.total,
                 notes: form.notes
@@ -402,9 +477,9 @@ export default function CreateInvoice() {
                         <FormInput
                             label="Invoice No"
                             name="invoiceNo"
-                            value={form.invoiceNo || "AUTO-GENERATED BY BACKEND"}
-                            disabled
-                            className={!form.invoiceNo ? "text-emerald-600 font-bold italic" : ""}
+                            value={form.invoiceNo}
+                            onChange={handleFormChange}
+                            placeholder="e.g. TRD-INV-001 (or leave blank for auto)"
                         />
 
                         <div className="flex flex-col gap-1">
@@ -419,6 +494,17 @@ export default function CreateInvoice() {
                                 <option value="Unpaid">Unpaid</option>
                                 <option value="Due">Due</option>
                             </select>
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                            <label className="text-xs font-semibold text-slate-500 uppercase">Company Selection</label>
+                            <CompanyAutocomplete
+                                value={form.company || ""}
+                                onChange={handleCompanyChange}
+                                division={form.division!}
+                                placeholder="Search company..."
+                                disabled={isEditing}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -460,10 +546,18 @@ export default function CreateInvoice() {
                                 name="refType"
                                 value={form.refType}
                                 onChange={handleFormChange}
-                                className="border p-2 rounded-lg"
+                                className="border p-2 rounded-lg bg-white"
                                 placeholder="e.g. General, Proposal, Project"
                             />
                         </div>
+
+                        <FormInput 
+                            label="Invoice Reference #" 
+                            name="refNo" 
+                            value={form.refNo} 
+                            onChange={handleFormChange} 
+                            placeholder="e.g. TRD-QUO-001 or REF-001" 
+                        />
 
                         <FormInput label="Invoice Date" name="date" type="date" value={form.date} onChange={handleFormChange} />
 
@@ -479,16 +573,51 @@ export default function CreateInvoice() {
                         <FormInput label="Due Date" name="dueDate" type="date" value={form.dueDate} disabled />
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-slate-500 uppercase">Invoice Type</label>
-                            <select
-                                name="invoiceType"
-                                value={form.invoiceType}
-                                onChange={handleFormChange}
-                                className="border p-2 rounded-lg"
-                            >
-                                <option value="Credit">Credit</option>
-                                <option value="Cash">Cash</option>
-                            </select>
+                            <div className="flex justify-between items-center">
+                                <label className="text-xs font-semibold text-slate-500 uppercase">Invoice Type</label>
+                                {isCustomInvoiceType && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsCustomInvoiceType(false);
+                                            setForm(prev => ({ ...prev, invoiceType: "Credit" }));
+                                        }}
+                                        className="text-[10px] text-brand-600 font-bold hover:underline"
+                                    >
+                                        Back to list
+                                    </button>
+                                )}
+                            </div>
+                            {isCustomInvoiceType ? (
+                                <input
+                                    type="text"
+                                    name="invoiceType"
+                                    value={form.invoiceType || ""}
+                                    onChange={handleFormChange}
+                                    className="border p-2 rounded-lg bg-white text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                                    placeholder="e.g. 30days credit, 30days PDC, etc."
+                                />
+                            ) : (
+                                <select
+                                    name="invoiceType"
+                                    value={INVOICE_TYPES.includes(form.invoiceType || "") ? form.invoiceType : "CUSTOM"}
+                                    onChange={handleInvoiceTypeSelect}
+                                    className="border p-2 rounded-lg bg-white text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                                >
+                                    <option value="Credit">Credit</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="100% Advance payment">100% Advance payment</option>
+                                    <option value="30 days credit">30 days credit</option>
+                                    <option value="45 days credit">45 days credit</option>
+                                    <option value="60 days credit">60 days credit</option>
+                                    <option value="90 days credit">90 days credit</option>
+                                    <option value="30 days PDC">30 days PDC</option>
+                                    <option value="45 days PDC">45 days PDC</option>
+                                    <option value="60 days PDC">60 days PDC</option>
+                                    <option value="90 days PDC">90 days PDC</option>
+                                    <option value="CUSTOM">Custom / Other (Type manually)...</option>
+                                </select>
+                            )}
                         </div>
 
                         <FormInput label="LPO No." name="lpoNo" value={form.lpoNo} onChange={handleFormChange} placeholder="e.g. PO1031" />

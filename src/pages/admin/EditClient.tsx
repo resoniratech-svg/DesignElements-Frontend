@@ -249,14 +249,14 @@ function EditClient() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Client Name</label>
               <input
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 disabled={true}
                 className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-slate-50 cursor-not-allowed text-slate-500 font-medium"
-                placeholder="Full Name"
+                placeholder="Enter Client Name"
               />
             </div>
 

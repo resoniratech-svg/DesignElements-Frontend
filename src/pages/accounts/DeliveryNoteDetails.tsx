@@ -270,17 +270,6 @@ export default function DeliveryNoteDetails() {
                         {/* Checked By */}
                         <div className="w-1/3 border-r border-black p-2 flex flex-col justify-between relative">
                             <div>Checked By: {invoice.dnCheckedBy}</div>
-                            {/* Simulated Stamp/Signature if checked by is present */}
-                            {invoice.dnCheckedBy && (
-                                <div className="absolute inset-0 flex items-center justify-center opacity-70 pointer-events-none transform -rotate-12">
-                                    <div className="text-blue-600 border-2 border-blue-600 rounded-full w-24 h-24 flex items-center justify-center relative">
-                                        <div className="absolute top-2 text-[6px] tracking-widest text-center leading-tight">DESIGN ELEMENTS</div>
-                                        <div className="text-center">
-                                            <span className="text-[14px] block font-signature">Athar</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* Receiver Area */}

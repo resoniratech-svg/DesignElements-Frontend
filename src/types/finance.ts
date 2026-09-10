@@ -18,6 +18,7 @@ export interface Invoice {
   invoiceNo: string;
   client: string;
   clientCompany?: string;
+  company?: string;
   customerCode?: string;
   clientId?: string;
   status: InvoiceStatus;
@@ -44,7 +45,7 @@ export interface Invoice {
   salesman?: string;
   qid?: string;
   address?: string;
-  invoiceType?: "Credit" | "Cash";
+  invoiceType?: string;
   due_date?: string; // Added
   invoice_date?: string; // Added
   attn?: string; // Added
