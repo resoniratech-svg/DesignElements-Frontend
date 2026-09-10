@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import FormInput from "../../components/forms/FormInput";
-import { Plus, Trash2, Save, Camera } from "lucide-react";
+import { Plus, Trash2, Save } from "lucide-react";
 import DivisionTiles from "../../components/forms/DivisionTiles";
 import { useDivision } from "../../context/DivisionContext";
 import { useApprovals } from "../../context/ApprovalContext";
@@ -182,17 +182,6 @@ export default function CreateQuotation() {
     const [items, setItems] = useState<QuotationItem[]>([
         { description: "", quantity: 1, unit: "Nos", unitPrice: 0, amount: 0, customSrNo: "01", itemCode: "", itemName: "", image: "" }
     ]);
-
-    const handleImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                handleItemChange(index, 'image', reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     // Fetch existing quotation from database if editing
     const { data: existingQuotation } = useQuery({

@@ -38,6 +38,7 @@ export interface Quotation {
   terms?: string;
   client_name?: string;
   client_company?: string;
+  company?: string;
   client_phone?: string; // Added
   client_email?: string; // Added
   attn?: string;

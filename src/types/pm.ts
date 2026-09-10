@@ -23,6 +23,10 @@ export interface Quotation {
   branch?: string; // Legacy
   project?: string;
   client?: string;
+  company?: string;
+  client_company?: string;
+  client_id?: string | number;
+  discount?: number | string;
   date?: string;
   qtn_number?: string;
   total_amount?: number;
