@@ -422,7 +422,7 @@ export default function InvoiceDetails() {
 
                         {/* Footer */}
                         <div className="text-center font-bold font-serif text-[10px] mt-2 pb-4">
-                            <div>OCR No: 211686 <span className="mx-1"></span> 0+974 70122772 <span className="mx-1"></span> 0 Doha - Qatar</div>
+                            <div>OCR No: 211686 <span className="mx-1"></span> 0+974 5023 4242 <span className="mx-1"></span> 0 Doha - Qatar</div>
                             <div className="flex items-center justify-center gap-2 mt-1">
                                 <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
                                 info@designelementsqatar.com <span className="mx-2 font-black text-gray-400">O</span> www.designelementsqatar.com

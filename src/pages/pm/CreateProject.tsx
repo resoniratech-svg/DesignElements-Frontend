@@ -8,6 +8,7 @@ import { useDivision } from "../../context/DivisionContext";
 import { useAuth } from "../../context/AuthContext";
 import DivisionTiles from "../../components/forms/DivisionTiles";
 import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
+import CompanyAutocomplete from "../../components/forms/CompanyAutocomplete";
 import ManagerAutocomplete from "../../components/forms/ManagerAutocomplete";
 import { projectService } from "../../services/projectService";
 // Removed unused userService import
@@ -28,6 +29,7 @@ function CreateProject() {
 
   const [form, setForm] = useState<any>({
     name: "",
+    company: "",
     client: "",
     client_id: null,
     budget: "",
@@ -39,6 +41,28 @@ function CreateProject() {
     status: "Active",
     division: isPM ? userDivision : (activeDivision === "all" ? "CONTRACTING" : activeDivision.toUpperCase())
   });
+
+  const handleCompanyChange = (companyName: string, clientId?: string, clientData?: any) => {
+    const clientDisplayName = clientData?.contactPerson && clientData.contactPerson !== "N/A"
+      ? clientData.contactPerson
+      : (clientData?.name || "");
+
+    setForm((prev: any) => ({
+      ...prev,
+      company: companyName,
+      client: clientDisplayName || prev.client,
+      client_id: clientData?.userId?.toString() || clientId?.toString() || prev.client_id
+    }));
+  };
+
+  const handleClientChange = (name: string, id?: string, clientData?: any) => {
+    setForm((prev: any) => ({
+      ...prev,
+      client: name,
+      company: clientData?.companyName || prev.company,
+      client_id: clientData?.userId?.toString() || id?.toString() || prev.client_id
+    }));
+  };
 
   const allowedSectors = useMemo(() => {
     return isPM && user?.division ? [user.division.toUpperCase()] : [];
@@ -187,6 +211,7 @@ function CreateProject() {
               onChange={(id: any) => setForm({ 
                 ...form, 
                 division: id,
+                company: "",
                 client: "",
                 client_id: null,
                 manager: isPM ? user?.name : "",
@@ -206,16 +231,6 @@ function CreateProject() {
               required
             />
 
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Client <span className="text-rose-500">*</span></label>
-              <ClientAutocomplete
-                value={form.client}
-                onChange={(name, id) => setForm({ ...form, client: name, client_id: id })}
-                division={form.division}
-                placeholder="Select a client..."
-              />
-            </div>
-
             <FormInput
               label="Budget (QAR)"
               name="budget"
@@ -223,6 +238,26 @@ function CreateProject() {
               onChange={handleChange}
               placeholder="e.g. 500,000"
             />
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Company Selection</label>
+              <CompanyAutocomplete
+                value={form.company || ""}
+                onChange={handleCompanyChange}
+                division={form.division}
+                placeholder="Search company..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Client <span className="text-rose-500">*</span></label>
+              <ClientAutocomplete
+                value={form.client}
+                onChange={handleClientChange}
+                division={form.division}
+                placeholder="Select a client..."
+              />
+            </div>
 
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 uppercase tracking-tighter text-[11px] font-black">Project Manager</label>
@@ -248,6 +283,20 @@ function CreateProject() {
               )}
             </div>
 
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700 uppercase tracking-tighter text-[11px] font-black">Project Status</label>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 outline-none transition-shadow bg-white h-[42px] font-bold text-sm"
+              >
+                <option value="Active">Active Project</option>
+                <option value="COMPLETED">Inactive Completed</option>
+                <option value="Cancelled">Inactive Cancelled</option>
+              </select>
+            </div>
+
             <FormInput
               label="Start Date"
               type="date"
@@ -264,20 +313,6 @@ function CreateProject() {
               onChange={handleChange}
               min={form.startDate}
             />
-
-            <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 uppercase tracking-tighter text-[11px] font-black">Project Status</label>
-              <select
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 outline-none transition-shadow bg-white h-[42px] font-bold text-sm"
-              >
-                <option value="Active">Active Project</option>
-                <option value="COMPLETED">Inactive Completed</option>
-                <option value="Cancelled">Inactive Cancelled</option>
-              </select>
-            </div>
 
             <div className="col-span-2">
               <label className="block text-sm font-medium mb-1 text-gray-700">Description</label>

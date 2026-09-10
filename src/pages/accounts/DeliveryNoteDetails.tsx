@@ -288,7 +288,7 @@ export default function DeliveryNoteDetails() {
                     <div className="flex items-center gap-2 uppercase tracking-wide">
                         <span>CR No: 211686</span>
                         <span>|</span>
-                        <span>+974 70122772</span>
+                        <span>+974 5023 4242</span>
                         <span>|</span>
                         <span>Doha - Qatar</span>
                     </div>
@@ -303,7 +303,7 @@ export default function DeliveryNoteDetails() {
                      <div className="flex items-center gap-2 uppercase tracking-wide">
                         <span>CR No: 211686</span>
                         <span>|</span>
-                        <span>+974 70122772</span>
+                        <span>+974 5023 4242</span>
                         <span>|</span>
                         <span>Doha - Qatar</span>
                     </div>

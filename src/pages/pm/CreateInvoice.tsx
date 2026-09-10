@@ -551,14 +551,6 @@ export default function CreateInvoice() {
                             />
                         </div>
 
-                        <FormInput 
-                            label="Invoice Reference #" 
-                            name="refNo" 
-                            value={form.refNo} 
-                            onChange={handleFormChange} 
-                            placeholder="e.g. TRD-QUO-001 or REF-001" 
-                        />
-
                         <FormInput label="Invoice Date" name="date" type="date" value={form.date} onChange={handleFormChange} />
 
                         <FormInput

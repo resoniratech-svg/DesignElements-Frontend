@@ -131,7 +131,7 @@ export default function QuotationDetails() {
 
                     {/* Salutation & Intro */}
                     <div className="mb-6">
-                        <p className="font-bold text-black mb-2">{quotation.salutation}</p>
+                        <p className="text-[12px] font-semibold text-black mb-1">{quotation.salutation}</p>
                         <p className="text-[13px] leading-relaxed text-slate-700 italic">
                             {quotation.intro_text}
                         </p>
@@ -216,7 +216,7 @@ export default function QuotationDetails() {
                                 {/* Total Row */}
                                 <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
                                     <td className="border border-slate-400 px-3 py-2 uppercase" colSpan={1}>Total</td>
-                                    <td className="border border-slate-400 px-3 py-2 text-center italic text-[11px]" colSpan={quotation?.selected_format === 'quotation3' ? 4 : 5}>
+                                    <td className="border border-slate-400 px-3 py-2 text-center text-[11px]" colSpan={quotation?.selected_format === 'quotation3' ? 4 : 5}>
                                         {numberToWords(netTotal).toUpperCase()}
                                     </td>
                                     <td className="border border-slate-400 px-3 py-2 text-right text-black bg-white">
@@ -264,7 +264,7 @@ export default function QuotationDetails() {
                             <div className="flex items-center gap-3">
                                 <span>CR No: 211686</span>
                                 <span>•</span>
-                                <span>+974 70122772</span>
+                                <span>+974 5023 4242</span>
                                 <span>•</span>
                                 <span>Doha - Qatar</span>
                             </div>

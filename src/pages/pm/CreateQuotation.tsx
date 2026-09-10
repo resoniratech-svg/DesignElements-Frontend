@@ -274,7 +274,7 @@ export default function CreateQuotation() {
         }
     };
 
-    const handleCompanyChange = async (companyName: string, clientId?: string, clientData?: any) => {
+    const handleCompanyChange = (companyName: string, clientId?: string, clientData?: any) => {
         if (!clientId) {
             setForm(prev => ({ ...prev, company: companyName }));
             return;
@@ -292,25 +292,9 @@ export default function CreateQuotation() {
             clientPhone: clientData?.phone && clientData.phone !== "N/A" ? clientData.phone : prev.clientPhone,
             clientEmail: clientData?.email && clientData.email !== "N/A" ? clientData.email : prev.clientEmail,
         }));
-
-        try {
-            const { clientService } = await import("../../services/clientService");
-            const details = await clientService.getClient(clientId);
-            if (details) {
-                setForm(prev => ({
-                    ...prev,
-                    clientPhone: details.phone || prev.clientPhone,
-                    clientEmail: details.email || prev.clientEmail,
-                    client: details.name || details.contactPerson || clientDisplayName || prev.client,
-                    company: details.companyName || companyName || prev.company
-                }));
-            }
-        } catch (err) {
-            console.error("Error fetching company client details:", err);
-        }
     };
 
-    const handleClientChange = async (name: string, clientId?: string, clientData?: any) => {
+    const handleClientChange = (name: string, clientId?: string, clientData?: any) => {
         if (!clientId) {
             setForm(prev => ({ ...prev, client: name, customerCode: "", clientPhone: "", clientEmail: "" }));
             return;
@@ -320,25 +304,10 @@ export default function CreateQuotation() {
             ...prev,
             client: name,
             customerCode: clientId,
-            company: clientData?.companyName || prev.company,
+            company: clientData?.companyName || clientData?.name || prev.company,
             clientPhone: clientData?.phone && clientData.phone !== "N/A" ? clientData.phone : prev.clientPhone,
             clientEmail: clientData?.email && clientData.email !== "N/A" ? clientData.email : prev.clientEmail,
         }));
-
-        try {
-            const { clientService } = await import("../../services/clientService");
-            const details = await clientService.getClient(clientId);
-            if (details) {
-                setForm(prev => ({
-                    ...prev,
-                    company: details.companyName || prev.company,
-                    clientPhone: details.phone || prev.clientPhone,
-                    clientEmail: details.email || prev.clientEmail
-                }));
-            }
-        } catch (err) {
-            console.error("Error fetching client details:", err);
-        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

@@ -5,12 +5,14 @@ import PageHeader from "../../components/PageHeader";
 import { useActivity } from "../../context/ActivityContext";
 import { projectService } from "../../services/projectService";
 import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
+import CompanyAutocomplete from "../../components/forms/CompanyAutocomplete";
 import ManagerAutocomplete from "../../components/forms/ManagerAutocomplete";
 import { Loader2, AlertCircle, CheckCircle, Upload, FileText, X } from "lucide-react";
 import type { Project } from "../../types/project";
 
 interface FormState {
     name: string;
+    company: string;
     client: string;
     client_id: string | number | null;
     budget: string;
@@ -30,6 +32,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
 
     const [form, setForm] = useState<FormState>({
         name: project.name || project.projectName || "",
+        company: (project as any).company || (project as any).client_company || "",
         client: project.client || project.clientName || "",
         client_id: project.client_id || null,
         budget: String(project.budget || project.value || ""),
@@ -116,6 +119,28 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
         e.target.value = "";
     };
 
+    const handleCompanyChange = (companyName: string, clientId?: string, clientData?: any) => {
+        const clientDisplayName = clientData?.contactPerson && clientData.contactPerson !== "N/A"
+            ? clientData.contactPerson
+            : (clientData?.name || "");
+
+        setForm(prev => ({
+            ...prev,
+            company: companyName,
+            client: clientDisplayName || prev.client,
+            client_id: clientData?.userId?.toString() || clientId?.toString() || prev.client_id
+        }));
+    };
+
+    const handleClientChange = (name: string, id?: string, clientData?: any) => {
+        setForm(prev => ({
+            ...prev,
+            client: name,
+            company: clientData?.companyName || prev.company,
+            client_id: clientData?.userId?.toString() || id?.toString() || prev.client_id
+        }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMsg(null);
@@ -138,9 +163,12 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
             description: form.description || null,
             start_date: form.startDate || null,
             end_date: form.endDate || null,
-            division: form.division || null,
-            uploaded_document: uploadedDoc || null,
+            division: form.division || null
         };
+
+        if (uploadedDoc) {
+            payload.uploaded_document = uploadedDoc;
+        }
 
         updateMutation.mutate(payload);
     };
@@ -162,7 +190,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
+                    <div>
                         <label className="block text-sm font-medium mb-1 text-gray-700">Project Name <span className="text-rose-500">*</span></label>
                         <input
                             name="name"
@@ -173,15 +201,6 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-700">Client <span className="text-rose-500">*</span></label>
-                        <ClientAutocomplete
-                            value={form.client}
-                            onChange={(name, id) => setForm({ ...form, client: name, client_id: id || null })}
-                            division={form.division}
-                            placeholder="Search client..."
-                        />
-                    </div>
-                    <div>
                         <label className="block text-sm font-medium mb-1 text-gray-700">Budget</label>
                         <input
                             name="budget"
@@ -189,6 +208,24 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-brand-500 outline-none"
                             required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-700">Company Selection</label>
+                        <CompanyAutocomplete
+                            value={form.company || ""}
+                            onChange={handleCompanyChange}
+                            division={form.division}
+                            placeholder="Search company..."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-700">Client <span className="text-rose-500">*</span></label>
+                        <ClientAutocomplete
+                            value={form.client}
+                            onChange={handleClientChange}
+                            division={form.division}
+                            placeholder="Search client..."
                         />
                     </div>
                     <div>
