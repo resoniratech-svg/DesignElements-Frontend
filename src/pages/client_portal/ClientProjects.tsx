@@ -204,12 +204,12 @@ export default function ClientProjects() {
                            <p>Your project is currently in the <strong>{selectedProject.status || "Pending"}</strong> phase.</p>
                          )}
                          <div className="pt-4 mt-4 border-t border-brand-100/50 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           {selectedProject.budget && (
-                             <div className="flex items-center gap-2 p-2 bg-white/50 rounded-lg">
-                               <span className="text-[10px] font-bold text-brand-400 uppercase">Budget</span>
-                               <span className="text-xs font-black text-brand-700">{selectedProject.budget}</span>
-                             </div>
-                           )}
+                            {selectedProject.budget && (
+                              <div className="flex items-center gap-2 p-2 bg-white/50 rounded-lg">
+                                <span className="text-[10px] font-bold text-brand-400 uppercase">Budget</span>
+                                <span className="text-xs font-black text-brand-700">{`QAR ${Number(selectedProject.budget).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}</span>
+                              </div>
+                            )}
                            {selectedProject.manager && (
                              <div className="flex items-center gap-2 p-2 bg-white/50 rounded-lg">
                                <span className="text-[10px] font-bold text-brand-400 uppercase pl-1 border-l-2 border-brand-200">Manager</span>

@@ -297,7 +297,7 @@ export default function InvoiceDetails() {
                                         </tr>
                                         <tr>
                                             <td className="border border-black p-1 pl-2">Delivery Note:</td>
-                                            <td className="border border-black p-1 text-center">{invoice.deliveryNote || invoice.refNo || "N/A"}</td>
+                                            <td className="border border-black p-1 text-center">{invoice.deliveryNote || "N/A"}</td>
                                         </tr>
                                         <tr>
                                             <td className="border border-black p-1 pl-2">Order Number</td>

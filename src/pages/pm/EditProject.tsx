@@ -94,7 +94,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                 return { ...prev, [name]: value };
             });
         } else if (name === "budget") {
-            const numericValue = value.replace(/[^0-9]/g, "");
+            const numericValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, '$1');
             setForm(prev => ({
                 ...prev,
                 [name]: numericValue

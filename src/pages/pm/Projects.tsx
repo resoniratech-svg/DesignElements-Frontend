@@ -96,8 +96,10 @@ function Projects() {
       "Project": item.name || item.projectName,
       "Client Company": clientDisplay,
       "Sector": item.division ? item.division.toUpperCase() : "N/A",
-      "Budget": item.budget || item.contract_value,
-      "Manager": item.manager,
+      "Budget": (item.budget || item.contract_value)
+        ? `QAR ${Number(item.budget || item.contract_value).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+        : "-",
+      "Manager": item.manager || "-",
       "Start Date": item.startDate || "-",
       "End Date": item.endDate || "-",
       "Status": <StatusBadge status={item.status || "Pending"} />,

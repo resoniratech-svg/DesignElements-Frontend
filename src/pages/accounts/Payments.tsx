@@ -5,7 +5,7 @@ import PageHeader from "../../components/PageHeader";
 import StatusBadge from "../../components/StatusBadge";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";
-import { Receipt, Download, Search, Filter, Eye, FileText } from "lucide-react";
+import { Receipt, Download, Search, Filter, Eye, FileText, Edit } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { financeService } from "../../services/financeService";
 import PageLoader from "../../components/PageLoader";
@@ -151,18 +151,35 @@ function Payments() {
                   {p.status?.toUpperCase() === "PAID" && (
                     (() => {
                       const hasDN = p.delivery_note && p.delivery_note.trim() !== "";
+                      if (hasDN) {
+                        return (
+                          <div className="flex items-center gap-1.5">
+                            <Link
+                              to={`/delivery-note/${p.dbId || p.id}`}
+                              className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
+                              title="View Delivery Note"
+                            >
+                              <FileText size={12} />
+                              View DN
+                            </Link>
+                            <Link
+                              to={`/edit-delivery-note/${p.dbId || p.id}`}
+                              className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors"
+                              title="Edit Delivery Note"
+                            >
+                              <Edit size={14} />
+                            </Link>
+                          </div>
+                        );
+                      }
                       return (
                         <Link
-                          to={hasDN ? `/delivery-note/${p.dbId || p.id}` : `/edit-delivery-note/${p.dbId || p.id}`}
-                          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit transition-colors ${
-                            hasDN
-                              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
-                          }`}
-                          title={hasDN ? "View Delivery Note" : "Create Delivery Note"}
+                          to={`/edit-delivery-note/${p.dbId || p.id}`}
+                          className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300 transition-colors"
+                          title="Create Delivery Note"
                         >
                           <FileText size={12} />
-                          {hasDN ? 'View DN' : 'Create DN'}
+                          Create DN
                         </Link>
                       );
                     })()

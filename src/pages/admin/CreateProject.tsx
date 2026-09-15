@@ -111,7 +111,7 @@ const CreateProject = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name === "budget") {
-      const numericValue = value.replace(/[^0-9]/g, "");
+      const numericValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, '$1');
       setFormData(prev => ({ ...prev, [name]: numericValue }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));

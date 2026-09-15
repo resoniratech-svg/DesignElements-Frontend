@@ -107,11 +107,11 @@ function CreateProject() {
         return { ...prev, [name]: value };
       });
     } else if (name === "budget") {
-      const numericValue = value.replace(/[^0-9]/g, "");
-      setForm({
-        ...form,
+      const numericValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, '$1');
+      setForm((prev: any) => ({
+        ...prev,
         [name]: numericValue
-      });
+      }));
     } else {
       setForm({
         ...form,
