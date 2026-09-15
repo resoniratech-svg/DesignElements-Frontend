@@ -254,7 +254,7 @@ export default function QuotationDetails() {
                                                     ))}
                                                     {/* Total Row */}
                                                     <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
-                                                        <td className="border border-slate-400 px-3 py-2 uppercase" colSpan={1}>Total</td>
+                                                        <td className="border border-slate-400 px-3 py-2 uppercase text-center" colSpan={1}>Total</td>
                                                         <td className="border border-slate-400 px-3 py-2 text-center text-[11px]" colSpan={quotation?.selected_format === 'quotation3' ? 4 : 5}>
                                                             {numberToWords(netTotal).toUpperCase()}
                                                         </td>
@@ -303,6 +303,27 @@ export default function QuotationDetails() {
                         </tbody>
                     </table>
 
+                    {/* FIXED PRINT FOOTER (ALWAYS PINNED TO LOWEST PART OF EVERY PRINTED PAGE) */}
+                    <div className="print-fixed-footer hidden">
+                        <div className="pt-2 border-t border-slate-200 bg-white">
+                            <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                                <div className="flex items-center gap-3">
+                                    <span>CR No: 211686</span>
+                                    <span>•</span>
+                                    <span>+974 5023 4242</span>
+                                    <span>•</span>
+                                    <span>Doha - Qatar</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <span>info@designelementsqatar.com</span>
+                                    <span>•</span>
+                                    <span>www.designelementsqatar.com</span>
+                                </div>
+                            </div>
+                            <div className="h-3 w-full bg-slate-800 mt-2"></div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -331,6 +352,10 @@ export default function QuotationDetails() {
                     }
                     .print-doc-table tfoot {
                         display: table-footer-group !important;
+                        visibility: hidden !important;
+                    }
+                    .print-doc-table tfoot .print-footer-wrapper {
+                        height: 20mm !important;
                     }
                     .print-doc-table tbody {
                         display: table-row-group !important;
@@ -344,6 +369,16 @@ export default function QuotationDetails() {
                     .print-footer-wrapper {
                         padding-top: 4mm;
                         padding-bottom: 4mm;
+                    }
+                    .print-fixed-footer {
+                        display: block !important;
+                        position: fixed !important;
+                        bottom: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        width: 100% !important;
+                        background: white !important;
+                        z-index: 9999 !important;
                     }
 
                     tr {
@@ -360,7 +395,7 @@ export default function QuotationDetails() {
                     .bg-slate-800 { background-color: #1e293b !important; -webkit-print-color-adjust: exact !important; }
                     .text-brand-600 { color: #2563eb !important; }
                     @page { 
-                        margin: 12mm 15mm 12mm 15mm; 
+                        margin: 12mm 15mm 20mm 15mm; 
                         size: A4 portrait; 
                     }
                 }
