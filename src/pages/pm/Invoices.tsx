@@ -95,44 +95,40 @@ function Invoices() {
             "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
             "Status": <StatusBadge status={invoice.status} />,
             "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
-            "Delivery Note": (
-                invoice.status?.toUpperCase() === "PAID" ? (
-                    (() => {
-                        const hasDN = invoice.delivery_note && invoice.delivery_note.trim() !== "";
-                        if (hasDN) {
-                            return (
-                                <div className="flex items-center gap-1.5">
-                                    <Link
-                                        to={`/delivery-note/${invoice.id}`}
-                                        className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
-                                        title="View Delivery Note"
-                                    >
-                                        <FileText size={12} />
-                                        View DN
-                                    </Link>
-                                    <Link
-                                        to={`/edit-delivery-note/${invoice.id}`}
-                                        className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors"
-                                        title="Edit Delivery Note"
-                                    >
-                                        <Edit size={14} />
-                                    </Link>
-                                </div>
-                            );
-                        }
-                        return (
+            "Delivery Note": (() => {
+                const hasDN = invoice.delivery_note && invoice.delivery_note.trim() !== "";
+                if (hasDN) {
+                    return (
+                        <div className="flex items-center gap-1.5">
                             <Link
-                                to={`/edit-delivery-note/${invoice.id}`}
-                                className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300 transition-colors"
-                                title="Create Delivery Note"
+                                to={`/delivery-note/${invoice.id}`}
+                                className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
+                                title="View Delivery Note"
                             >
                                 <FileText size={12} />
-                                Create DN
+                                View DN
                             </Link>
-                        );
-                    })()
-                ) : null
-            ),
+                            <Link
+                                to={`/edit-delivery-note/${invoice.id}`}
+                                className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors"
+                                title="Edit Delivery Note"
+                            >
+                                <Edit size={14} />
+                            </Link>
+                        </div>
+                    );
+                }
+                return (
+                    <Link
+                        to={`/edit-delivery-note/${invoice.id}`}
+                        className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300 transition-colors"
+                        title="Create Delivery Note"
+                    >
+                        <FileText size={12} />
+                        Create DN
+                    </Link>
+                );
+            })(),
             "Actions": (
                 <div className="flex gap-2 items-center">
                     <Link
