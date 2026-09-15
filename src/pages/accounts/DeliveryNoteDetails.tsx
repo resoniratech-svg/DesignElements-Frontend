@@ -123,8 +123,8 @@ export default function DeliveryNoteDetails() {
             </div>
 
             {/* NEW DELIVERY NOTE DESIGN (EXACT MATCH) */}
-            <div className="max-w-[900px] mx-auto bg-white font-serif text-black print:m-0 print:w-full border-t border-b-0 border-white relative print-dn-container flex flex-col">
-                <table className="w-full border-none border-collapse print-doc-table">
+            <div className="max-w-[900px] min-h-[280mm] mx-auto bg-white font-serif text-black print:m-0 print:w-full print:min-h-[280mm] border-t border-b-0 border-white relative print-dn-container flex flex-col justify-between">
+                <table className="w-full min-h-[275mm] border-none border-collapse print-doc-table">
                     {/* REPEATING HEADER FOR PRINT */}
                     <thead>
                         <tr>
@@ -149,11 +149,11 @@ export default function DeliveryNoteDetails() {
                         </tr>
                     </thead>
 
-                    {/* REPEATING FOOTER FOR PRINT */}
+                    {/* REPEATING FOOTER FOR PRINT (PINNED TO LOWEST SECTION) */}
                     <tfoot>
                         <tr>
                             <td className="border-none p-0">
-                                <div className="flex flex-col items-center justify-end pt-4 pb-4 font-serif text-[10px] text-gray-500 font-bold bg-white w-full border-t border-gray-200">
+                                <div className="flex flex-col items-center justify-end pt-4 pb-2 font-serif text-[10px] text-gray-500 font-bold bg-white w-full border-t border-gray-200 mt-auto">
                                     <div className="flex items-center gap-2 uppercase tracking-wide">
                                         <span>CR No: 211686</span>
                                         <span>|</span>
@@ -280,7 +280,7 @@ export default function DeliveryNoteDetails() {
                                                     </tr>
                                                 ))}
                                                 {/* Fill remaining space cleanly */}
-                                                <tr className="h-36 border border-black border-t-0">
+                                                <tr className="h-44 border border-black border-t-0">
                                                     <td className="border border-black border-t-0"></td>
                                                     <td className="border border-black border-t-0"></td>
                                                     <td className="border border-black border-t-0"></td>
