@@ -261,7 +261,7 @@ export default function DeliveryNoteDetails() {
                                         <div className="border-l border-r border-b border-black h-8"></div>
 
                                         {/* Main Table */}
-                                        <table className="w-full border-collapse border border-black text-[11px] font-serif flex-1">
+                                        <table className="w-full border-collapse border border-black text-[11px] font-serif table-fixed">
                                             <thead>
                                                 <tr className="font-bold">
                                                     <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">SL. NO.</th>
@@ -274,7 +274,7 @@ export default function DeliveryNoteDetails() {
                                                 {items.map((item: any, idx: number) => (
                                                     <tr key={idx} className="h-9 align-top">
                                                         <td className="border border-black p-1 text-center font-bold">{idx + 1}</td>
-                                                        <td className="border border-black p-1 text-center font-bold">{item.description}</td>
+                                                        <td className="border border-black p-1 text-center font-bold whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word]">{item.description}</td>
                                                         <td className="border border-black p-1 text-center font-bold">Nos</td>
                                                         <td className="border border-black p-1 text-center font-bold">{item.quantity}</td>
                                                     </tr>

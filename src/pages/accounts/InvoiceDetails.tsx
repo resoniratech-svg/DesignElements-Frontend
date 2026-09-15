@@ -341,7 +341,7 @@ export default function InvoiceDetails() {
                         <div className="border-l border-r border-b border-black h-12"></div>
 
                         {/* Main Table */}
-                        <table className="w-full border-collapse border border-black text-[11px] font-serif">
+                        <table className="w-full border-collapse border border-black text-[11px] font-serif table-fixed">
                             <thead>
                                 <tr className="font-bold">
                                     <th className="border border-black p-1 w-[8%] text-center uppercase font-bold text-[10px]">SL. NO.</th>
@@ -357,8 +357,8 @@ export default function InvoiceDetails() {
                                 {items.length > 0 ? items.map((item, idx: number) => (
                                     <tr key={idx} className="align-top font-bold text-[11px]">
                                         <td className="border border-black p-1 text-center h-20 pt-2">{idx + 1}</td>
-                                        <td className="border border-black p-1 text-center pt-2">{item.code || ""}</td>
-                                        <td className="border border-black p-1 whitespace-pre-wrap pt-2 px-2 text-[10px]">{item.description}</td>
+                                        <td className="border border-black p-1 text-center pt-2 break-words [overflow-wrap:anywhere]">{item.code || ""}</td>
+                                        <td className="border border-black p-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] pt-2 px-2 text-[10px]">{item.description}</td>
                                         <td className="border border-black p-1 text-center uppercase pt-2">{item.uom || "Nos"}</td>
                                         <td className="border border-black p-1 text-center pt-2">{item.quantity}</td>
                                         <td className="border border-black p-1 text-center uppercase pt-2">{item.unitPrice === 0 ? "LUMPSUM" : Number(item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>

@@ -212,14 +212,14 @@ export default function QuotationDetails() {
                                             </div>
                                         </div>
 
-                                        {/* Items Table with Wide Item Description */}
+                                        {/* Items Table with Auto-Wrapping Item Description */}
                                         <div className="mb-6 flex-grow">
-                                            <table className="w-full border-collapse border border-slate-400 text-[12px]">
+                                            <table className="w-full border-collapse border border-slate-400 text-[12px] table-fixed">
                                                 <thead>
                                                     <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
                                                         <th className="border border-slate-400 px-2 py-2 text-center w-12">Sr. No.</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-center w-24">Item Code</th>
-                                                        <th className="border border-slate-400 px-3 py-2 text-left font-bold min-w-[200px]">{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
+                                                        <th className="border border-slate-400 px-2 py-2 text-center w-20">Item Code</th>
+                                                        <th className="border border-slate-400 px-3 py-2 text-left font-bold">{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
                                                         <th className="border border-slate-400 px-2 py-2 text-center w-14">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
                                                         {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-12">Qty</th>}
                                                         <th className="border border-slate-400 px-3 py-2 text-right w-24">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
@@ -232,10 +232,10 @@ export default function QuotationDetails() {
                                                             <td className="border border-slate-400 px-2 py-3 text-center align-top font-bold">
                                                                 {item.customSrNo || (idx + 1).toString().padStart(2, '0')}
                                                             </td>
-                                                            <td className="border border-slate-400 px-2 py-3 text-center align-top font-bold text-slate-700">
+                                                            <td className="border border-slate-400 px-2 py-3 text-center align-top font-bold text-slate-700 break-words [overflow-wrap:anywhere]">
                                                                 {item.itemCode || item.item_code || "-"}
                                                             </td>
-                                                            <td className="border border-slate-400 px-3 py-3 align-top whitespace-pre-wrap leading-relaxed font-semibold text-black">
+                                                            <td className="border border-slate-400 px-3 py-3 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed font-semibold text-black">
                                                                 {item.description}
                                                             </td>
                                                             <td className="border border-slate-400 px-2 py-3 text-center align-top font-medium">
