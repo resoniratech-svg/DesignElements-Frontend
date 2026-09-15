@@ -141,7 +141,7 @@ export default function DeliveryNoteDetails() {
                                         <div className="flex flex-col">
                                             <span className="text-2xl font-bold text-gray-700 uppercase tracking-wider">DESIGN ELEMENTS</span>
                                             <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">TRADING AND CONTRACTING W.L.L</span>
-                                            <span className="text-[10px] text-gray-400 font-bold text-right mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
+                                            <span className="text-[10px] text-gray-400 font-bold mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
                                         </div>
                                     </div>
                                 </div>

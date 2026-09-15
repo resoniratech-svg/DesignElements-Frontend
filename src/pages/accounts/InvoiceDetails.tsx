@@ -225,211 +225,239 @@ export default function InvoiceDetails() {
             </div>
 
             {/* NEW INVOICE DESIGN (EXACT MATCH) */}
-            <div className="max-w-[900px] mx-auto bg-white font-serif text-black print:m-0 print:w-full border-t border-b-0 border-white">
-                {/* Decorative Top Bar */}
-                <div className="h-4 bg-gray-200 w-full flex justify-end">
-                    <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
-                </div>
+            <div className="max-w-[900px] min-h-[280mm] mx-auto bg-white font-serif text-black print:m-0 print:w-full print:min-h-[280mm] border-t border-b-0 border-white relative print-inv-container flex flex-col justify-between">
+                <table className="w-full min-h-[275mm] border-none border-collapse print-doc-table">
+                    {/* REPEATING HEADER FOR PRINT */}
+                    <thead>
+                        <tr>
+                            <th className="border-none p-0 font-normal text-left">
+                                {/* Decorative Top Bar */}
+                                <div className="h-4 bg-gray-200 w-full flex justify-end">
+                                    <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
+                                </div>
 
-                {/* Header Section */}
-                <div className="p-8 pb-4 flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        <img src="/logo.png" alt="Design Elements Logo" className="w-16 h-16 object-contain" />
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-bold text-gray-700 uppercase tracking-wider">DESIGN ELEMENTS</span>
-                            <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">TRADING AND CONTRACTING W.L.L</span>
-                            <span className="text-[10px] text-gray-400 font-bold text-right mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
-                        </div>
-                    </div>
-                </div>
+                                {/* Header Section */}
+                                <div className="p-8 pb-4 flex justify-between items-center">
+                                    <div className="flex items-center gap-4">
+                                        <img src="/logo.png" alt="Design Elements Logo" className="w-16 h-16 object-contain" />
+                                        <div className="flex flex-col">
+                                            <span className="text-2xl font-bold text-gray-700 uppercase tracking-wider">DESIGN ELEMENTS</span>
+                                            <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">TRADING AND CONTRACTING W.L.L</span>
+                                            <span className="text-[10px] text-gray-400 font-bold mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
 
-                <div className="px-8 pb-8 flex flex-col">
-                    {/* Title Box */}
-                    <div className="border border-black border-collapse mb-4 mt-2 h-8 flex items-center justify-center">
-                        <h1 className="font-bold tracking-widest text-[14px] uppercase underline decoration-2 underline-offset-4">INVOICE</h1>
-                    </div>
+                    {/* REPEATING FOOTER FOR PRINT (PINNED TO LOWEST SECTION) */}
+                    <tfoot>
+                        <tr>
+                            <td className="border-none p-0">
+                                <div className="text-center font-bold font-serif text-[10px] pt-4 pb-2 bg-white w-full border-t border-gray-200 mt-auto">
+                                    <div className="flex items-center justify-center gap-2">
+                                        <span>OCR No: 211686</span>
+                                        <span>•</span>
+                                        <span>+974 5023 4242</span>
+                                        <span>•</span>
+                                        <span>Doha - Qatar</span>
+                                    </div>
+                                    <div className="flex items-center justify-center gap-2 mt-1">
+                                        <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
+                                        <span>info@designelementsqatar.com</span>
+                                        <span className="mx-2 font-black text-gray-400">•</span>
+                                        <span>www.designelementsqatar.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
 
-                    <div className="flex flex-col">
-                        {/* Two Column Layout */}
-                        <div className="flex justify-between gap-4 h-48">
-                            {/* Left Column */}
-                            <div className="w-1/2 flex flex-col justify-between">
-                                <div className="border border-black p-2 text-[11px] h-32 flex flex-col font-bold font-serif leading-tight">
-                                    {invoice.clientCompany ? (
-                                        <>
-                                            <div className="uppercase mb-0.5">{invoice.clientCompany}</div>
-                                            {invoice.client && (
-                                                <div className="text-[10px] text-gray-700 font-semibold mb-1">
-                                                    Attn: <span className="uppercase">{invoice.client}</span>
+                    {/* MAIN BODY CONTENT */}
+                    <tbody>
+                        <tr>
+                            <td className="border-none p-0">
+                                <div className="px-8 pb-4 flex flex-col justify-between min-h-[190mm]">
+                                    <div>
+                                        {/* Title Box */}
+                                        <div className="border border-black border-collapse mb-4 mt-2 h-8 flex items-center justify-center">
+                                            <h1 className="font-bold tracking-widest text-[14px] uppercase underline decoration-2 underline-offset-4">INVOICE</h1>
+                                        </div>
+
+                                        <div className="flex flex-col">
+                                            {/* Two Column Layout */}
+                                            <div className="flex justify-between gap-4 h-48">
+                                                {/* Left Column */}
+                                                <div className="w-1/2 flex flex-col justify-between">
+                                                    <div className="border border-black p-2 text-[11px] h-32 flex flex-col font-bold font-serif leading-tight">
+                                                        {invoice.clientCompany ? (
+                                                            <>
+                                                                <div className="uppercase mb-0.5">{invoice.clientCompany}</div>
+                                                                {invoice.client && (
+                                                                    <div className="text-[10px] text-gray-700 font-semibold mb-1">
+                                                                        Attn: <span className="uppercase">{invoice.client}</span>
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <div className="uppercase mb-1">{invoice.client}</div>
+                                                        )}
+                                                        {invoice.address ? invoice.address.split(',').map((line, idx) => (
+                                                            <div key={idx}>{line.trim()}</div>
+                                                        )) : (
+                                                            <>
+                                                                <div>{invoice.address || "Doha, Qatar"}</div>
+                                                            </>
+                                                        )}
+                                                        {invoice.contactNumber ? (
+                                                            <div className="mt-1">Contact: {invoice.contactNumber}</div>
+                                                        ) : (
+                                                            invoice.tel && <div className="mt-1">Contact: {invoice.tel}</div>
+                                                        )}
+                                                        {!invoice.address && <div>Doha, Qatar</div>}
+                                                    </div>
+
+                                                    <div className="border border-black p-2 text-[11px] font-bold flex items-center h-8 font-serif uppercase">
+                                                        ATTN: {invoice.attn || "Finance Department"}
+                                                    </div>
                                                 </div>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <div className="uppercase mb-1">{invoice.client}</div>
-                                    )}
-                                    {invoice.address ? invoice.address.split(',').map((line, idx) => (
-                                        <div key={idx}>{line.trim()}</div>
-                                    )) : (
-                                        <>
-                                            <div>{invoice.address || "Doha, Qatar"}</div>
-                                        </>
-                                    )}
-                                    {invoice.contactNumber ? (
-                                        <div className="mt-1">Contact: {invoice.contactNumber}</div>
-                                    ) : (
-                                        invoice.tel && <div className="mt-1">Contact: {invoice.tel}</div>
-                                    )}
-                                    {!invoice.address && <div>Doha, Qatar</div>}
-                                </div>
 
-                                <div className="border border-black p-2 text-[11px] font-bold flex items-center h-8 font-serif uppercase">
-                                    ATTN: {invoice.attn || "Finance Department"}
-                                </div>
-                            </div>
+                                                {/* Right Column */}
+                                                <div className="w-1/2 flex flex-col justify-between">
+                                                    <table className="w-full border-collapse border border-black text-[11px] font-serif font-bold">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td className="border border-black p-1 pl-2 w-1/3">INV No:</td>
+                                                                <td className="border border-black p-1 text-center">{invoice.invoiceNo}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="border border-black p-1 pl-2">Delivery Note:</td>
+                                                                <td className="border border-black p-1 text-center">{invoice.deliveryNote || "N/A"}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="border border-black p-1 pl-2">Order Number</td>
+                                                                <td className="border border-black p-1 text-center">{invoice.lpoNo || invoice.refNo || "N/A"}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="border border-black p-1 pl-2">DATE :</td>
+                                                                <td className="border border-black p-1 text-center">
+                                                                    {new Date(invoice.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
 
-                            {/* Right Column */}
-                            <div className="w-1/2 flex flex-col justify-between">
-                                <table className="w-full border-collapse border border-black text-[11px] font-serif font-bold">
-                                    <tbody>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2 w-1/3">INV No:</td>
-                                            <td className="border border-black p-1 text-center">{invoice.invoiceNo}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2">Delivery Note:</td>
-                                            <td className="border border-black p-1 text-center">{invoice.deliveryNote || "N/A"}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2">Order Number</td>
-                                            <td className="border border-black p-1 text-center">{invoice.lpoNo || invoice.refNo || "N/A"}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2">DATE :</td>
-                                            <td className="border border-black p-1 text-center">
-                                                {new Date(invoice.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                    <table className="w-full border-collapse border border-black text-[11px] font-serif font-bold">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td className="border border-black p-1 pl-2 w-1/3">SALESMAN :</td>
+                                                                <td className="border border-black p-1 text-center">{invoice.salesman || "-"}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
 
-                                <table className="w-full border-collapse border border-black text-[11px] font-serif font-bold">
-                                    <tbody>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2 w-1/3">SALESMAN :</td>
-                                            <td className="border border-black p-1 text-center">{invoice.salesman || "-"}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                    <table className="w-full border-collapse border border-black text-[11px] font-serif font-bold">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td className="border border-black p-1 pl-2 w-1/3">Project :</td>
+                                                                <td className="border border-black p-1 text-center uppercase">{invoice.project || invoice.client}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
 
-                                <table className="w-full border-collapse border border-black text-[11px] font-serif font-bold">
-                                    <tbody>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2 w-1/3">Project :</td>
-                                            <td className="border border-black p-1 text-center uppercase">{invoice.project || invoice.client}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="border border-black p-1 pl-2">Ref #:</td>
-                                            <td className="border border-black p-1 text-center">{invoice.refNo || "N/A"}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                            {/* Blank Separator Blocks */}
+                                            <div className="border border-black h-8 mt-2"></div>
+                                            <div className="border-l border-r border-b border-black h-12"></div>
 
-                        {/* Blank Separator Blocks */}
-                        <div className="border border-black h-8 mt-2"></div>
-                        <div className="border-l border-r border-b border-black h-12"></div>
-
-                        {/* Main Table */}
-                        <table className="w-full border-collapse border border-black text-[11px] font-serif table-fixed">
-                            <thead>
-                                <tr className="font-bold">
-                                    <th className="border border-black p-1 w-[8%] text-center uppercase font-bold text-[10px]">SL. NO.</th>
-                                    <th className="border border-black p-1 w-[12%] text-center"></th>
-                                    <th className="border border-black p-1 w-[35%] text-center uppercase font-bold text-[10px]">Description</th>
-                                    <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">UOM</th>
-                                    <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">QTY</th>
-                                    <th className="border border-black p-1 w-[12%] text-center uppercase font-bold text-[10px]">UNIT PRICE</th>
-                                    <th className="border border-black p-1 w-[13%] text-center uppercase font-bold text-[10px]">TOTAL AMOUNT</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.length > 0 ? items.map((item, idx: number) => (
-                                    <tr key={idx} className="align-top font-bold text-[11px]">
-                                        <td className="border border-black p-1 text-center h-20 pt-2">{idx + 1}</td>
-                                        <td className="border border-black p-1 text-center pt-2 break-words [overflow-wrap:anywhere]">{item.code || ""}</td>
-                                        <td className="border border-black p-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] pt-2 px-2 text-[10px]">{item.description}</td>
-                                        <td className="border border-black p-1 text-center uppercase pt-2">{item.uom || "Nos"}</td>
-                                        <td className="border border-black p-1 text-center pt-2">{item.quantity}</td>
-                                        <td className="border border-black p-1 text-center uppercase pt-2">{item.unitPrice === 0 ? "LUMPSUM" : Number(item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                        <td className="border border-black p-1 text-right pt-2 pr-2">{Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                    </tr>
-                                )) : (
-                                    <tr className="h-20 font-bold">
-                                        <td className="border border-black p-1"></td>
-                                        <td className="border border-black p-1"></td>
-                                        <td className="border border-black p-1"></td>
-                                        <td className="border border-black p-1"></td>
-                                        <td className="border border-black p-1"></td>
-                                        <td className="border border-black p-1"></td>
-                                        <td className="border border-black p-1"></td>
-                                    </tr>
-                                )}
-                                {/* Total Row */}
-                                <tr className="font-bold border border-black text-[11px]">
-                                    <td className="border-r border-black p-1 pl-2">Total</td>
-                                    <td colSpan={5} className="border-r border-black p-1 text-center uppercase px-4">
-                                        {numberToWords(balance)}
-                                    </td>
-                                    <td className="p-1 pr-2 text-right">
-                                        {Number(balance).toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        })}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        {/* Bottom Section */}
-                        <div className="border-l border-r border-b border-black text-[10px] flex h-40 font-serif relative">
-                            <div className="p-2 w-[55%] font-bold flex flex-col justify-between">
-                                <div>
-                                    <div className="mb-0.5">Beneficiary Name: DESIGN ELEMENTS TRADING AND CONTRACTING</div>
-                                    <div className="mb-0.5">Account No: 0260-483896-001</div>
-                                    <div className="mb-0.5">SWIFT: QNBAQAQAXXX</div>
-                                    <div className="flex">
-                                        <div className="w-12">IBAN:</div>
-                                        <div className="font-black text-gray-800">QA86QNBA00000000260483896001</div>
+                                            {/* Main Table */}
+                                            <table className="w-full border-collapse border border-black text-[11px] font-serif table-fixed">
+                                                <thead>
+                                                    <tr className="font-bold">
+                                                        <th className="border border-black p-1 w-[8%] text-center uppercase font-bold text-[10px]">SL. NO.</th>
+                                                        <th className="border border-black p-1 w-[12%] text-center"></th>
+                                                        <th className="border border-black p-1 w-[35%] text-center uppercase font-bold text-[10px]">Description</th>
+                                                        <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">UOM</th>
+                                                        <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">QTY</th>
+                                                        <th className="border border-black p-1 w-[12%] text-center uppercase font-bold text-[10px]">UNIT PRICE</th>
+                                                        <th className="border border-black p-1 w-[13%] text-center uppercase font-bold text-[10px]">TOTAL AMOUNT</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {items.length > 0 ? items.map((item, idx: number) => (
+                                                        <tr key={idx} className="align-top font-bold text-[11px]">
+                                                            <td className="border border-black p-1 text-center h-20 pt-2">{idx + 1}</td>
+                                                            <td className="border border-black p-1 text-center pt-2 break-words [overflow-wrap:anywhere]">{item.code || ""}</td>
+                                                            <td className="border border-black p-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] pt-2 px-2 text-[10px]">{item.description}</td>
+                                                            <td className="border border-black p-1 text-center uppercase pt-2">{item.uom || "Nos"}</td>
+                                                            <td className="border border-black p-1 text-center pt-2">{item.quantity}</td>
+                                                            <td className="border border-black p-1 text-center uppercase pt-2">{item.unitPrice === 0 ? "LUMPSUM" : Number(item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                            <td className="border border-black p-1 text-right pt-2 pr-2">{Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                        </tr>
+                                                    )) : (
+                                                        <tr className="h-20 font-bold">
+                                                            <td className="border border-black p-1"></td>
+                                                            <td className="border border-black p-1"></td>
+                                                            <td className="border border-black p-1"></td>
+                                                            <td className="border border-black p-1"></td>
+                                                            <td className="border border-black p-1"></td>
+                                                            <td className="border border-black p-1"></td>
+                                                            <td className="border border-black p-1"></td>
+                                                        </tr>
+                                                    )}
+                                                    {/* Total Row */}
+                                                    <tr className="font-bold border border-black text-[11px]">
+                                                        <td className="border-r border-black p-1 pl-2">Total</td>
+                                                        <td colSpan={5} className="border-r border-black p-1 text-center uppercase px-4">
+                                                            {numberToWords(balance)}
+                                                        </td>
+                                                        <td className="p-1 pr-2 text-right">
+                                                            {Number(balance).toLocaleString(undefined, {
+                                                                minimumFractionDigits: 2,
+                                                                maximumFractionDigits: 2
+                                                            })}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                    <div className="flex">
-                                        <div className="w-16">Bank Name:</div>
-                                        <div className="font-black text-gray-800">QATAR NATIONAL BANK</div>
+
+                                    {/* Bottom Section */}
+                                    <div className="border border-black text-[10px] flex h-40 font-serif relative mt-6">
+                                        <div className="p-2 w-[55%] font-bold flex flex-col justify-between">
+                                            <div>
+                                                <div className="mb-0.5">Beneficiary Name: DESIGN ELEMENTS TRADING AND CONTRACTING</div>
+                                                <div className="mb-0.5">Account No: 0260-483896-001</div>
+                                                <div className="mb-0.5">SWIFT: QNBAQAQAXXX</div>
+                                                <div className="flex">
+                                                    <div className="w-12">IBAN:</div>
+                                                    <div className="font-black text-gray-800">QA86QNBA00000000260483896001</div>
+                                                </div>
+                                                <div className="flex">
+                                                    <div className="w-16">Bank Name:</div>
+                                                    <div className="font-black text-gray-800">QATAR NATIONAL BANK</div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-auto flex items-end mb-2">
+                                                <div className="uppercase tracking-widest text-[11px]">FOR : DESIGN ELEMENTS</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Signatures Area */}
+                                        <div className="w-[45%] relative p-2 flex flex-col justify-end items-end">
+                                            <div className="flex flex-col items-center mr-6 z-10 relative mb-2">
+                                                <div className="uppercase font-bold text-[11px] tracking-wider">RECEIVER SIGNATURE</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="mt-auto flex items-end mb-2">
-                                    <div className="uppercase tracking-widest text-[11px]">FOR : DESIGN ELEMENTS</div>
-                                </div>
-                            </div>
-
-                            {/* Signatures Area */}
-                            <div className="w-[45%] relative p-2 flex flex-col justify-end items-end">
-                                <div className="flex flex-col items-center mr-6 z-10 relative mb-2">
-                                    <div className="uppercase font-bold text-[11px] tracking-wider">RECEIVER SIGNATURE</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="text-center font-bold font-serif text-[10px] mt-2 pb-4">
-                            <div>OCR No: 211686 <span className="mx-1"></span> 0+974 5023 4242 <span className="mx-1"></span> 0 Doha - Qatar</div>
-                            <div className="flex items-center justify-center gap-2 mt-1">
-                                <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
-                                info@designelementsqatar.com <span className="mx-2 font-black text-gray-400">O</span> www.designelementsqatar.com
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 {/* Decorative Bottom Bar */}
                 <div className="h-4 bg-gray-200 w-full flex justify-start -mt-2">
@@ -455,6 +483,19 @@ export default function InvoiceDetails() {
             box-shadow: none !important; 
             margin: 0 auto !important;
             display: block !important;
+          }
+          .print-doc-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+          }
+          .print-doc-table thead {
+            display: table-header-group !important;
+          }
+          .print-doc-table tfoot {
+            display: table-footer-group !important;
+          }
+          .print-doc-table tbody tr {
+            page-break-inside: avoid !important;
           }
           @page { 
             size: A4 portrait; 
