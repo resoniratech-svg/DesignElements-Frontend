@@ -4,7 +4,7 @@ export function numberToWords(amount: number): string {
     const ones = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"];
     const tens = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"];
 
-    function convertTens(num: number): string {
+    function convertUnderHundred(num: number): string {
         if (num < 20) return ones[num];
         const digit = num % 10;
         if (digit === 0) return tens[Math.floor(num / 10)];
@@ -12,32 +12,39 @@ export function numberToWords(amount: number): string {
     }
 
     function convertHundreds(num: number): string {
-        if (num > 99) {
-            return ones[Math.floor(num / 100)] + " HUNDRED " + (num % 100 === 0 ? "" : "AND " + convertTens(num % 100));
+        if (num >= 100) {
+            const h = Math.floor(num / 100);
+            const remainder = num % 100;
+            return ones[h] + " HUNDRED" + (remainder > 0 ? " AND " + convertUnderHundred(remainder) : "");
         } else {
-            return convertTens(num);
+            return convertUnderHundred(num);
         }
     }
 
     function convertWhole(num: number): string {
         let n = Math.floor(num);
         if (n === 0) return "ZERO";
+
+        const scales = [
+            { value: 1000000000000, name: "TRILLION" },
+            { value: 1000000000, name: "BILLION" },
+            { value: 1000000, name: "MILLION" },
+            { value: 1000, name: "THOUSAND" }
+        ];
+
         let result = "";
-        if (n >= 1000000000) {
-            result += convertHundreds(Math.floor(n / 1000000000)) + " BILLION ";
-            n %= 1000000000;
+        for (const scale of scales) {
+            if (n >= scale.value) {
+                const chunk = Math.floor(n / scale.value);
+                result += convertHundreds(chunk) + " " + scale.name + " ";
+                n %= scale.value;
+            }
         }
-        if (n >= 1000000) {
-            result += convertHundreds(Math.floor(n / 1000000)) + " MILLION ";
-            n %= 1000000;
-        }
-        if (n >= 1000) {
-            result += convertHundreds(Math.floor(n / 1000)) + " THOUSAND ";
-            n %= 1000;
-        }
+
         if (n > 0) {
             result += convertHundreds(n);
         }
+
         return result.trim().replace(/\s+/g, ' ');
     }
 

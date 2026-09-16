@@ -7,9 +7,9 @@ export interface QuotationItem {
   itemName?: string;
   item_name?: string;
   description: string;
-  quantity: number;
+  quantity: number | string;
   unit: string;
-  unitPrice: number;
+  unitPrice: number | string;
   amount: number;
   image?: string;
   customSrNo?: string;

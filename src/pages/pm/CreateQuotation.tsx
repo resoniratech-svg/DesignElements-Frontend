@@ -179,8 +179,30 @@ export default function CreateQuotation() {
         }));
     };
 
+    const formatNumberWithCommas = (val: string | number): string => {
+        if (val === undefined || val === null) return "";
+        const cleanStr = String(val).replace(/,/g, "").trim();
+        if (cleanStr === "") return "";
+
+        const parts = cleanStr.split(".");
+        let integerPart = parts[0].replace(/\D/g, "");
+
+        if (integerPart !== "") {
+            integerPart = Number(integerPart).toLocaleString("en-US");
+        } else if (parts.length > 1) {
+            integerPart = "0";
+        }
+
+        if (parts.length > 1) {
+            const decimalPart = parts.slice(1).join("").replace(/\D/g, "");
+            return `${integerPart}.${decimalPart}`;
+        }
+
+        return integerPart;
+    };
+
     const [items, setItems] = useState<QuotationItem[]>([
-        { description: "", quantity: 1, unit: "Nos", unitPrice: 0, amount: 0, customSrNo: "01", itemCode: "", itemName: "", image: "" }
+        { description: "", quantity: "1", unit: "Nos", unitPrice: "0", amount: 0, customSrNo: "01", itemCode: "", itemName: "", image: "" }
     ]);
 
     // Fetch existing quotation from database if editing
@@ -236,7 +258,12 @@ export default function CreateQuotation() {
             }));
 
             if (found.items && found.items.length > 0) {
-                setItems(found.items);
+                setItems(found.items.map((it: any) => ({
+                    ...it,
+                    quantity: formatNumberWithCommas(it.quantity ?? it.qty ?? 1),
+                    unitPrice: formatNumberWithCommas(it.unitPrice ?? it.unit_price ?? 0),
+                    amount: ((parseFloat(String(it.quantity ?? it.qty ?? 1).replace(/,/g, '')) || 0) * (parseFloat(String(it.unitPrice ?? it.unit_price ?? 0).replace(/,/g, '')) || 0))
+                })));
             }
         }
     }, [isEditing, existingQuotation]);
@@ -250,12 +277,16 @@ export default function CreateQuotation() {
 
     const handleItemChange = (index: number, field: keyof QuotationItem, value: any) => {
         const newItems = [...items];
-        const updatedItem = { ...newItems[index], [field]: value };
+        let valToSet = value;
+        if (field === 'quantity' || field === 'unitPrice') {
+            valToSet = formatNumberWithCommas(value);
+        }
+        const updatedItem = { ...newItems[index], [field]: valToSet };
 
         // Recalculate item amount
         if (field === 'quantity' || field === 'unitPrice') {
-            const q = parseFloat(String(updatedItem.quantity)) || 0;
-            const p = parseFloat(String(updatedItem.unitPrice)) || 0;
+            const q = parseFloat(String(updatedItem.quantity).replace(/,/g, '')) || 0;
+            const p = parseFloat(String(updatedItem.unitPrice).replace(/,/g, '')) || 0;
             updatedItem.amount = q * p;
         }
 
@@ -265,7 +296,7 @@ export default function CreateQuotation() {
 
     const addItem = () => {
         const nextNum = (items.length + 1).toString().padStart(2, '0');
-        setItems([...items, { description: "", quantity: 1, unit: "Nos", unitPrice: 0, amount: 0, customSrNo: nextNum, itemCode: "", itemName: "", image: "" }]);
+        setItems([...items, { description: "", quantity: "1", unit: "Nos", unitPrice: "0", amount: 0, customSrNo: nextNum, itemCode: "", itemName: "", image: "" }]);
     };
 
     const removeItem = (index: number) => {
@@ -314,12 +345,16 @@ export default function CreateQuotation() {
         e.preventDefault();
 
         // Calculate totals
-        const calculatedItems = items.map(item => ({
-            ...item,
-            quantity: parseFloat(String(item.quantity)) || 0,
-            unitPrice: parseFloat(String(item.unitPrice)) || 0,
-            amount: (parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)
-        }));
+        const calculatedItems = items.map(item => {
+            const q = parseFloat(String(item.quantity).replace(/,/g, '')) || 0;
+            const p = parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0;
+            return {
+                ...item,
+                quantity: q,
+                unitPrice: p,
+                amount: q * p
+            };
+        });
 
         const totalAmount = calculatedItems.reduce((sum, item) => sum + item.amount, 0);
         const netTotal = totalAmount * (1 - (parseFloat(String(form.discount)) || 0) / 100);
@@ -529,8 +564,8 @@ export default function CreateQuotation() {
 
                         <div className="space-y-3">
                             {items.map((item, index) => (
-                                <div key={index} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 relative">
-                                    <div className="w-24">
+                                <div key={index} className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 relative">
+                                    <div className="w-20 shrink-0">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Sr. No</label>
                                         <input
                                             type="text"
@@ -540,7 +575,7 @@ export default function CreateQuotation() {
                                             placeholder="01"
                                         />
                                     </div>
-                                    <div className="w-36">
+                                    <div className="w-28 shrink-0">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Item Code</label>
                                         <input
                                             type="text"
@@ -550,7 +585,7 @@ export default function CreateQuotation() {
                                             placeholder="e.g. ITM-001"
                                         />
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 min-w-[200px]">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                                             {form.selectedFormat === 'quotation3' ? 'Particulars' : 'Description (Particulars)'}
                                         </label>
@@ -563,19 +598,19 @@ export default function CreateQuotation() {
                                             required
                                         />
                                     </div>
-                                    <div className="w-24">
+                                    <div className="w-28 shrink-0">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">QTY</label>
                                         <input
-                                            type="number"
-                                            step="any"
-                                            min="0"
+                                            type="text"
+                                            inputMode="decimal"
                                             value={item.quantity}
                                             onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md no-spinner"
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm font-medium"
+                                            placeholder="1"
                                             required
                                         />
                                     </div>
-                                    <div className="w-24">
+                                    <div className="w-20 shrink-0">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Unit</label>
                                         <input
                                             type="text"
@@ -586,29 +621,30 @@ export default function CreateQuotation() {
                                             required
                                         />
                                     </div>
-                                    <div className="w-32">
+                                    <div className="w-32 shrink-0">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Unit Price</label>
                                         <input
-                                            type="number"
-                                            step="any"
-                                            min="0"
+                                            type="text"
+                                            inputMode="decimal"
                                             value={item.unitPrice}
                                             onChange={(e) => handleItemChange(index, "unitPrice", e.target.value)}
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md no-spinner"
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-sm font-medium"
+                                            placeholder="0.00"
                                             required
                                         />
                                     </div>
-                                    <div className="w-32">
+                                    <div className="w-44 shrink-0">
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total</label>
-                                        <div className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-md text-slate-600 font-medium text-right">
-                                            {((parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        <div className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-md text-slate-700 font-bold text-right text-sm overflow-x-auto whitespace-nowrap">
+                                            {(((parseFloat(String(item.quantity).replace(/,/g, '')) || 0) * (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     </div>
-                                    <div className="pt-6">
+                                    <div className="pt-6 shrink-0">
                                         <button
                                             type="button"
                                             onClick={() => removeItem(index)}
                                             className="p-2 text-slate-400 hover:text-red-500 hover:bg-white rounded-md transition-colors"
+                                            title="Remove item"
                                         >
                                             <Trash2 size={18} />
                                         </button>
@@ -623,7 +659,7 @@ export default function CreateQuotation() {
                         <div className="w-64 space-y-3">
                             <div className="flex justify-between items-center text-sm font-medium text-slate-600">
                                 <span>Subtotal</span>
-                                <span>{items.reduce((sum, item) => sum + ((parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                <span>{items.reduce((sum, item) => sum + ((parseFloat(String(item.quantity).replace(/,/g, '')) || 0) * (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0)), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm font-medium text-slate-600">
                                 <span>Discount (%)</span>
@@ -639,7 +675,7 @@ export default function CreateQuotation() {
                             </div>
                             <div className="flex justify-between items-center text-lg font-black text-slate-900 pt-2 border-t">
                                 <span>Net Total</span>
-                                <span>{(items.reduce((sum, item) => sum + ((parseFloat(String(item.quantity)) || 0) * (parseFloat(String(item.unitPrice)) || 0)), 0) * (1 - (parseFloat(String(form.discount)) || 0) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} QAR</span>
+                                <span>{(items.reduce((sum, item) => sum + ((parseFloat(String(item.quantity).replace(/,/g, '')) || 0) * (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0)), 0) * (1 - (parseFloat(String(form.discount)) || 0) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} QAR</span>
                             </div>
                         </div>
                     </div>

@@ -81,20 +81,6 @@ function Invoices() {
 
         return {
             ...invoice,
-            "Invoice No": invoice.invoice_number || invoice.invoiceNo,
-            "Client Company": clientDisplay,
-            "Sector": (
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                    (invoice.division?.toLowerCase() === 'trading' || invoice.branch?.toLowerCase() === 'trading') ? 'bg-emerald-100 text-emerald-600' :
-                    'bg-blue-100 text-blue-600'
-                }`}>
-                    {invoice.division || invoice.branch || 'Contracting'}
-                </span>
-            ),
-            "Ref Type": invoice.ref_type || invoice.refType || "General",
-            "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
-            "Status": <StatusBadge status={invoice.status} />,
-            "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
             "Delivery Note": (() => {
                 const hasDN = invoice.delivery_note && invoice.delivery_note.trim() !== "";
                 if (hasDN) {
@@ -129,6 +115,20 @@ function Invoices() {
                     </Link>
                 );
             })(),
+            "Invoice No": invoice.invoice_number || invoice.invoiceNo,
+            "Client Company": clientDisplay,
+            "Sector": (
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                    (invoice.division?.toLowerCase() === 'trading' || invoice.branch?.toLowerCase() === 'trading') ? 'bg-emerald-100 text-emerald-600' :
+                    'bg-blue-100 text-blue-600'
+                }`}>
+                    {invoice.division || invoice.branch || 'Contracting'}
+                </span>
+            ),
+            "Ref Type": invoice.ref_type || invoice.refType || "General",
+            "Amount": `QAR ${Number(invoice.total_amount || invoice.total || invoice.amount || 0).toLocaleString()}`,
+            "Status": <StatusBadge status={invoice.status} />,
+            "Date": invoice.invoice_date || invoice.date || invoice.createdAt || "-",
             "Actions": (
                 <div className="flex gap-2 items-center">
                     <Link
@@ -167,7 +167,7 @@ function Invoices() {
         };
     });
 
-    const columns = ["Invoice No", "Client Company", "Sector", "Ref Type", "Amount", "Status", "Date", "Delivery Note", "Actions"];
+    const columns = ["Delivery Note", "Invoice No", "Client Company", "Sector", "Ref Type", "Amount", "Status", "Date", "Actions"];
 
     const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
     const pageTitle = activeDivision === "all" ? "All Sales Invoices" : `${currentDivision?.label} Invoices`;
