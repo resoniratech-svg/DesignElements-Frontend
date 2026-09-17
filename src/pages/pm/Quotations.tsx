@@ -52,6 +52,7 @@ function Quotations() {
     mutationFn: quotationService.deleteQuotation,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quotations"] });
+      queryClient.invalidateQueries({ queryKey: ["deletedItems"] });
       logActivity("Deleted Quotation", "project", "/quotations");
     }
   });
@@ -60,6 +61,7 @@ function Quotations() {
     mutationFn: financeService.deleteInvoice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["deletedItems"] });
       logActivity("Deleted Invoice", "finance", "/quotations");
     }
   });

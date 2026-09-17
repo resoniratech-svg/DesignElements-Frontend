@@ -41,10 +41,13 @@ export default function Restore() {
     setTimeout(() => setNotification(null), 4000);
   };
 
-  // Fetch deleted items (unified across all sectors)
+  // Fetch deleted items (unified across all sectors, always fresh)
   const { data, isLoading } = useQuery({
     queryKey: ["deletedItems"],
     queryFn: () => restoreService.getDeletedItems("all"),
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   // Restore Mutation
