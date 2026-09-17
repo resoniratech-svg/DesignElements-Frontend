@@ -279,6 +279,7 @@ export default function QuotationDetails() {
                         <tfoot className="w-full mt-auto block print:table-footer-group">
                             <tr className="w-full block print:table-row">
                                 <td className="border-none p-0 block print:table-cell w-full">
+                                    <div className="print-footer-spacer hidden print:block h-[18mm]"></div>
                                     <div className="print-footer-wrapper text-center font-bold font-serif text-[10px] pt-4 pb-2 bg-white w-full border-t border-gray-200 mt-auto">
                                         <div className="flex items-center justify-center gap-2">
                                             <span>OCR No: 211686</span>
@@ -319,7 +320,7 @@ export default function QuotationDetails() {
                     .w-\\[210mm\\] { 
                         width: 210mm !important; 
                         max-width: 100% !important; 
-                        box-shadow: none !important;
+                        box-shadow: none !important; 
                         margin: 0 auto !important;
                         display: block !important;
                     }
@@ -346,6 +347,16 @@ export default function QuotationDetails() {
                         display: table-cell !important;
                     }
 
+                    .print-footer-wrapper {
+                        position: fixed !important;
+                        bottom: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        width: 100% !important;
+                        background: white !important;
+                        z-index: 9999 !important;
+                    }
+
                     tr {
                         page-break-inside: avoid !important;
                         break-inside: avoid !important;
@@ -361,7 +372,7 @@ export default function QuotationDetails() {
                     .text-brand-600 { color: #2563eb !important; }
                     @page { 
                         size: A4 portrait; 
-                        margin: 5mm; 
+                        margin: 8mm 10mm 8mm 10mm; 
                     }
                 }
 
