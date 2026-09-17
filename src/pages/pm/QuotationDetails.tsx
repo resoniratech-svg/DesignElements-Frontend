@@ -65,15 +65,15 @@ export default function QuotationDetails() {
             </div>
 
             {/* A4 Document Container */}
-            <div className="w-[210mm] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 font-['Inter',_sans-serif] text-slate-800 print:text-black">
+            <div className="w-[210mm] min-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 font-['Inter',_sans-serif] text-slate-800 print:text-black flex flex-col justify-between">
                 
-                <div className="p-[15mm] min-h-[297mm] flex flex-col relative print:p-0">
+                <div className="p-[15mm] min-h-[297mm] flex flex-col justify-between relative print:p-0">
                     
-                    <table className="w-full border-none border-collapse print-doc-table">
+                    <table className="w-full min-h-[267mm] border-none border-collapse print-doc-table flex-1 flex flex-col justify-between print:table">
                         {/* REPEATING HEADER FOR PRINT */}
-                        <thead>
-                            <tr>
-                                <th className="border-none p-0 font-normal text-left">
+                        <thead className="w-full block print:table-header-group">
+                            <tr className="w-full block print:table-row">
+                                <th className="border-none p-0 font-normal text-left block print:table-cell w-full">
                                     <div className="print-header-wrapper mb-6">
                                         <div className="flex justify-between items-start">
                                             <div className="flex items-center gap-4">
@@ -93,34 +93,11 @@ export default function QuotationDetails() {
                             </tr>
                         </thead>
 
-                        {/* REPEATING FOOTER FOR PRINT */}
-                        <tfoot>
-                            <tr>
-                                <td className="border-none p-0">
-                                    <div className="print-footer-wrapper text-center font-bold font-serif text-[10px] pt-4 pb-2 bg-white w-full border-t border-gray-200 mt-auto">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <span>OCR No: 211686</span>
-                                            <span>•</span>
-                                            <span>+974 5023 4242</span>
-                                            <span>•</span>
-                                            <span>Doha - Qatar</span>
-                                        </div>
-                                        <div className="flex items-center justify-center gap-2 mt-1">
-                                            <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
-                                            <span>info@designelementsqatar.com</span>
-                                            <span className="mx-2 font-black text-gray-400">•</span>
-                                            <span>www.designelementsqatar.com</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tfoot>
-
                         {/* DOCUMENT BODY CONTENT */}
-                        <tbody>
-                            <tr>
-                                <td className="border-none p-0">
-                                    <div className="print-content-wrapper flex flex-col relative">
+                        <tbody className="flex-1 flex flex-col justify-between print:table-row-group">
+                            <tr className="flex-1 flex flex-col justify-between print:table-row">
+                                <td className="border-none p-0 flex-1 flex flex-col justify-between print:table-cell">
+                                    <div className="print-content-wrapper flex flex-col justify-between flex-1 min-h-[190mm] relative">
 
                                         {/* Reference & Date Row */}
                                         <div className="flex justify-between items-center mb-6 font-bold text-sm">
@@ -297,29 +274,31 @@ export default function QuotationDetails() {
                                 </td>
                             </tr>
                         </tbody>
+
+                        {/* REPEATING FOOTER FOR PRINT */}
+                        <tfoot className="w-full mt-auto block print:table-footer-group">
+                            <tr className="w-full block print:table-row">
+                                <td className="border-none p-0 block print:table-cell w-full">
+                                    <div className="print-footer-wrapper text-center font-bold font-serif text-[10px] pt-4 pb-2 bg-white w-full border-t border-gray-200 mt-auto">
+                                        <div className="flex items-center justify-center gap-2">
+                                            <span>OCR No: 211686</span>
+                                            <span>•</span>
+                                            <span>+974 5023 4242</span>
+                                            <span>•</span>
+                                            <span>Doha - Qatar</span>
+                                        </div>
+                                        <div className="flex items-center justify-center gap-2 mt-1">
+                                            <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
+                                            <span>info@designelementsqatar.com</span>
+                                            <span className="mx-2 font-black text-gray-400">•</span>
+                                            <span>www.designelementsqatar.com</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
-
-                    {/* FIXED PRINT FOOTER (ALWAYS PINNED TO LOWEST PART OF EVERY PRINTED PAGE) */}
-                    <div className="print-fixed-footer hidden">
-                        <div className="text-center font-bold font-serif text-[10px] pt-4 pb-2 bg-white w-full border-t border-gray-200">
-                            <div className="flex items-center justify-center gap-2">
-                                <span>OCR No: 211686</span>
-                                <span>•</span>
-                                <span>+974 5023 4242</span>
-                                <span>•</span>
-                                <span>Doha - Qatar</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-2 mt-1">
-                                <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
-                                <span>info@designelementsqatar.com</span>
-                                <span className="mx-2 font-black text-gray-400">•</span>
-                                <span>www.designelementsqatar.com</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
 
             <style>{`
@@ -331,48 +310,40 @@ export default function QuotationDetails() {
                         background: white !important; 
                         margin: 0 !important; 
                         padding: 0 !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                     .bg-slate-50 { background-color: white !important; }
                     .p-6 { padding: 0 !important; }
                     .shadow-2xl { box-shadow: none !important; }
-                    .w-\\[210mm\\] { width: 100% !important; max-width: 210mm !important; }
+                    .w-\\[210mm\\] { 
+                        width: 210mm !important; 
+                        max-width: 100% !important; 
+                        box-shadow: none !important;
+                        margin: 0 auto !important;
+                        display: block !important;
+                    }
                     
                     .print-doc-table {
                         width: 100% !important;
                         border-collapse: collapse !important;
+                        display: table !important;
                     }
                     .print-doc-table thead {
                         display: table-header-group !important;
                     }
                     .print-doc-table tfoot {
                         display: table-footer-group !important;
-                        visibility: hidden !important;
-                    }
-                    .print-doc-table tfoot .print-footer-wrapper {
-                        height: 20mm !important;
                     }
                     .print-doc-table tbody {
                         display: table-row-group !important;
                     }
                     .print-doc-table tr {
-                        page-break-inside: auto !important;
+                        display: table-row !important;
+                        page-break-inside: avoid !important;
                     }
-                    .print-header-wrapper {
-                        padding-bottom: 6mm;
-                    }
-                    .print-footer-wrapper {
-                        padding-top: 4mm;
-                        padding-bottom: 4mm;
-                    }
-                    .print-fixed-footer {
-                        display: block !important;
-                        position: fixed !important;
-                        bottom: 0 !important;
-                        left: 0 !important;
-                        right: 0 !important;
-                        width: 100% !important;
-                        background: white !important;
-                        z-index: 9999 !important;
+                    .print-doc-table td, .print-doc-table th {
+                        display: table-cell !important;
                     }
 
                     tr {
@@ -389,8 +360,8 @@ export default function QuotationDetails() {
                     .bg-slate-800 { background-color: #1e293b !important; -webkit-print-color-adjust: exact !important; }
                     .text-brand-600 { color: #2563eb !important; }
                     @page { 
-                        margin: 12mm 15mm 20mm 15mm; 
                         size: A4 portrait; 
+                        margin: 5mm; 
                     }
                 }
 

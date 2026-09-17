@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Printer, Edit, Loader2 } from "lucide-react";
+import { ArrowLeft, Printer, Edit, Loader2, Award, FileText } from "lucide-react";
 import StatusBadge from "../../components/StatusBadge";
 import { useAuth } from "../../context/AuthContext";
 import { financeService } from "../../services/financeService";
@@ -210,16 +210,32 @@ export default function InvoiceDetails() {
                     <h1 className="text-2xl font-bold">Invoice: {invoice.invoiceNo}</h1>
                     <StatusBadge status={invoice.status} />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => navigate(`/delivery-note/${id}`)} 
+                        className="flex items-center gap-1.5 px-3 py-2 border rounded-lg hover:bg-slate-50 transition bg-white text-xs font-bold text-emerald-700 border-emerald-300"
+                        title="View Delivery Note"
+                    >
+                        <FileText size={15} />
+                        Delivery Note
+                    </button>
+                    <button 
+                        onClick={() => navigate(`/completion-certificate/${id}`)} 
+                        className="flex items-center gap-1.5 px-3 py-2 border rounded-lg hover:bg-slate-50 transition bg-white text-xs font-bold text-purple-700 border-purple-300"
+                        title="View Certificate of Completion"
+                    >
+                        <Award size={15} />
+                        Completion Certificate
+                    </button>
                     {!isClient && (
-                        <button onClick={() => navigate(`/edit-invoice/${id}`)} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-slate-50 transition">
-                            <Edit size={16} />
+                        <button onClick={() => navigate(`/edit-invoice/${id}`)} className="flex items-center gap-1.5 px-3 py-2 border rounded-lg hover:bg-slate-50 transition bg-white text-xs font-bold text-slate-700">
+                            <Edit size={15} />
                             Edit
                         </button>
                     )}
-                    <button onClick={handlePrint} className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition shadow-sm">
-                        <Printer size={16} />
-                        Print / Download PDF
+                    <button onClick={handlePrint} className="flex items-center gap-1.5 bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition shadow-sm text-xs font-bold">
+                        <Printer size={15} />
+                        Print / PDF
                     </button>
                 </div>
             </div>
@@ -372,13 +388,12 @@ export default function InvoiceDetails() {
                                             <div className="border border-black h-8 mt-2"></div>
                                             <div className="border-l border-r border-b border-black h-12"></div>
 
-                                            {/* Main Table */}
+                                             {/* Main Table */}
                                             <table className="w-full border-collapse border border-black text-[11px] font-serif table-fixed">
                                                 <thead>
                                                     <tr className="font-bold">
                                                         <th className="border border-black p-1 w-[8%] text-center uppercase font-bold text-[10px]">SL. NO.</th>
-                                                        <th className="border border-black p-1 w-[12%] text-center"></th>
-                                                        <th className="border border-black p-1 w-[35%] text-center uppercase font-bold text-[10px]">Description</th>
+                                                        <th className="border border-black p-1 w-[47%] text-center uppercase font-bold text-[10px]">Description</th>
                                                         <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">UOM</th>
                                                         <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">QTY</th>
                                                         <th className="border border-black p-1 w-[12%] text-center uppercase font-bold text-[10px]">UNIT PRICE</th>
@@ -389,7 +404,6 @@ export default function InvoiceDetails() {
                                                     {items.length > 0 ? items.map((item, idx: number) => (
                                                         <tr key={idx} className="align-top font-bold text-[11px]">
                                                             <td className="border border-black p-1 text-center h-20 pt-2">{idx + 1}</td>
-                                                            <td className="border border-black p-1 text-center pt-2 break-words [overflow-wrap:anywhere]">{item.code || ""}</td>
                                                             <td className="border border-black p-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] pt-2 px-2 text-[10px]">{item.description}</td>
                                                             <td className="border border-black p-1 text-center uppercase pt-2">{item.uom || "Nos"}</td>
                                                             <td className="border border-black p-1 text-center pt-2">{item.quantity}</td>
@@ -404,13 +418,12 @@ export default function InvoiceDetails() {
                                                             <td className="border border-black p-1"></td>
                                                             <td className="border border-black p-1"></td>
                                                             <td className="border border-black p-1"></td>
-                                                            <td className="border border-black p-1"></td>
                                                         </tr>
                                                     )}
                                                     {/* Total Row */}
                                                     <tr className="font-bold border border-black text-[11px]">
                                                         <td className="border-r border-black p-1 pl-2">Total</td>
-                                                        <td colSpan={5} className="border-r border-black p-1 text-center uppercase px-4">
+                                                        <td colSpan={4} className="border-r border-black p-1 text-center uppercase px-4">
                                                             {numberToWords(balance)}
                                                         </td>
                                                         <td className="p-1 pr-2 text-right">

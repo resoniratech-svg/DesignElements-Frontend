@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable";
 import StatusBadge from "../../components/StatusBadge";
-import { Trash2, Plus, ArrowLeft, Edit, Loader2, FileText } from "lucide-react";
+import { Trash2, Plus, ArrowLeft, Edit, Loader2, FileText, Award } from "lucide-react";
 import { useActivity } from "../../context/ActivityContext";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";
@@ -115,6 +115,40 @@ function Invoices() {
                     </Link>
                 );
             })(),
+            "Certificate": (() => {
+                const hasCOC = invoice.coc_number && invoice.coc_number.trim() !== "";
+                if (hasCOC) {
+                    return (
+                        <div className="flex items-center gap-1.5">
+                            <Link
+                                to={`/completion-certificate/${invoice.id}`}
+                                className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
+                                title="View Certificate of Completion"
+                            >
+                                <Award size={12} />
+                                View Cert
+                            </Link>
+                            <Link
+                                to={`/edit-completion-certificate/${invoice.id}`}
+                                className="p-1 text-slate-400 hover:text-purple-700 hover:bg-purple-50 rounded transition-colors"
+                                title="Edit Completion Certificate"
+                            >
+                                <Edit size={14} />
+                            </Link>
+                        </div>
+                    );
+                }
+                return (
+                    <Link
+                        to={`/edit-completion-certificate/${invoice.id}`}
+                        className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300 transition-colors"
+                        title="Create Completion Certificate"
+                    >
+                        <Award size={12} />
+                        Create Cert
+                    </Link>
+                );
+            })(),
             "Invoice No": invoice.invoice_number || invoice.invoiceNo,
             "Client Company": clientDisplay,
             "Sector": (
@@ -167,7 +201,7 @@ function Invoices() {
         };
     });
 
-    const columns = ["Delivery Note", "Invoice No", "Client Company", "Sector", "Ref Type", "Amount", "Status", "Date", "Actions"];
+    const columns = ["Delivery Note", "Certificate", "Invoice No", "Client Company", "Sector", "Ref Type", "Amount", "Status", "Date", "Actions"];
 
     const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
     const pageTitle = activeDivision === "all" ? "All Sales Invoices" : `${currentDivision?.label} Invoices`;

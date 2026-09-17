@@ -53,6 +53,8 @@ import CreateInvoice from "../pages/pm/CreateInvoice";
 import InvoiceDetails from "../pages/accounts/InvoiceDetails";
 import EditDeliveryNote from "../pages/pm/EditDeliveryNote";
 import DeliveryNoteDetails from "../pages/accounts/DeliveryNoteDetails";
+import EditCompletionCertificate from "../pages/pm/EditCompletionCertificate";
+import CompletionCertificateDetails from "../pages/accounts/CompletionCertificateDetails";
 import Payments from "../pages/accounts/Payments";
 import Expenses from "../pages/accounts/Expenses";
 import CreateExpense from "../pages/accounts/CreateExpense";
@@ -157,6 +159,7 @@ function AppRoutes() {
           <Route path="/create-invoice/:division" element={<CreateInvoice />} />
           <Route path="/edit-invoice/:id" element={<CreateInvoice />} />
           <Route path="/edit-delivery-note/:id" element={<EditDeliveryNote />} />
+          <Route path="/edit-completion-certificate/:id" element={<EditCompletionCertificate />} />
         </Route>
 
         {/* Clients */}
@@ -220,6 +223,7 @@ function AppRoutes() {
           <Route path="/quotation-details/:id" element={<QuotationDetails />} />
           <Route path="/invoice-details/:id" element={<InvoiceDetails />} />
           <Route path="/delivery-note/:id" element={<DeliveryNoteDetails />} />
+          <Route path="/completion-certificate/:id" element={<CompletionCertificateDetails />} />
           <Route path="/boq-details/:id" element={<BOQDetails />} />
         </Route>
         {/* Redirects for decommissioned pages */}
