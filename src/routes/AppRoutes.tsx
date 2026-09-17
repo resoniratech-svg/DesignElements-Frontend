@@ -51,10 +51,12 @@ import QuotationDetails from "../pages/pm/QuotationDetails";
 import Invoices from "../pages/pm/Invoices";
 import CreateInvoice from "../pages/pm/CreateInvoice";
 import InvoiceDetails from "../pages/accounts/InvoiceDetails";
+import DeliveryNotes from "../pages/pm/DeliveryNotes";
 import EditDeliveryNote from "../pages/pm/EditDeliveryNote";
 import DeliveryNoteDetails from "../pages/accounts/DeliveryNoteDetails";
 import EditCompletionCertificate from "../pages/pm/EditCompletionCertificate";
 import CompletionCertificateDetails from "../pages/accounts/CompletionCertificateDetails";
+import Restore from "../pages/pm/Restore";
 import Payments from "../pages/accounts/Payments";
 import Expenses from "../pages/accounts/Expenses";
 import CreateExpense from "../pages/accounts/CreateExpense";
@@ -154,6 +156,7 @@ function AppRoutes() {
           <Route path="/edit-proposal/:id" element={<CreateProposal />} />
           <Route path="/draft-proposals" element={<Proposals filter="Draft" />} />
           <Route path="/proposal-templates" element={<Proposals filter="Templates" />} />
+          <Route path="/delivery-notes" element={<DeliveryNotes />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/create-invoice" element={<CreateInvoice />} />
           <Route path="/create-invoice/:division" element={<CreateInvoice />} />
@@ -225,6 +228,7 @@ function AppRoutes() {
           <Route path="/delivery-note/:id" element={<DeliveryNoteDetails />} />
           <Route path="/completion-certificate/:id" element={<CompletionCertificateDetails />} />
           <Route path="/boq-details/:id" element={<BOQDetails />} />
+          <Route path="/restore" element={<Restore />} />
         </Route>
         {/* Redirects for decommissioned pages */}
         <Route path="/employees/list" element={<Navigate to="/pro-services" replace />} />

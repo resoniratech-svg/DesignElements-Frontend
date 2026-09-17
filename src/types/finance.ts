@@ -64,7 +64,7 @@ export interface Invoice {
   coc_completion_date?: string;
   coc_product?: string;
   coc_remarks?: string;
-  coc_has_no_remarks?: boolean;
+  coc_has_no_remarks?: boolean | null;
   dn_date?: string; // Added for compatibility
   dnPreparedBy?: string;
   dn_prepared_by?: string; // Added for compatibility

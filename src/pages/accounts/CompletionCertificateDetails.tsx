@@ -10,10 +10,23 @@ export default function CompletionCertificateDetails() {
     
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const isEditing = false;
 
     // Certificate state
-    const [certData, setCertData] = useState({
+    const [certData, setCertData] = useState<{
+        certNo: string;
+        date: string;
+        companyName: string;
+        projectName: string;
+        product: string;
+        poNo: string;
+        dnNo: string;
+        startDate: string;
+        completionDate: string;
+        hasNoRemarks: boolean | null;
+        remarksDetails: string;
+        clientSigner: string;
+        detcSigner: string;
+    }>({
         certNo: "",
         date: new Date().toISOString().split("T")[0],
         companyName: "",
@@ -23,11 +36,12 @@ export default function CompletionCertificateDetails() {
         dnNo: "",
         startDate: "",
         completionDate: "",
-        hasNoRemarks: true,
+        hasNoRemarks: null,
         remarksDetails: "",
         clientSigner: "",
         detcSigner: ""
     });
+    const [isDeleted, setIsDeleted] = useState(false);
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -38,6 +52,7 @@ export default function CompletionCertificateDetails() {
 
                 if (data && data.invoice) {
                     const inv = data.invoice;
+                    setIsDeleted(Boolean(inv.coc_deleted_at || inv.deleted_at));
                     const items = data.items || [];
                     const productSummary = items.map((it: any) => it.description).filter(Boolean).join(", ");
                     const year = new Date().getFullYear();
@@ -54,7 +69,7 @@ export default function CompletionCertificateDetails() {
                         dnNo: inv.delivery_note || "",
                         startDate: inv.coc_start_date || "",
                         completionDate: inv.coc_completion_date || inv.invoice_date || "",
-                        hasNoRemarks: inv.coc_has_no_remarks !== undefined ? inv.coc_has_no_remarks : true,
+                        hasNoRemarks: inv.coc_has_no_remarks !== undefined ? inv.coc_has_no_remarks : null,
                         remarksDetails: inv.coc_remarks || "",
                         clientSigner: inv.client_name || "",
                         detcSigner: inv.salesman || "Design Elements W.L.L"
@@ -108,22 +123,29 @@ export default function CompletionCertificateDetails() {
     return (
         <div className="p-6 bg-slate-50 min-h-screen">
             {/* Top Toolbar */}
-            <div className="flex justify-between items-center mb-6 no-print max-w-[900px] mx-auto">
+            <div className="flex justify-between items-center mb-6 no-print max-w-[850px] mx-auto">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate('/invoices')} className="p-2 hover:bg-white rounded-full transition-colors" title="Back to Invoices">
+                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors" title="Back">
                         <ArrowLeft size={20} />
                     </button>
                     <h1 className="text-2xl font-bold">Certificate of Completion</h1>
+                    {isDeleted && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1">
+                            🗑️ Recycle Bin (Read Only)
+                        </span>
+                    )}
                 </div>
                 <div className="flex gap-3">
-                    <button 
-                        onClick={() => navigate(`/edit-completion-certificate/${id}`)}
-                        className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-slate-50 transition bg-white font-medium text-slate-700"
-                        title="Edit Certificate Setup"
-                    >
-                        <Edit2 size={16} />
-                        Edit Setup
-                    </button>
+                    {!isDeleted && (
+                        <button 
+                            onClick={() => navigate(`/edit-completion-certificate/${id}`)}
+                            className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-slate-50 transition bg-white font-medium text-slate-700"
+                            title="Edit Certificate Setup"
+                        >
+                            <Edit2 size={16} />
+                            Edit Setup
+                        </button>
+                    )}
                     <button 
                         onClick={handlePrint} 
                         className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition shadow-sm font-medium"
@@ -135,238 +157,135 @@ export default function CompletionCertificateDetails() {
             </div>
 
             {/* A4 CERTIFICATE DOCUMENT */}
-            <div className="max-w-[900px] min-h-[297mm] mx-auto bg-white font-serif text-black print:m-0 print:w-full print:min-h-[297mm] shadow-xl print:shadow-none border-t border-b-0 border-white relative flex flex-col justify-between">
+            <div className="cert-container max-w-[850px] mx-auto bg-white font-serif text-black shadow-xl print:shadow-none border-t border-b-0 border-white relative flex flex-col justify-between" style={{ minHeight: "1050px" }}>
                 
                 <div>
                     {/* Decorative Top Bar */}
-                    <div className="h-4 bg-gray-200 w-full flex justify-end">
+                    <div className="h-3.5 bg-gray-200 w-full flex justify-end">
                         <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
                     </div>
 
                     {/* Header Section */}
-                    <div className="px-10 pt-6 pb-2 flex justify-between items-center">
+                    <div className="px-10 pt-4 pb-1 flex justify-between items-center">
                         <div className="flex items-center gap-4">
-                            <img src="/logo.png" alt="Design Elements Logo" className="w-16 h-16 object-contain" />
+                            <img src="/logo.png" alt="Design Elements Logo" className="w-14 h-14 object-contain" />
                             <div className="flex flex-col">
-                                <span className="text-2xl font-bold text-gray-700 uppercase tracking-wider">DESIGN ELEMENTS</span>
-                                <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">TRADING AND CONTRACTING W.L.L</span>
-                                <span className="text-[10px] text-gray-400 font-bold mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
+                                <span className="text-xl font-bold text-gray-700 uppercase tracking-wider leading-tight">DESIGN ELEMENTS</span>
+                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest leading-tight">TRADING AND CONTRACTING W.L.L</span>
+                                <span className="text-[9px] text-gray-400 font-bold mt-0.5 leading-tight">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Main Content */}
-                    <div className="px-10 py-4">
+                    <div className="px-10 py-2">
                         {/* Title Box */}
-                        <div className="text-center mb-6">
-                            <h1 className="text-lg font-bold tracking-wider uppercase border-b-2 border-black inline-block px-8 pb-1">
+                        <div className="text-center mb-3">
+                            <h1 className="text-base font-bold tracking-wider uppercase border-b-2 border-black inline-block px-8 pb-0.5">
                                 CERTIFICATE OF COMPLETION
                             </h1>
                         </div>
 
                         {/* Certificate Meta */}
-                        <div className="text-[12px] font-sans space-y-1.5 mb-6">
+                        <div className="text-[11.5px] font-sans space-y-1 mb-3">
                             <div className="flex items-center">
                                 <span className="font-bold w-32">Certificate No. :</span>
-                                {isEditing ? (
-                                    <input 
-                                        type="text" 
-                                        value={certData.certNo} 
-                                        onChange={(e) => setCertData({ ...certData, certNo: e.target.value })}
-                                        className="border border-slate-300 rounded px-2 py-0.5 text-xs font-semibold w-64"
-                                    />
-                                ) : (
-                                    <span className="font-semibold">{certData.certNo || "DETC-001-2026"}</span>
-                                )}
+                                <span className="font-semibold">{certData.certNo || "DETC-001-2026"}</span>
                             </div>
                             <div className="flex items-center">
                                 <span className="font-bold w-32">Date:</span>
-                                {isEditing ? (
-                                    <input 
-                                        type="text" 
-                                        value={certData.date} 
-                                        onChange={(e) => setCertData({ ...certData, date: e.target.value })}
-                                        className="border border-slate-300 rounded px-2 py-0.5 text-xs font-semibold w-64"
-                                    />
-                                ) : (
-                                    <span className="font-semibold">{certData.date}</span>
-                                )}
+                                <span className="font-semibold">{certData.date}</span>
                             </div>
                         </div>
 
                         {/* Project Details Section */}
-                        <div className="mb-6">
-                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-3 text-slate-800">PROJECT DETAILS</h2>
-                            <div className="text-[12px] font-sans space-y-2">
+                        <div className="mb-3">
+                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-2 text-slate-800">PROJECT DETAILS</h2>
+                            <div className="text-[11.5px] font-sans space-y-1.5">
                                 <div className="flex items-baseline">
-                                    <span className="w-36 text-slate-700 font-medium">Company Name:</span>
-                                    {isEditing ? (
-                                        <input 
-                                            type="text" 
-                                            value={certData.companyName} 
-                                            onChange={(e) => setCertData({ ...certData, companyName: e.target.value })}
-                                            className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                        />
-                                    ) : (
-                                        <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.companyName || "-"}</span>
-                                    )}
+                                    <span className="w-36 text-slate-700 font-medium shrink-0">Company Name:</span>
+                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.companyName || "-"}</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="w-36 text-slate-700 font-medium">Project Name:</span>
-                                    {isEditing ? (
-                                        <input 
-                                            type="text" 
-                                            value={certData.projectName} 
-                                            onChange={(e) => setCertData({ ...certData, projectName: e.target.value })}
-                                            className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                        />
-                                    ) : (
-                                        <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.projectName || "-"}</span>
-                                    )}
+                                    <span className="w-36 text-slate-700 font-medium shrink-0">Project Name:</span>
+                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.projectName || "-"}</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="w-36 text-slate-700 font-medium">Product:</span>
-                                    {isEditing ? (
-                                        <input 
-                                            type="text" 
-                                            value={certData.product} 
-                                            onChange={(e) => setCertData({ ...certData, product: e.target.value })}
-                                            className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                        />
-                                    ) : (
-                                        <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.product || "-"}</span>
-                                    )}
+                                    <span className="w-36 text-slate-700 font-medium shrink-0">Product:</span>
+                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.product || "-"}</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="w-36 text-slate-700 font-medium">PO No.:</span>
-                                    {isEditing ? (
-                                        <input 
-                                            type="text" 
-                                            value={certData.poNo} 
-                                            onChange={(e) => setCertData({ ...certData, poNo: e.target.value })}
-                                            className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                        />
-                                    ) : (
-                                        <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.poNo || "-"}</span>
-                                    )}
+                                    <span className="w-36 text-slate-700 font-medium shrink-0">PO No.:</span>
+                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.poNo || "-"}</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="w-36 text-slate-700 font-medium">DN No.:</span>
-                                    {isEditing ? (
-                                        <input 
-                                            type="text" 
-                                            value={certData.dnNo} 
-                                            onChange={(e) => setCertData({ ...certData, dnNo: e.target.value })}
-                                            className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                        />
-                                    ) : (
-                                        <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.dnNo || "-"}</span>
-                                    )}
+                                    <span className="w-36 text-slate-700 font-medium shrink-0">DN No.:</span>
+                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.dnNo || "-"}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Installation Dates */}
-                        <div className="text-[12px] font-sans space-y-2 mb-6">
+                        <div className="text-[11.5px] font-sans space-y-1.5 mb-3">
                             <div className="flex items-baseline">
-                                <span className="w-48 text-slate-700 font-medium">Installation Start Date:</span>
-                                {isEditing ? (
-                                    <input 
-                                        type="text" 
-                                        placeholder="e.g. 15-Jan-2026"
-                                        value={certData.startDate} 
-                                        onChange={(e) => setCertData({ ...certData, startDate: e.target.value })}
-                                        className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                    />
-                                ) : (
-                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.startDate || "\u00A0"}</span>
-                                )}
+                                <span className="w-48 text-slate-700 font-medium shrink-0">Installation Start Date:</span>
+                                <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.startDate || "\u00A0"}</span>
                             </div>
                             <div className="flex items-baseline">
-                                <span className="w-48 text-slate-700 font-medium">Installation Completion Date:</span>
-                                {isEditing ? (
-                                    <input 
-                                        type="text" 
-                                        placeholder="e.g. 25-Jan-2026"
-                                        value={certData.completionDate} 
-                                        onChange={(e) => setCertData({ ...certData, completionDate: e.target.value })}
-                                        className="border-b border-black flex-1 px-1 py-0.5 text-xs font-bold outline-none"
-                                    />
-                                ) : (
-                                    <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.completionDate || "\u00A0"}</span>
-                                )}
+                                <span className="w-48 text-slate-700 font-medium shrink-0">Installation Completion Date:</span>
+                                <span className="border-b border-black flex-1 font-bold pb-0.5">{certData.completionDate || "\u00A0"}</span>
                             </div>
                         </div>
 
                         {/* Completion & Inspection Declaration */}
-                        <div className="mb-6">
-                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-1.5 text-slate-800">COMPLETION & INSPECTION</h2>
-                            <p className="text-[12px] leading-relaxed text-slate-800 mb-1">
+                        <div className="mb-3">
+                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-1 text-slate-800">COMPLETION & INSPECTION</h2>
+                            <p className="text-[11.5px] leading-relaxed text-slate-800 mb-0.5">
                                 The above-mentioned installation works have been completed and inspected by the concerned parties.
                             </p>
-                            <p className="text-[12px] leading-relaxed text-slate-800">
+                            <p className="text-[11.5px] leading-relaxed text-slate-800">
                                 Upon inspection, the works have been found to be completed in accordance with the agreed requirements and are considered complete and ready for use, subject to any minor outstanding items or observations stated below.
                             </p>
                         </div>
 
                         {/* Outstanding Items / Remarks */}
-                        <div className="mb-6">
-                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-2 text-slate-800">OUTSTANDING ITEMS / REMARKS (if any):</h2>
-                            <div className="text-[12px] space-y-1.5 pl-2">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <input 
-                                        type="checkbox" 
-                                        checked={certData.hasNoRemarks} 
-                                        onChange={(e) => setCertData({ ...certData, hasNoRemarks: e.target.checked })}
-                                        className="rounded border-slate-400 text-brand-600 focus:ring-0"
-                                    />
-                                    <span className="font-medium">None</span>
-                                </label>
+                        <div className="mb-3">
+                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-1.5 text-slate-800">OUTSTANDING ITEMS / REMARKS (if any):</h2>
+                            <div className="text-[11.5px] space-y-1.5 pl-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-3.5 h-3.5 border border-black inline-block"></span>
+                                    <span className="font-medium text-[11.5px]">None</span>
+                                </div>
                                 <div className="flex items-baseline gap-2">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input 
-                                            type="checkbox" 
-                                            checked={!certData.hasNoRemarks} 
-                                            onChange={(e) => setCertData({ ...certData, hasNoRemarks: !e.target.checked })}
-                                            className="rounded border-slate-400 text-brand-600 focus:ring-0"
-                                        />
-                                        <span className="font-medium">Details:</span>
-                                    </label>
-                                    {isEditing && !certData.hasNoRemarks ? (
-                                        <input 
-                                            type="text" 
-                                            placeholder="Enter any outstanding remarks..."
-                                            value={certData.remarksDetails} 
-                                            onChange={(e) => setCertData({ ...certData, remarksDetails: e.target.value })}
-                                            className="border-b border-black flex-1 px-1 py-0.5 text-xs font-medium outline-none"
-                                        />
-                                    ) : (
-                                        <span className="border-b border-black flex-1 pb-0.5 text-xs">{!certData.hasNoRemarks ? certData.remarksDetails : "\u00A0"}</span>
-                                    )}
+                                    <span className="w-3.5 h-3.5 border border-black inline-block self-center"></span>
+                                    <span className="font-medium text-[11.5px] shrink-0">Details:</span>
+                                    <span className="border-b border-black flex-1 text-[11.5px] font-semibold pb-0.5 min-h-[16px]">
+                                        {certData.remarksDetails || "\u00A0"}
+                                    </span>
                                 </div>
                             </div>
-                            <p className="text-[10px] text-slate-500 italic mt-1.5 pl-2">
+                            <p className="text-[9.5px] text-slate-500 italic mt-1 pl-1">
                                 If there are no outstanding items, please check the None box.
                             </p>
                         </div>
 
                         {/* Client Acceptance */}
-                        <div className="mb-10">
-                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-1.5 text-slate-800">CLIENT ACCEPTANCE</h2>
-                            <p className="text-[12px] leading-relaxed text-slate-800">
+                        <div className="mb-4">
+                            <h2 className="font-bold uppercase tracking-wider text-[11px] mb-1 text-slate-800">CLIENT ACCEPTANCE</h2>
+                            <p className="text-[11.5px] leading-relaxed text-slate-800">
                                 By signing this certificate, the Client / Authorized Representative confirms that the installation works described above have been completed and inspected.
                             </p>
                         </div>
 
                         {/* Signatures Section */}
-                        <div className="pt-12 pb-4 flex justify-between items-end px-4">
+                        <div className="pt-6 pb-2 flex justify-between items-end px-4">
                             <div className="text-center">
-                                <div className="w-56 border-t border-black mb-1"></div>
-                                <span className="text-[11px] font-bold tracking-wider font-sans text-slate-800">Signature & Date</span>
+                                <div className="w-52 border-t border-black mb-1"></div>
+                                <span className="text-[10.5px] font-bold tracking-wider font-sans text-slate-800">Signature & Date</span>
                             </div>
                             <div className="text-center">
-                                <div className="w-56 border-t border-black mb-1"></div>
-                                <span className="text-[11px] font-bold tracking-wider font-sans text-slate-800">For DETC Signature</span>
+                                <div className="w-52 border-t border-black mb-1"></div>
+                                <span className="text-[10.5px] font-bold tracking-wider font-sans text-slate-800">For DETC Signature</span>
                             </div>
                         </div>
 
@@ -375,7 +294,7 @@ export default function CompletionCertificateDetails() {
 
                 {/* Footer Section (Pinned to Lowest Section) */}
                 <div>
-                    <div className="flex flex-col items-center justify-end pt-4 pb-2 font-serif text-[10px] text-gray-500 font-bold bg-white w-full border-t border-gray-200 mt-auto">
+                    <div className="flex flex-col items-center justify-end pt-3 pb-1.5 font-serif text-[9.5px] text-gray-500 font-bold bg-white w-full border-t border-gray-200 mt-auto">
                         <div className="flex items-center gap-2 uppercase tracking-wide">
                             <span>OCR No: 211686</span>
                             <span>•</span>
@@ -383,16 +302,16 @@ export default function CompletionCertificateDetails() {
                             <span>•</span>
                             <span>Doha - Qatar</span>
                         </div>
-                        <div className="flex items-center gap-2 tracking-wide mt-1">
-                            <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
+                        <div className="flex items-center gap-2 tracking-wide mt-0.5">
+                            <span className="bg-gray-400 text-white rounded-full w-[13px] h-[13px] flex items-center justify-center text-[8.5px]">@</span>
                             <span>info@designelementsqatar.com</span>
-                            <span className="mx-2 font-black text-gray-400">•</span>
+                            <span className="mx-1.5 font-black text-gray-400">•</span>
                             <span>www.designelementsqatar.com</span>
                         </div>
                     </div>
 
                     {/* Decorative Bottom Bar */}
-                    <div className="h-4 bg-gray-200 w-full flex justify-start -mt-2">
+                    <div className="h-3.5 bg-gray-200 w-full flex justify-start -mt-1">
                         <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
                     </div>
                 </div>
@@ -409,25 +328,37 @@ export default function CompletionCertificateDetails() {
                 }
                 @media print {
                     .no-print { display: none !important; }
-                    body { 
-                        background: white !important; 
+                    @page { 
+                        size: A4 portrait; 
+                        margin: 0 !important; 
+                    }
+                    html, body { 
                         margin: 0 !important; 
                         padding: 0 !important; 
+                        background: white !important; 
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
+                        height: 297mm !important;
+                        max-height: 297mm !important;
+                        overflow: hidden !important;
                     }
                     .bg-slate-50 { background: white !important; }
                     .p-6 { padding: 0 !important; }
-                    .max-w-\\[900px\\] { 
-                        max-width: 100% !important; 
-                        width: 210mm !important;
+                    .cert-container { 
+                        width: 210mm !important; 
+                        height: 297mm !important; 
+                        max-height: 297mm !important; 
                         box-shadow: none !important; 
                         margin: 0 auto !important;
+                        padding: 0 !important;
+                        border: none !important;
                         display: flex !important;
-                    }
-                    @page { 
-                        size: A4 portrait; 
-                        margin: 5mm; 
+                        flex-direction: column !important;
+                        justify-content: space-between !important;
+                        overflow: hidden !important;
+                        page-break-after: avoid !important;
+                        page-break-before: avoid !important;
+                        page-break-inside: avoid !important;
                     }
                 }
             `}</style>

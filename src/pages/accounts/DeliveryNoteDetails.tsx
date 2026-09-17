@@ -101,20 +101,29 @@ export default function DeliveryNoteDetails() {
     // Use dnDate if set, otherwise fallback to invoice date
     const displayDate = invoice.dnDate ? new Date(invoice.dnDate) : new Date(invoice.date);
 
+    const isDeleted = Boolean((invoice as any)?.dn_deleted_at || (invoice as any)?.deleted_at);
+
     return (
         <div className="p-6 bg-slate-50 min-h-screen">
             <div className="flex justify-between items-center mb-6 no-print">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate('/invoices')} className="p-2 hover:bg-white rounded-full transition-colors" title="Back to Invoices">
+                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors" title="Back">
                         <ArrowLeft size={20} />
                     </button>
                     <h1 className="text-2xl font-bold">Delivery Note: {invoice.deliveryNote || "Draft"}</h1>
+                    {isDeleted && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1">
+                            🗑️ Recycle Bin (Read Only)
+                        </span>
+                    )}
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => navigate(`/edit-delivery-note/${id}`)} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-slate-50 transition">
-                        <Edit size={16} />
-                        Edit DN Details
-                    </button>
+                    {!isDeleted && (
+                        <button onClick={() => navigate(`/edit-delivery-note/${id}`)} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-slate-50 transition">
+                            <Edit size={16} />
+                            Edit DN Details
+                        </button>
+                    )}
                     <button onClick={handlePrint} className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition shadow-sm">
                         <Printer size={16} />
                         Print / Download PDF

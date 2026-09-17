@@ -42,6 +42,8 @@ export default function QuotationDetails() {
     const items = quotation.items || [];
     const netTotal = quotation.total_amount || 0;
 
+    const isDeleted = Boolean((quotation as any)?.deleted_at);
+
     return (
         <div className="p-6 bg-slate-50 min-h-screen">
             <div className="flex justify-between items-center mb-6 no-print font-sans max-w-5xl mx-auto">
@@ -51,9 +53,14 @@ export default function QuotationDetails() {
                     </button>
                     <h1 className="text-2xl font-bold">Quote: {quotation.qtn_number}</h1>
                     <StatusBadge status={quotation.status || "PENDING_APPROVAL"} />
+                    {isDeleted && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1">
+                            🗑️ Recycle Bin (Read Only)
+                        </span>
+                    )}
                 </div>
                 <div className="flex gap-3">
-                    {user?.role !== "CLIENT" && (
+                    {user?.role !== "CLIENT" && !isDeleted && (
                         <button onClick={() => navigate('/edit-quotation/' + quotation.id)} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-slate-50 transition bg-white font-medium">
                             <Edit size={16} /> Edit
                         </button>

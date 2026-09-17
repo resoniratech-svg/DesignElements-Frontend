@@ -46,6 +46,7 @@ function Navbar({ onToggleSidebar }: NavbarProps) {
   const isSupportPage = location.pathname.includes("support");
   const isSettingsPage = location.pathname.includes("settings");
   const isDashboardPage = location.pathname.includes("dashboard");
+  const isRestorePage = location.pathname.startsWith("/restore");
 
   const isProjectsModule = location.pathname.startsWith("/projects") ||
                            location.pathname.startsWith("/create-project") ||
@@ -67,7 +68,7 @@ function Navbar({ onToggleSidebar }: NavbarProps) {
                            location.pathname.startsWith("/edit-delivery-note") ||
                            location.pathname.startsWith("/delivery-note");
 
-  const hideExtraItems = isCreateClientPage || isCreateInvoicePage || isCreateQuotationPage;
+  const hideExtraItems = isCreateClientPage || isCreateInvoicePage || isCreateQuotationPage || isRestorePage;
   const hideSearch = hideExtraItems || isBOQPage ||
                      isDashboardPage ||
                      isProjectsModule ||
@@ -87,7 +88,8 @@ function Navbar({ onToggleSidebar }: NavbarProps) {
                      isClientsPage ||
                      isDocumentsPage ||
                      isSupportPage ||
-                     isSettingsPage;
+                     isSettingsPage ||
+                     isRestorePage;
 
 
 

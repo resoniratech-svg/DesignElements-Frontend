@@ -6,11 +6,13 @@ import {
   Folder,
   ClipboardList,
   ScrollText,
+  Truck,
   Coins,
   BarChart2,
   CheckSquare,
   BookOpen,
   ShieldCheck,
+  RotateCcw,
 } from "lucide-react";
 import type { Role } from "../types/user";
 import type { LucideIcon } from "lucide-react";
@@ -74,6 +76,7 @@ export const sidebarMenu: SidebarSection[] = [
     items: [
       { label: "BOQ", path: "/boq", icon: ClipboardList },
       { label: "Quotations", path: "/quotations", icon: FileText },
+      { label: "Delivery Notes", path: "/delivery-notes", icon: Truck },
       { label: "Invoices", path: "/invoices", icon: ScrollText },
     ],
   },
@@ -133,6 +136,15 @@ export const sidebarMenu: SidebarSection[] = [
       { label: "Users", path: "/users", icon: Users },
 
       { label: "Permissions", path: "/permissions", icon: ShieldCheck },
+    ],
+  },
+
+  //  Recycle Bin / Restore
+  {
+    section: "System",
+    roles: ["SUPER_ADMIN", "ACCOUNTS", "PROJECT_MANAGER"],
+    items: [
+      { label: "Recycle Bin", path: "/restore", icon: RotateCcw },
     ],
   },
 ];

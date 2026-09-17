@@ -200,6 +200,8 @@ export default function InvoiceDetails() {
 
     const balance = totalAmount - advancePaid;
 
+    const isDeleted = Boolean((invoice as any)?.deleted_at);
+
     return (
         <div className="p-6 bg-slate-50 min-h-screen">
             <div className="flex justify-between items-center mb-6 no-print">
@@ -209,6 +211,11 @@ export default function InvoiceDetails() {
                     </button>
                     <h1 className="text-2xl font-bold">Invoice: {invoice.invoiceNo}</h1>
                     <StatusBadge status={invoice.status} />
+                    {isDeleted && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1">
+                            🗑️ Recycle Bin (Read Only)
+                        </span>
+                    )}
                 </div>
                 <div className="flex gap-2">
                     <button 
@@ -227,7 +234,7 @@ export default function InvoiceDetails() {
                         <Award size={15} />
                         Completion Certificate
                     </button>
-                    {!isClient && (
+                    {!isClient && !isDeleted && (
                         <button onClick={() => navigate(`/edit-invoice/${id}`)} className="flex items-center gap-1.5 px-3 py-2 border rounded-lg hover:bg-slate-50 transition bg-white text-xs font-bold text-slate-700">
                             <Edit size={15} />
                             Edit
