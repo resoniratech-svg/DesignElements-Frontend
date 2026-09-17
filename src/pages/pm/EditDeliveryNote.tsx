@@ -89,7 +89,7 @@ export default function EditDeliveryNote() {
         <div className="p-6 bg-slate-50 min-h-screen">
             <div className="flex items-center justify-between mb-6 max-w-5xl mx-auto">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors">
+                    <button onClick={() => navigate('/invoices')} className="p-2 hover:bg-white rounded-full transition-colors" title="Back to Invoices">
                         <ArrowLeft size={20} />
                     </button>
                     <div>
@@ -143,7 +143,7 @@ export default function EditDeliveryNote() {
                     </div>
 
                     <div className="pt-4 flex justify-end gap-3 border-t">
-                        <button type="button" onClick={() => navigate(-1)} className="px-6 py-2 border rounded-lg font-semibold hover:bg-slate-50 transition">
+                        <button type="button" onClick={() => navigate('/invoices')} className="px-6 py-2 border rounded-lg font-semibold hover:bg-slate-50 transition">
                             Cancel
                         </button>
                         <button 

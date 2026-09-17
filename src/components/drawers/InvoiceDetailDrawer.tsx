@@ -67,16 +67,16 @@ export default function InvoiceDetailDrawer({ isOpen, onClose, invoice }: Props)
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Amount</p>
-                  <p className="text-lg font-black text-slate-900 mt-1">QAR {(invoice.total_amount || 0).toLocaleString()}</p>
+                  <p className="text-lg font-black text-slate-900 mt-1">QAR {Number(invoice.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
                 <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-100">
                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Collected</p>
-                  <p className="text-lg font-black text-emerald-700 mt-1">QAR {(invoice.amount_paid || 0).toLocaleString()}</p>
+                  <p className="text-lg font-black text-emerald-700 mt-1">QAR {Number(invoice.amount_paid || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
                 <div className="col-span-2 p-5 rounded-lg bg-brand-600 text-white shadow-lg shadow-brand-100 relative overflow-hidden">
                   <div className="relative z-10 text-center">
                     <p className="text-[11px] font-bold text-brand-100 uppercase tracking-widest">Remaining Balance</p>
-                    <p className="text-3xl font-black mt-1 tracking-tighter">QAR {(invoice.balance_amount || 0).toLocaleString()}</p>
+                    <p className="text-3xl font-black mt-1 tracking-tighter">QAR {Number(invoice.balance_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     {isOverdue && (
                         <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold backdrop-blur-md">
                             <Clock size={12} /> Overdue

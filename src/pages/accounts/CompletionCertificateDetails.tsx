@@ -98,8 +98,8 @@ export default function CompletionCertificateDetails() {
         return (
             <div className="p-6 text-center space-y-4">
                 <div className="text-red-500 font-bold">{error}</div>
-                <button onClick={() => navigate(-1)} className="text-brand-600 hover:underline flex items-center gap-2 justify-center mx-auto">
-                    <ArrowLeft size={16} /> Go Back
+                <button onClick={() => navigate('/invoices')} className="text-brand-600 hover:underline flex items-center gap-2 justify-center mx-auto">
+                    <ArrowLeft size={16} /> Go Back to Invoices
                 </button>
             </div>
         );
@@ -110,7 +110,7 @@ export default function CompletionCertificateDetails() {
             {/* Top Toolbar */}
             <div className="flex justify-between items-center mb-6 no-print max-w-[900px] mx-auto">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors">
+                    <button onClick={() => navigate('/invoices')} className="p-2 hover:bg-white rounded-full transition-colors" title="Back to Invoices">
                         <ArrowLeft size={20} />
                     </button>
                     <h1 className="text-2xl font-bold">Certificate of Completion</h1>

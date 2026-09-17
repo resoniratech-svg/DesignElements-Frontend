@@ -105,7 +105,7 @@ export default function DeliveryNoteDetails() {
         <div className="p-6 bg-slate-50 min-h-screen">
             <div className="flex justify-between items-center mb-6 no-print">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors">
+                    <button onClick={() => navigate('/invoices')} className="p-2 hover:bg-white rounded-full transition-colors" title="Back to Invoices">
                         <ArrowLeft size={20} />
                     </button>
                     <h1 className="text-2xl font-bold">Delivery Note: {invoice.deliveryNote || "Draft"}</h1>

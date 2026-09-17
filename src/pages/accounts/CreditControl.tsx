@@ -26,6 +26,10 @@ dayjs.extend(isSameOrAfter);
 
 const COLORS = ["#10b981", "#f59e0b", "#ef4444"]; // Paid, Partial, Overdue
 
+const formatAmount = (val: number | string | null | undefined) => {
+  return Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
 export default function CreditControl() {
   const { activeDivision } = useDivision();
   const {
@@ -87,14 +91,14 @@ export default function CreditControl() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Total Invoiced"
-          value={`QAR ${summary?.totalInvoiced ? summary.totalInvoiced.toLocaleString() : '0'}`}
+          value={`QAR ${formatAmount(summary?.totalInvoiced)}`}
           icon={<FileText size={20} className="text-blue-500" />}
           onClick={() => setStatusFilter("all")}
           className={statusFilter === "all" ? "ring-2 ring-brand-500" : ""}
         />
         <StatCard
           title="Total Collected"
-          value={`QAR ${summary?.totalCollected ? summary.totalCollected.toLocaleString() : '0'}`}
+          value={`QAR ${formatAmount(summary?.totalCollected)}`}
           icon={<CreditCard size={20} className="text-emerald-500" />}
           trend={{
             value: summary?.totalInvoiced ? `${((summary.totalCollected / summary.totalInvoiced) * 100).toFixed(1)}%` : '0%',
@@ -105,14 +109,14 @@ export default function CreditControl() {
         />
         <StatCard
           title="Pending Payments"
-          value={`QAR ${summary?.pendingPayments ? summary.pendingPayments.toLocaleString() : '0'}`}
+          value={`QAR ${formatAmount(summary?.pendingPayments)}`}
           icon={<TrendingUp size={20} className="text-amber-500" />}
           onClick={() => setStatusFilter("UNPAID")}
           className={statusFilter === "UNPAID" ? "ring-2 ring-brand-500" : ""}
         />
         <StatCard
           title="Due Invoices"
-          value={`QAR ${summary?.dueAmount ? summary.dueAmount.toLocaleString() : '0'}`}
+          value={`QAR ${formatAmount(summary?.dueAmount)}`}
           trend={{
             value: `${summary?.overdueCount || 0} Invoices`,
             positive: false
@@ -212,11 +216,11 @@ export default function CreditControl() {
                         <td className="px-5 py-4">
                           <div className="font-semibold text-slate-800">{inv.client_name}</div>
                         </td>
-                        <td className="px-5 py-4 text-right font-medium">QAR {inv.total_amount.toLocaleString()}</td>
-                        <td className="px-5 py-4 text-right font-medium text-emerald-600">QAR {inv.amount_paid.toLocaleString()}</td>
+                        <td className="px-5 py-4 text-right font-medium">QAR {formatAmount(inv.total_amount)}</td>
+                        <td className="px-5 py-4 text-right font-medium text-emerald-600">QAR {formatAmount(inv.amount_paid)}</td>
                         <td className="px-5 py-4 text-right">
-                          <span className={`font-bold ${inv.balance_amount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                            QAR {inv.balance_amount.toLocaleString()}
+                          <span className={`font-bold ${Number(inv.balance_amount || 0) > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                            QAR {formatAmount(inv.balance_amount)}
                           </span>
                         </td>
                         <td className="px-5 py-4">
