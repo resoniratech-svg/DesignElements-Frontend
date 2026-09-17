@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable";
-import { ArrowLeft, Loader2, FileText, Edit, Truck, CheckCircle2, Clock, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, FileText, Edit, Truck, CheckCircle2, Clock, Trash2, Award } from "lucide-react";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";
 import { financeService } from "../../services/financeService";
@@ -35,6 +35,21 @@ export default function DeliveryNotes() {
     const handleDeleteDN = (invoiceId: number, dnNumber: string) => {
         if (window.confirm(`Move Delivery Note "${dnNumber}" to Recycle Bin? The parent invoice will remain safe.`)) {
             deleteDNMutation.mutate(invoiceId);
+        }
+    };
+
+    // Delete Certificate Mutation
+    const deleteCertMutation = useMutation({
+        mutationFn: (invoiceId: string | number) => restoreService.deleteCertificate(invoiceId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["invoices"] });
+            queryClient.invalidateQueries({ queryKey: ["deletedItems"] });
+        }
+    });
+
+    const handleDeleteCert = (invoiceId: string | number, cocNumber: string) => {
+        if (window.confirm(`Move Completion Certificate "${cocNumber}" to Recycle Bin? The parent invoice and delivery note will remain safe.`)) {
+            deleteCertMutation.mutate(invoiceId);
         }
     };
 
@@ -134,7 +149,49 @@ export default function DeliveryNotes() {
                         Invoice
                     </Link>
                 </div>
-            )
+            ),
+            "Certificate": (() => {
+                const hasCOC = invoice.coc_number && invoice.coc_number.trim() !== "" && !invoice.coc_deleted_at;
+                if (hasCOC) {
+                    return (
+                        <div className="flex items-center gap-1.5">
+                            <Link
+                                to={`/completion-certificate/${invoice.id}`}
+                                className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
+                                title="View Certificate of Completion"
+                            >
+                                <Award size={12} />
+                                View Cert
+                            </Link>
+                            <Link
+                                to={`/edit-completion-certificate/${invoice.id}`}
+                                className="p-1 text-slate-400 hover:text-purple-700 hover:bg-purple-50 rounded transition-colors"
+                                title="Edit Completion Certificate"
+                            >
+                                <Edit size={14} />
+                            </Link>
+                            <button
+                                onClick={() => handleDeleteCert(invoice.id, invoice.coc_number)}
+                                className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                                title="Delete Completion Certificate"
+                                disabled={deleteCertMutation.isPending}
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    );
+                }
+                return (
+                    <Link
+                        to={`/edit-completion-certificate/${invoice.id}`}
+                        className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300 transition-colors"
+                        title="Create Completion Certificate"
+                    >
+                        <Award size={12} />
+                        Create Cert
+                    </Link>
+                );
+            })()
         };
     });
 
@@ -146,7 +203,8 @@ export default function DeliveryNotes() {
         "Sector",
         "Prepared By",
         "Receiver Name",
-        "Actions"
+        "Actions",
+        "Certificate"
     ];
 
     const currentDivision = DIVISIONS.find(d => d.id === activeDivision);
