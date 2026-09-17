@@ -377,7 +377,7 @@ export default function CompletionCertificateDetails() {
                 <div>
                     <div className="flex flex-col items-center justify-end pt-4 pb-2 font-serif text-[10px] text-gray-500 font-bold bg-white w-full border-t border-gray-200 mt-auto">
                         <div className="flex items-center gap-2 uppercase tracking-wide">
-                            <span>Cr No: 211686</span>
+                            <span>OCR No: 211686</span>
                             <span>•</span>
                             <span>+974 5023 4242</span>
                             <span>•</span>
@@ -386,7 +386,7 @@ export default function CompletionCertificateDetails() {
                         <div className="flex items-center gap-2 tracking-wide mt-1">
                             <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
                             <span>info@designelementsqatar.com</span>
-                            <span>•</span>
+                            <span className="mx-2 font-black text-gray-400">•</span>
                             <span>www.designelementsqatar.com</span>
                         </div>
                     </div>
@@ -400,6 +400,13 @@ export default function CompletionCertificateDetails() {
             </div>
 
             <style>{`
+                * {
+                    font-variant-numeric: lining-nums tabular-nums;
+                }
+                .font-serif {
+                    font-family: "Times New Roman", Times, Cambria, serif !important;
+                    font-variant-numeric: lining-nums tabular-nums !important;
+                }
                 @media print {
                     .no-print { display: none !important; }
                     body { 

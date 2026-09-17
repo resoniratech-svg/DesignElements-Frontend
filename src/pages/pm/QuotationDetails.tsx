@@ -74,19 +74,22 @@ export default function QuotationDetails() {
                         <thead className="w-full block print:table-header-group">
                             <tr className="w-full block print:table-row">
                                 <th className="border-none p-0 font-normal text-left block print:table-cell w-full">
-                                    <div className="print-header-wrapper mb-6">
-                                        <div className="flex justify-between items-start">
+                                    <div className="print-header-wrapper mb-4">
+                                        {/* Decorative Top Bar */}
+                                        <div className="h-4 bg-gray-200 w-full flex justify-end">
+                                            <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
+                                        </div>
+
+                                        {/* Header Section */}
+                                        <div className="pt-6 pb-2 flex justify-between items-center">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-16 h-16 flex items-center justify-center">
-                                                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
-                                                </div>
-                                                <div>
-                                                    <h1 className="text-2xl font-black tracking-tighter leading-none text-[#333]">DESIGN ELEMENTS</h1>
-                                                    <p className="text-[10px] font-bold tracking-[0.2em] text-[#666] leading-none mt-1">TRADING AND CONTRACTING W.L.L</p>
-                                                    <p className="text-[10px] font-bold text-[#666] leading-none mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</p>
+                                                <img src="/logo.png" alt="Design Elements Logo" className="w-16 h-16 object-contain" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-2xl font-bold text-gray-700 uppercase tracking-wider">DESIGN ELEMENTS</span>
+                                                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">TRADING AND CONTRACTING W.L.L</span>
+                                                    <span className="text-[10px] text-gray-400 font-bold mt-1">ديسين المنتس للتجارة والمقاولات ذ.م.م</span>
                                                 </div>
                                             </div>
-                                            <div className="h-4 w-64 bg-gradient-to-l from-slate-800 to-transparent"></div>
                                         </div>
                                     </div>
                                 </th>
@@ -294,6 +297,10 @@ export default function QuotationDetails() {
                                             <span className="mx-2 font-black text-gray-400">•</span>
                                             <span>www.designelementsqatar.com</span>
                                         </div>
+                                        {/* Decorative Bottom Bar */}
+                                        <div className="h-3 bg-gray-200 w-full flex justify-start mt-2">
+                                            <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -305,6 +312,10 @@ export default function QuotationDetails() {
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
                 
+                * {
+                    font-variant-numeric: lining-nums tabular-nums;
+                }
+
                 @media print {
                     .no-print { display: none !important; }
                     body { 

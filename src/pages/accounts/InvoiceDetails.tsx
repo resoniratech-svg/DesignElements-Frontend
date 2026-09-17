@@ -479,43 +479,50 @@ export default function InvoiceDetails() {
             </div>
 
             <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          body { 
-            background: white !important; 
-            margin: 0 !important; 
-            padding: 0 !important; 
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .bg-slate-50 { background: white !important; }
-          .p-6 { padding: 0 !important; }
-          .max-w-\\[900px\\] { 
-            max-width: 100% !important; 
-            width: 210mm !important;
-            box-shadow: none !important; 
-            margin: 0 auto !important;
-            display: block !important;
-          }
-          .print-doc-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-          }
-          .print-doc-table thead {
-            display: table-header-group !important;
-          }
-          .print-doc-table tfoot {
-            display: table-footer-group !important;
-          }
-          .print-doc-table tbody tr {
-            page-break-inside: avoid !important;
-          }
-          @page { 
-            size: A4 portrait; 
-            margin: 5mm; 
-          }
-        }
-      `}</style>
+                * {
+                    font-variant-numeric: lining-nums tabular-nums;
+                }
+                .font-serif {
+                    font-family: "Times New Roman", Times, Cambria, serif !important;
+                    font-variant-numeric: lining-nums tabular-nums !important;
+                }
+                @media print {
+                    .no-print { display: none !important; }
+                    body { 
+                        background: white !important; 
+                        margin: 0 !important; 
+                        padding: 0 !important; 
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    .bg-slate-50 { background: white !important; }
+                    .p-6 { padding: 0 !important; }
+                    .max-w-\\[900px\\] { 
+                        max-width: 100% !important; 
+                        width: 210mm !important;
+                        box-shadow: none !important; 
+                        margin: 0 auto !important;
+                        display: block !important;
+                    }
+                    .print-doc-table {
+                        width: 100% !important;
+                        border-collapse: collapse !important;
+                    }
+                    .print-doc-table thead {
+                        display: table-header-group !important;
+                    }
+                    .print-doc-table tfoot {
+                        display: table-footer-group !important;
+                    }
+                    .print-doc-table tbody tr {
+                        page-break-inside: avoid !important;
+                    }
+                    @page { 
+                        size: A4 portrait; 
+                        margin: 5mm; 
+                    }
+                }
+            `}</style>
         </div>
     );
 }

@@ -218,7 +218,12 @@ export default function EditCompletionCertificate() {
                 {/* LIVE PREVIEW */}
                 <div className="space-y-3">
                     <h2 className="text-lg font-bold text-slate-700">Certificate Preview</h2>
-                    <div className="bg-white font-serif text-black border border-slate-300 shadow-md relative flex flex-col p-8">
+                    <div className="bg-white font-serif text-black border border-slate-300 shadow-md relative flex flex-col p-8 pt-0">
+                        {/* Decorative Top Bar */}
+                        <div className="h-4 bg-gray-200 w-full flex justify-end -mx-8 mb-6" style={{ width: "calc(100% + 4rem)" }}>
+                            <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
+                        </div>
+
                         {/* Header Section */}
                         <div className="pb-4 flex justify-between items-center border-b pb-4 mb-4">
                             <div className="flex items-center gap-4">
@@ -268,9 +273,41 @@ export default function EditCompletionCertificate() {
                             <p className="text-slate-700">The above-mentioned installation works have been completed and inspected by the concerned parties.</p>
                             <p className="text-slate-700">Upon inspection, the works have been found to be completed in accordance with the agreed requirements.</p>
                         </div>
+
+                        {/* Standard Footer */}
+                        <div className="mt-8 text-center font-bold font-serif text-[10px] pt-4 pb-2 bg-white w-full border-t border-gray-200">
+                            <div className="flex items-center justify-center gap-2">
+                                <span>OCR No: 211686</span>
+                                <span>•</span>
+                                <span>+974 5023 4242</span>
+                                <span>•</span>
+                                <span>Doha - Qatar</span>
+                            </div>
+                            <div className="flex items-center justify-center gap-2 mt-1">
+                                <span className="bg-gray-400 text-white rounded-full w-[14px] h-[14px] flex items-center justify-center text-[9px]">@</span>
+                                <span>info@designelementsqatar.com</span>
+                                <span className="mx-2 font-black text-gray-400">•</span>
+                                <span>www.designelementsqatar.com</span>
+                            </div>
+                        </div>
+
+                        {/* Decorative Bottom Bar */}
+                        <div className="h-4 bg-gray-200 w-full flex justify-start -mx-8 -mb-8 mt-2" style={{ width: "calc(100% + 4rem)" }}>
+                            <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <style>{`
+                * {
+                    font-variant-numeric: lining-nums tabular-nums;
+                }
+                .font-serif {
+                    font-family: "Times New Roman", Times, Cambria, serif !important;
+                    font-variant-numeric: lining-nums tabular-nums !important;
+                }
+            `}</style>
         </div>
     );
 }
