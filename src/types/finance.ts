@@ -58,6 +58,13 @@ export interface Invoice {
   deliveryNote?: string;
   delivery_note?: string; // Added for compatibility
   dnDate?: string;
+  coc_number?: string;
+  coc_date?: string;
+  coc_start_date?: string;
+  coc_completion_date?: string;
+  coc_product?: string;
+  coc_remarks?: string;
+  coc_has_no_remarks?: boolean;
   dn_date?: string; // Added for compatibility
   dnPreparedBy?: string;
   dn_prepared_by?: string; // Added for compatibility

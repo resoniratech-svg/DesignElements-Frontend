@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Printer, Edit2, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Printer, Edit2, Loader2 } from "lucide-react";
 import { financeService } from "../../services/financeService";
 
 export default function CompletionCertificateDetails() {
@@ -10,7 +10,7 @@ export default function CompletionCertificateDetails() {
     
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
+    const isEditing = false;
 
     // Certificate state
     const [certData, setCertData] = useState({
