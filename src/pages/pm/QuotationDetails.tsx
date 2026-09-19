@@ -83,9 +83,10 @@ export default function QuotationDetails() {
                                 <th className="border-none p-0 font-normal text-left block print:table-cell w-full">
                                     <div className="print-header-wrapper mb-4">
                                         {/* Decorative Top Bar */}
-                                        <div className="h-4 bg-gray-200 w-full flex justify-end">
-                                            <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
-                                        </div>
+                                        <svg className="w-full h-4 block" viewBox="0 0 1000 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="0" y="0" width="1000" height="16" fill="#e5e7eb" />
+                                            <polygon points="720,0 1000,0 1000,16 740,16" fill="#4b5563" />
+                                        </svg>
 
                                         {/* Header Section */}
                                         <div className="pt-6 pb-2 flex justify-between items-center">
@@ -237,7 +238,7 @@ export default function QuotationDetails() {
                                                      ))}
                                                      {/* Total Row */}
                                                      <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
-                                                         <td className="border border-slate-400 px-2 py-2 uppercase text-center text-[11px]" colSpan={2}>Total</td>
+                                                         <td className="border border-slate-400 px-2 py-2 uppercase text-center text-[11px]" colSpan={2}>Grand Total</td>
                                                          <td className="border border-slate-400 px-3 py-2 text-center text-[11px] leading-snug" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
                                                              {numberToWords(netTotal).toUpperCase()}
                                                          </td>
@@ -305,9 +306,10 @@ export default function QuotationDetails() {
                                             <span>www.designelementsqatar.com</span>
                                         </div>
                                         {/* Decorative Bottom Bar */}
-                                        <div className="h-3 bg-gray-200 w-full flex justify-start mt-2">
-                                            <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
-                                        </div>
+                                        <svg className="w-full h-3.5 block mt-2" viewBox="0 0 1000 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="0" y="0" width="1000" height="14" fill="#e5e7eb" />
+                                            <polygon points="0,0 280,0 260,14 0,14" fill="#4b5563" />
+                                        </svg>
                                     </div>
                                 </td>
                             </tr>
@@ -325,6 +327,11 @@ export default function QuotationDetails() {
 
                 @media print {
                     .no-print { display: none !important; }
+                    *, *::before, *::after {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
                     body { 
                         background: white !important; 
                         margin: 0 !important; 

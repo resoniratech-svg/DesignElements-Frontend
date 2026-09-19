@@ -15,6 +15,7 @@ import FileUploader from "../../components/FileUploader";
 import { financeService } from "../../services/financeService";
 import { projectService } from "../../services/projectService";
 import { quotationService } from "../../services/quotationService";
+import { formatWithCommas, stripCommas } from "../../utils/numberFormat";
 
 const EXPENSE_CATEGORIES = [
   "Office Rent",
@@ -31,6 +32,14 @@ const EXPENSE_CATEGORIES = [
   "Marketing & Advertising",
   "Legal & Professional",
   "Miscellaneous",
+  "Custom Other",
+];
+
+const DEPARTMENT_CHOICES = [
+  { id: "Administrative Office", label: "Administrative Office", icon: "🏢", description: "HQ, HR, Finance, Executive" },
+  { id: "Sales / Marketing", label: "Sales / Marketing", icon: "📈", description: "Business Dev, Client Acquisition" },
+  { id: "Operations / Logistics", label: "Operations / Logistics", icon: "🚚", description: "Site Operations, Delivery, Warehouse" },
+  { id: "Custom Other", label: "Custom Other", icon: "✍️", description: "Specify a custom department" }
 ];
 
 const PAYMENT_METHODS = [
@@ -52,9 +61,12 @@ interface ReferenceOption {
 interface ExpenseForm {
   expenseName: string;
   category: string;
-  division: DivisionId;
+  customCategory: string;
+  department: string;
+  customDepartment: string;
+  division: string;
   referenceId: string;
-  amount: number;
+  amount: string;
   taxRate: number;
   taxAmount: number;
   vendor: string;
@@ -81,14 +93,15 @@ function CreateExpense() {
   const { logActivity } = useActivity();
   const [referenceOptions, setReferenceOptions] = useState<ReferenceOption[]>([]);
 
-
-
   const [form, setForm] = useState<ExpenseForm>({
     expenseName: "",
     category: "",
-    division: (activeDivision === "all" ? "contracting" : activeDivision) as DivisionId,
+    customCategory: "",
+    department: "Administrative Office",
+    customDepartment: "",
+    division: activeDivision === "all" ? "" : activeDivision.toUpperCase(),
     referenceId: "",
-    amount: 0,
+    amount: "",
     taxRate: 0,
     taxAmount: 0,
     vendor: "",
@@ -112,13 +125,26 @@ function CreateExpense() {
 
   useEffect(() => {
     if (dbExpense) {
+      const rawDept = dbExpense.department || "";
+      const isPredefined = ["Administrative Office", "Sales / Marketing", "Operations / Logistics"].includes(rawDept);
+      const initialDept = isPredefined ? rawDept : (rawDept ? "Custom Other" : "Administrative Office");
+      const initialCustom = isPredefined ? "" : rawDept;
+
+      const rawCat = dbExpense.category || "";
+      const isPredefinedCat = EXPENSE_CATEGORIES.filter(c => c !== "Custom Other").includes(rawCat);
+      const initialCat = isPredefinedCat ? rawCat : (rawCat ? "Custom Other" : "");
+      const initialCustomCat = isPredefinedCat ? "" : rawCat;
+
       setForm(prev => ({
         ...prev,
         expenseName: dbExpense.description || "",
-        category: dbExpense.category || "",
+        category: initialCat,
+        customCategory: initialCustomCat,
+        department: initialDept,
+        customDepartment: initialCustom,
         division: (dbExpense.allocation_type === "SMART" ? "all" : (dbExpense.allocations?.[0]?.division?.toLowerCase() || dbExpense.division?.toLowerCase() || "contracting")) as DivisionId,
         referenceId: dbExpense.reference_id || "",
-        amount: Number(dbExpense.total_amount) || 0,
+        amount: dbExpense.total_amount ? formatWithCommas(dbExpense.total_amount) : "",
         taxRate: Number(dbExpense.tax_rate) || 0,
         taxAmount: Number(dbExpense.tax_amount) || 0,
         vendor: dbExpense.vendor || "",
@@ -176,10 +202,18 @@ function CreateExpense() {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    if (name === "amount") {
+      setForm({
+        ...form,
+        amount: formatWithCommas(value)
+      });
+    } else {
+      setForm({
+        ...form,
+        [name]: value,
+      });
+    }
   };
 
   const handleDivisionChange = (newDivision: DivisionId) => {
@@ -193,36 +227,38 @@ function CreateExpense() {
     });
   };
 
-  const handleAllocationChange = (division: "contracting" | "trading", value: string) => {
-    const percent = Number(value) || 0;
-    setForm(prev => ({
-      ...prev,
-      allocations: {
-        ...prev.allocations,
-        [division]: percent
-      }
-    }));
-  };
-
-
-
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!form.division) {
+      alert("Please select a Sector (Trading Sector or Contracting Sector).");
+      return;
+    }
+
+    const selectedCategory = form.category === "Custom Other"
+      ? form.customCategory.trim()
+      : form.category;
+
+    if (!selectedCategory) {
+      alert("Please specify a Category for this expense.");
+      return;
+    }
+
     const isApproved = user?.role === "SUPER_ADMIN";
-    const amountNum = Number(form.amount) || 0;
+    const amountNum = parseFloat(stripCommas(form.amount)) || 0;
+
+    const selectedDepartment = form.department === "Custom Other"
+      ? form.customDepartment.trim()
+      : (form.department || null);
 
     const expenseData: any = {
-      category: form.category,
+      category: selectedCategory,
+      department: selectedDepartment,
       description: form.expenseName,
       totalAmount: amountNum,
       date: form.date,
-      allocationType: form.allocationType,
-      division:
-        form.allocationType === "SMART"
-          ? null
-          : form.division.toUpperCase(),
+      allocationType: "SINGLE",
+      division: form.division.toUpperCase(),
       vendor: form.vendor,
       paymentMethod: form.paymentMethod,
       taxRate: Number(form.taxRate) || 0,
@@ -230,21 +266,9 @@ function CreateExpense() {
       referenceId: form.referenceId,
       attachment: form.attachment,
       notes: form.notes,
-      allocations: form.allocationType === "SMART" ? [
-        { division: "CONTRACTING", percentage: form.allocations.contracting },
-        { division: "TRADING", percentage: form.allocations.trading }
-      ] : [],
+      allocations: [],
       approval_status: form.approvalStatus === "pending" ? "PENDING_APPROVAL" : form.approvalStatus?.toUpperCase()
     };
-
-    // Validate Smart Allocation
-    if (form.allocationType === "SMART") {
-      const totalPercent = Object.values(form.allocations || {}).reduce((a, b) => a + (b || 0), 0);
-      if (Math.abs(totalPercent - 100) > 0.01) {
-        alert("Smart Allocation must total exactly 100%");
-        return;
-      }
-    }
 
     const mutationFn = isEditing
       ? financeService.updateExpense(id!, expenseData)
@@ -318,11 +342,25 @@ function CreateExpense() {
                       </option>
                     ))}
                   </select>
+
+                  {form.category === "Custom Other" && (
+                    <div className="mt-2 animate-in fade-in duration-200">
+                      <input
+                        type="text"
+                        name="customCategory"
+                        value={form.customCategory}
+                        onChange={(e) => setForm(prev => ({ ...prev, customCategory: e.target.value }))}
+                        placeholder="Enter custom category name (e.g. Software, Licensing)..."
+                        className="w-full bg-slate-50 border border-brand-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <FormInput
                   label="Amount (QAR) *"
-                  type="number"
+                  type="text"
                   name="amount"
                   value={form.amount}
                   onChange={handleChange}
@@ -369,7 +407,7 @@ function CreateExpense() {
                 <div className="flex flex-col gap-1">
                   <label className="text-sm text-gray-400">Calculated Tax Amount</label>
                   <div className="px-3 py-2 bg-slate-50 border rounded-lg text-slate-500 font-medium">
-                    QAR {((Number(form.amount) || 0) * (Number(form.taxRate) || 0) / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    QAR {((parseFloat(stripCommas(form.amount)) || 0) * (Number(form.taxRate) || 0) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
               </div>
@@ -416,77 +454,77 @@ function CreateExpense() {
                 Link to Division / Project
               </h3>
               <div className="space-y-6">
-                <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-700">Allocation Mode</h4>
-                    <p className="text-[10px] text-slate-500">Choose between single division or distributed allocation.</p>
-                  </div>
-                  <div className="flex bg-white p-1 rounded-lg border border-slate-200">
-                    <button
-                      type="button"
-                      onClick={() => setForm({ ...form, allocationType: "SINGLE" })}
-                      className={`px-4 py-1.5 rounded-md text-[11px] font-bold transition-all ${form.allocationType === "SINGLE" ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                      Single Division
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setForm({ ...form, allocationType: "SMART" })}
-                      className={`px-4 py-1.5 rounded-md text-[11px] font-bold transition-all ${form.allocationType === "SMART" ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                      Smart Allocation
-                    </button>
-                  </div>
-                </div>
+                <DivisionTiles
+                  label="1. Select Sector *"
+                  selectedId={form.division}
+                  onChange={(newId: any) => handleDivisionChange(newId as DivisionId)}
+                />
 
-                {form.allocationType === "SINGLE" && (
-                  <DivisionTiles
-                    label="Select Division / Sector"
-                    selectedId={form.division}
-                    onChange={(newId: any) => handleDivisionChange(newId as DivisionId)}
-                  />
-                )}
-
-
-
-                {form.allocationType === "SMART" && (
-                  <div className="bg-brand-50/50 border border-brand-100 rounded-xl p-6">
-                    <h4 className="text-[11px] font-bold text-brand-700 uppercase tracking-widest mb-4">Division Distribution (%)</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase">Contracting</label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            value={form.allocations.contracting}
-                            onChange={(e) => handleAllocationChange("contracting", e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none no-spinner"
-                            placeholder="0"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">%</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase">Trading</label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            value={form.allocations.trading}
-                            onChange={(e) => handleAllocationChange("trading", e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none no-spinner"
-                            placeholder="0"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">%</span>
-                        </div>
-                      </div>
-
+                {form.division ? (
+                  <div className="space-y-3 bg-slate-50/70 p-4 rounded-xl border border-slate-200 animate-in fade-in duration-300">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        2. Select Department / Unit *
+                      </label>
+                      <span className="text-[10px] text-slate-500 font-medium">Categorize operational purpose</span>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-brand-100 flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase">Total Allocation</span>
-                      <span className={`text-sm font-black ${Math.abs(Object.values(form.allocations).reduce((a, b) => a + b, 0) - 100) < 0.01 ? 'text-emerald-600' : 'text-rose-500'}`}>
-                        {Object.values(form.allocations).reduce((a, b) => a + b, 0)}%
-                      </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {DEPARTMENT_CHOICES.map((choice) => {
+                        const isSelected = form.department === choice.id;
+                        return (
+                          <button
+                            key={choice.id}
+                            type="button"
+                            onClick={() => setForm(prev => ({ ...prev, department: choice.id }))}
+                            className={`flex items-start gap-3 p-3.5 rounded-xl border-2 text-left transition-all duration-200 ${
+                              isSelected
+                                ? 'border-brand-600 bg-white shadow-sm ring-2 ring-brand-500/20'
+                                : 'border-slate-200 bg-white/70 hover:border-slate-300 hover:bg-white'
+                            }`}
+                          >
+                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 transition-colors ${
+                              isSelected ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {choice.icon}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span className={`text-xs font-bold ${isSelected ? 'text-brand-900' : 'text-slate-700'}`}>
+                                  {choice.label}
+                                </span>
+                                {isSelected && (
+                                  <span className="w-2 h-2 rounded-full bg-brand-600"></span>
+                                )}
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">{choice.description}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
+
+                    {form.department === "Custom Other" && (
+                      <div className="mt-3 bg-white p-3.5 rounded-lg border border-brand-200 animate-in fade-in duration-200">
+                        <label className="text-xs font-bold text-brand-900 block mb-1">
+                          Specify Custom Department / Division Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={form.customDepartment}
+                          onChange={(e) => setForm(prev => ({ ...prev, customDepartment: e.target.value }))}
+                          placeholder="e.g. Workshop, IT Support, Site Supervision..."
+                          className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                          required
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 text-center">
+                    <p className="text-xs text-slate-400 font-medium">
+                      👆 Please select a Sector above to choose the Department / Unit.
+                    </p>
                   </div>
                 )}
 

@@ -59,6 +59,10 @@ export default function Restore() {
       queryClient.invalidateQueries({ queryKey: ["deletedItems"] });
       queryClient.invalidateQueries({ queryKey: ["quotations"] });
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["creditSummary"] });
+      queryClient.invalidateQueries({ queryKey: ["creditInvoices"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboardStats"] });
     },
     onError: (err: any) => {
       showNotification("error", err.response?.data?.message || "Failed to restore item");
@@ -75,6 +79,10 @@ export default function Restore() {
       queryClient.invalidateQueries({ queryKey: ["deletedItems"] });
       queryClient.invalidateQueries({ queryKey: ["quotations"] });
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["creditSummary"] });
+      queryClient.invalidateQueries({ queryKey: ["creditInvoices"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboardStats"] });
     },
     onError: (err: any) => {
       showNotification("error", err.response?.data?.message || "Failed to delete item");

@@ -91,6 +91,7 @@ export interface Expense {
   id: string;
   expenseName: string;
   category: string;
+  department?: string;
   division: DivisionId;
   branch?: string; // Legacy
   divisionLabel?: string;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Tag, CreditCard, FileText, Paperclip, ExternalLink, PieChart, X } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, CreditCard, FileText, Paperclip, ExternalLink, PieChart, X, Building2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { financeService } from "../../services/financeService";
 import { getUploadUrl } from "../../services/api";
@@ -28,6 +28,7 @@ export default function ExpenseDetails() {
         expenseName: dbExpense.description,
         date: dbExpense.date ? dbExpense.date.split(/[T ]/)[0] : "-",
         category: dbExpense.category,
+        department: dbExpense.department || "Administrative Office",
         paymentMethod: dbExpense.payment_method || "Transfer",
         vendor: dbExpense.vendor || "Internal",
         notes: dbExpense.notes || "",
@@ -104,6 +105,7 @@ export default function ExpenseDetails() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <DetailRow icon={<Calendar size={20} className="text-blue-500"/>} label="Expense Date" value={expense.date || "-"} color="blue" />
                                 <DetailRow icon={<Tag size={20} className="text-emerald-500" />} label="Category" value={expense.category || "-"} color="emerald" />
+                                <DetailRow icon={<Building2 size={20} className="text-purple-500" />} label="Department / Unit" value={expense.department || "-"} color="purple" />
                                 <DetailRow icon={<CreditCard size={20} className="text-amber-500" />} label="Payment Method" value={expense.paymentMethod || "-"} color="amber" />
                                 <DetailRow icon={<FileText size={20} className="text-indigo-500" />} label="Vendor / Payee" value={expense.vendor || "-"} color="indigo" />
                             </div>

@@ -139,9 +139,10 @@ export default function DeliveryNoteDetails() {
                         <tr>
                             <th className="border-none p-0 font-normal text-left">
                                 {/* Decorative Top Bar */}
-                                <div className="h-4 bg-gray-200 w-full flex justify-end">
-                                    <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
-                                </div>
+                                <svg className="w-full h-4 block" viewBox="0 0 1000 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="0" y="0" width="1000" height="16" fill="#e5e7eb" />
+                                    <polygon points="720,0 1000,0 1000,16 740,16" fill="#4b5563" />
+                                </svg>
                                 
                                 {/* Header Section */}
                                 <div className="p-8 pb-4 flex justify-between items-center">
@@ -328,9 +329,10 @@ export default function DeliveryNoteDetails() {
                 </table>
 
                 {/* Decorative Bottom Bar */}
-                <div className="h-4 bg-gray-200 w-full flex justify-start -mt-2">
-                    <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
-                </div>
+                <svg className="w-full h-4 block -mt-2" viewBox="0 0 1000 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0" y="0" width="1000" height="16" fill="#e5e7eb" />
+                    <polygon points="0,0 280,0 260,16 0,16" fill="#4b5563" />
+                </svg>
             </div>
 
             <style>{`
@@ -343,10 +345,15 @@ export default function DeliveryNoteDetails() {
                 }
                 @media print {
                     .no-print { display: none !important; }
+                    *, *::before, *::after {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
                     body { 
                         background: white !important; 
                         margin: 0 !important; 
-                        padding: 0 !important;
+                        padding: 0 !important; 
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }

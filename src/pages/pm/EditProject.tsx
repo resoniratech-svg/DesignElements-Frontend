@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import { useActivity } from "../../context/ActivityContext";
 import { projectService } from "../../services/projectService";
+import { formatWithCommas, stripCommas } from "../../utils/numberFormat";
 import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
 import CompanyAutocomplete from "../../components/forms/CompanyAutocomplete";
 import ManagerAutocomplete from "../../components/forms/ManagerAutocomplete";
@@ -35,7 +36,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
         company: (project as any).company || (project as any).client_company || "",
         client: project.client || project.clientName || "",
         client_id: project.client_id || null,
-        budget: String(project.budget || project.value || ""),
+        budget: formatWithCommas(project.budget || project.value || ""),
         manager: project.manager || "",
         manager_id: project.manager_id || null,
         status: project.status || "CREATED",
@@ -94,10 +95,9 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                 return { ...prev, [name]: value };
             });
         } else if (name === "budget") {
-            const numericValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, '$1');
             setForm(prev => ({
                 ...prev,
-                [name]: numericValue
+                [name]: formatWithCommas(value)
             }));
         } else {
             setForm({
@@ -156,7 +156,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
             project_name: form.name,
             client_name: form.client,
             client_id: form.client_id || null,
-            contract_value: parseFloat(String(form.budget).replace(/[^0-9.]/g, "")) || 0,
+            contract_value: parseFloat(stripCommas(form.budget)) || 0,
             manager: form.manager || null,
             manager_id: form.manager_id || null,
             status: form.status || null,

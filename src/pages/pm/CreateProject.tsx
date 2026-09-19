@@ -11,7 +11,7 @@ import ClientAutocomplete from "../../components/forms/ClientAutocomplete";
 import CompanyAutocomplete from "../../components/forms/CompanyAutocomplete";
 import ManagerAutocomplete from "../../components/forms/ManagerAutocomplete";
 import { projectService } from "../../services/projectService";
-// Removed unused userService import
+import { formatWithCommas, stripCommas } from "../../utils/numberFormat";
 import { Loader2, AlertCircle, CheckCircle, Upload, FileText, X, Paperclip } from "lucide-react";
 import type { ProjectDocument } from "../../types/project";
 
@@ -107,10 +107,9 @@ function CreateProject() {
         return { ...prev, [name]: value };
       });
     } else if (name === "budget") {
-      const numericValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, '$1');
       setForm((prev: any) => ({
         ...prev,
-        [name]: numericValue
+        [name]: formatWithCommas(value)
       }));
     } else {
       setForm({
@@ -168,7 +167,7 @@ function CreateProject() {
       project_name: form.name,
       client_name: form.client,
       client_id: form.client_id || null,
-      contract_value: parseFloat(String(form.budget).replace(/[^0-9.]/g, "")) || 0,
+      contract_value: parseFloat(stripCommas(form.budget)) || 0,
       start_date: form.startDate || null,
       end_date: form.endDate || null,
       manager: form.manager || null,

@@ -15,6 +15,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { projectService } from '../../services/projectService';
+import { formatWithCommas, stripCommas } from '../../utils/numberFormat';
 import ClientAutocomplete from '../../components/forms/ClientAutocomplete';
 import ManagerAutocomplete from '../../components/forms/ManagerAutocomplete';
 
@@ -88,7 +89,7 @@ const CreateProject = () => {
       const payload = {
         project_name: formData.name,
         client_name: formData.client,
-        contract_value: parseFloat(String(formData.budget).replace(/[^0-9.]/g, "")) || 0,
+        contract_value: parseFloat(stripCommas(formData.budget)) || 0,
         start_date: formData.startDate || null,
         end_date: formData.endDate || null,
         manager: formData.manager || null,
@@ -111,8 +112,7 @@ const CreateProject = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name === "budget") {
-      const numericValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, '$1');
-      setFormData(prev => ({ ...prev, [name]: numericValue }));
+      setFormData(prev => ({ ...prev, [name]: formatWithCommas(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }

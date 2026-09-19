@@ -161,9 +161,10 @@ export default function CompletionCertificateDetails() {
                 
                 <div>
                     {/* Decorative Top Bar */}
-                    <div className="h-3.5 bg-gray-200 w-full flex justify-end">
-                        <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
-                    </div>
+                    <svg className="w-full h-3.5 block" viewBox="0 0 1000 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0" y="0" width="1000" height="14" fill="#e5e7eb" />
+                        <polygon points="720,0 1000,0 1000,14 740,14" fill="#4b5563" />
+                    </svg>
 
                     {/* Header Section */}
                     <div className="px-10 pt-4 pb-1 flex justify-between items-center">
@@ -311,9 +312,10 @@ export default function CompletionCertificateDetails() {
                     </div>
 
                     {/* Decorative Bottom Bar */}
-                    <div className="h-3.5 bg-gray-200 w-full flex justify-start -mt-1">
-                        <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
-                    </div>
+                    <svg className="w-full h-3.5 block -mt-1" viewBox="0 0 1000 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0" y="0" width="1000" height="14" fill="#e5e7eb" />
+                        <polygon points="0,0 280,0 260,14 0,14" fill="#4b5563" />
+                    </svg>
                 </div>
 
             </div>
@@ -331,6 +333,11 @@ export default function CompletionCertificateDetails() {
                     @page { 
                         size: A4 portrait; 
                         margin: 0 !important; 
+                    }
+                    *, *::before, *::after {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
                     }
                     html, body { 
                         margin: 0 !important; 

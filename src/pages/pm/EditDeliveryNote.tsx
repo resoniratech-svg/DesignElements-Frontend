@@ -162,9 +162,10 @@ export default function EditDeliveryNote() {
                     <h2 className="text-lg font-bold text-slate-700">Delivery Note Preview</h2>
                     <div className="bg-white font-serif text-black border border-slate-300 shadow-md relative flex flex-col p-8 pt-0">
                         {/* Decorative Top Bar */}
-                        <div className="h-4 bg-gray-200 w-full flex justify-end -mx-8 mb-6" style={{ width: "calc(100% + 4rem)" }}>
-                            <div className="w-1/4 h-full bg-gray-600 transform skew-x-12 origin-top-right"></div>
-                        </div>
+                        <svg className="h-4 -mx-8 mb-6 block" style={{ width: "calc(100% + 4rem)" }} viewBox="0 0 1000 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="0" y="0" width="1000" height="16" fill="#e5e7eb" />
+                            <polygon points="720,0 1000,0 1000,16 740,16" fill="#4b5563" />
+                        </svg>
 
                         {/* Header Section */}
                         <div className="pb-4 flex justify-between items-center border-b pb-4 mb-4">
@@ -302,9 +303,10 @@ export default function EditDeliveryNote() {
                         </div>
 
                         {/* Decorative Bottom Bar */}
-                        <div className="h-4 bg-gray-200 w-full flex justify-start -mx-8 -mb-8 mt-2" style={{ width: "calc(100% + 4rem)" }}>
-                            <div className="w-1/4 h-full bg-gray-600 transform -skew-x-12 origin-top-left"></div>
-                        </div>
+                        <svg className="h-4 -mx-8 -mb-8 mt-2 block" style={{ width: "calc(100% + 4rem)" }} viewBox="0 0 1000 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="0" y="0" width="1000" height="16" fill="#e5e7eb" />
+                            <polygon points="0,0 280,0 260,16 0,16" fill="#4b5563" />
+                        </svg>
                     </div>
                 </div>
             </div>

@@ -12,19 +12,15 @@ import { DIVISIONS } from "../../constants/divisions";
 import type { Expense } from "../../types/finance";
 import ApprovalBadge from "../../components/ApprovalBadge";
 
-const DIVISION_FILTERS = [
-  { value: "all", label: "All Divisions" },
-  { value: "trading", label: "Trading Sector" },
-  { value: "contracting", label: "Contracting Sector" },
-];
-
 function Expenses() {
   const { activeDivision } = useDivision();
   const [expenses, setExpenses] = useState<any[]>([]);
   const [rawExpenses, setRawExpenses] = useState<Expense[]>([]);
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
   const [approvalFilter, setApprovalFilter] = useState("all");
   const [categories, setCategories] = useState<string[]>([]);
+  const [departments, setDepartments] = useState<string[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -61,6 +57,7 @@ function Expenses() {
       date: dbExp.date ? dbExp.date.split(/[T ]/)[0] : "",
       expenseName: dbExp.description,
       category: dbExp.category,
+      department: dbExp.department || "",
       amount: dbExp.total_amount,
       division: dbExp.allocations && dbExp.allocations.length === 1
         ? dbExp.allocations[0].division.toLowerCase()
@@ -87,11 +84,16 @@ function Expenses() {
 
     setRawExpenses(filteredByGlobal);
 
-    // Extract unique categories from globally filtered data
+    // Extract unique categories and departments from globally filtered data
     const uniqueCategories = [
       ...new Set(filteredByGlobal.map((e) => e.category).filter(Boolean)),
     ];
     setCategories(uniqueCategories as string[]);
+
+    const uniqueDepartments = [
+      ...new Set(filteredByGlobal.map((e) => e.department).filter(Boolean)),
+    ];
+    setDepartments(uniqueDepartments as string[]);
   };
 
   useEffect(() => {
@@ -105,43 +107,66 @@ function Expenses() {
       filtered = filtered.filter((e) => e.category === categoryFilter);
     }
 
+    if (departmentFilter !== "all") {
+      filtered = filtered.filter((e) => e.department === departmentFilter);
+    }
+
     if (approvalFilter === "approved") {
       filtered = filtered.filter((e) => e.approvalStatus === "approved" || !e.approvalStatus);
     } else if (approvalFilter === "pending") {
       filtered = filtered.filter((e) => e.approvalStatus === "pending");
     }
 
-    const formattedData = filtered.map((expense) => ({
-      ...expense,
-      Date: expense.date || "-",
-      "Expense Name": expense.expenseName || expense.description || "-",
-      Category: expense.category || "-",
-      Division:
-        expense.divisionLabel ||
-        DIVISION_FILTERS.find((d) => d.value === (expense.division || expense.referenceType || "general"))
-          ?.label ||
-        "General",
-      Vendor: expense.vendor || "-",
-      "Payment Method": expense.paymentMethod || "-",
-      Amount: `QAR ${Number(expense.amount || 0).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`,
-      Status: <ApprovalBadge status={expense.approvalStatus as any} />,
-      "Receipt Doc": expense.attachment ? (
-        <a
-          href={getUploadUrl(expense.attachment)}
-          target="_blank"
-          rel="noreferrer"
-          className="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2 py-0.5 rounded-full font-medium transition-colors inline-block cursor-pointer"
-        >
-          📎 {expense.attachment.split('/').pop()}
-        </a>
-      ) : (
-        <span className="text-slate-300 text-xs">None</span>
-      ),
-      Actions: (
-        <div className="flex gap-2 items-center">
+    const formattedData = filtered.map((expense) => {
+      const isTrading = expense.division?.toLowerCase() === "trading";
+      const isContracting = expense.division?.toLowerCase() === "contracting";
+
+      return {
+        ...expense,
+        Date: expense.date || "-",
+        "Expense Name": expense.expenseName || expense.description || "-",
+        Category: expense.category || "-",
+        Division: (
+          <div className="flex flex-col gap-1 items-start py-0.5">
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                isTrading
+                  ? "bg-blue-50 text-blue-700 border border-blue-200"
+                  : isContracting
+                    ? "bg-amber-50 text-amber-700 border border-amber-200"
+                    : "bg-purple-50 text-purple-700 border border-purple-200"
+              }`}
+            >
+              {isTrading ? "TRADING SECTOR" : isContracting ? "CONTRACTING SECTOR" : (expense.division?.toUpperCase() || "GENERAL")}
+            </span>
+            {expense.department && (
+              <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                🏢 {expense.department}
+              </span>
+            )}
+          </div>
+        ),
+        Vendor: expense.vendor || "-",
+        "Payment Method": expense.paymentMethod || "-",
+        Amount: `QAR ${Number(expense.amount || 0).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+        Status: <ApprovalBadge status={expense.approvalStatus as any} />,
+        "Receipt Doc": expense.attachment ? (
+          <a
+            href={getUploadUrl(expense.attachment)}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2 py-0.5 rounded-full font-medium transition-colors inline-block cursor-pointer"
+          >
+            📎 {expense.attachment.split('/').pop()}
+          </a>
+        ) : (
+          <span className="text-slate-300 text-xs">None</span>
+        ),
+        Actions: (
+          <div className="flex gap-2 items-center">
           <Link
             to={`/expense-details/${expense.id}`}
             className="p-1 text-slate-400 hover:text-brand-600 transition-colors"
@@ -166,10 +191,11 @@ function Expenses() {
           </button>
         </div>
       ),
-    }));
+    };
+  });
 
-    setExpenses(formattedData);
-  }, [rawExpenses, categoryFilter, approvalFilter, approveMutation.isPending, rejectMutation.isPending, deleteMutation.isPending]);
+  setExpenses(formattedData);
+  }, [rawExpenses, categoryFilter, departmentFilter, approvalFilter, approveMutation.isPending, rejectMutation.isPending, deleteMutation.isPending]);
 
   // Removed unused handleToggleApproval function
 
@@ -287,7 +313,7 @@ function Expenses() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 bg-white min-w-[240px]"
+            className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 bg-white min-w-[200px]"
           >
             <option value="all">All Categories</option>
             {categories.map((cat) => (
@@ -298,10 +324,31 @@ function Expenses() {
           </select>
         </div>
 
+        {departments.length > 0 && (
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              Department
+            </label>
+            <select
+              value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 bg-white min-w-[200px]"
+            >
+              <option value="all">All Departments</option>
+              {departments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="flex items-end">
           <button
             onClick={() => {
               setCategoryFilter("all");
+              setDepartmentFilter("all");
               setApprovalFilter("all");
             }}
             className="text-sm text-brand-600 hover:text-brand-800 font-medium px-3 py-2 rounded-lg hover:bg-brand-50 transition"
