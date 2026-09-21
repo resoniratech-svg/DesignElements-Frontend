@@ -45,7 +45,7 @@ export default function QuotationDetails() {
     const isDeleted = Boolean((quotation as any)?.deleted_at);
 
     return (
-        <div className="p-6 bg-slate-50 min-h-screen">
+        <div className="p-6 bg-slate-50 min-h-screen print:p-0 print:m-0 print:bg-white print:min-h-0 print:w-full">
             <div className="flex justify-between items-center mb-6 no-print font-sans max-w-5xl mx-auto">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-full transition-colors">
@@ -72,9 +72,9 @@ export default function QuotationDetails() {
             </div>
 
             {/* A4 Document Container */}
-            <div className="w-[210mm] min-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 font-['Inter',_sans-serif] text-slate-800 print:text-black flex flex-col justify-between">
+            <div className="w-[210mm] min-h-[297mm] mx-auto bg-white shadow-2xl print:shadow-none print:m-0 print:w-full print:max-w-full font-['Inter',_sans-serif] text-slate-800 print:text-black flex flex-col justify-between">
                 
-                <div className="p-[15mm] min-h-[297mm] flex flex-col justify-between relative print:p-0">
+                <div className="p-[15mm] min-h-[297mm] flex flex-col justify-between relative print:p-0 print:min-h-0">
                     
                     <table className="w-full min-h-[267mm] border-none border-collapse print-doc-table flex-1 flex flex-col justify-between print:table">
                         {/* REPEATING HEADER FOR PRINT */}
@@ -212,53 +212,53 @@ export default function QuotationDetails() {
                                             <table className="w-full border-collapse border border-slate-400 text-[12px] table-fixed">
                                                 <thead>
                                                     <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-9">Sr. No.</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-center w-32">Item Code</th>
-                                                        <th className="border border-slate-400 px-3 py-2 text-center font-bold">{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-10">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
-                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-12">Qty</th>}
-                                                        <th className="border border-slate-400 px-2 py-2 text-right w-16">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-right w-20">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center w-[5%]">Sr. No.</th>
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-center w-[15%]">Item Code</th>
+                                                        <th className={`border border-slate-400 px-3 py-2 text-center font-bold ${quotation?.selected_format === 'quotation3' ? 'w-[56%]' : 'w-[48%]'}`}>{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center w-[6%]">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
+                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-1 py-2 text-center w-[6%]">Qty</th>}
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-right w-[10%]">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-right w-[10%]">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="text-slate-800">
                                                     {items.map((item: any, idx: number) => (
                                                         <tr key={idx} className="border-b border-slate-300">
-                                                             <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold text-[11px]">
-                                                                 {item.customSrNo || (idx + 1).toString().padStart(2, '0')}
-                                                             </td>
-                                                             <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold text-slate-700 break-words [overflow-wrap:anywhere] text-[11px]">
-                                                                 {item.itemCode || item.item_code || "-"}
-                                                             </td>
-                                                             <td className="border border-slate-400 px-3 py-3 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed font-semibold text-black">
-                                                                 {item.description}
-                                                             </td>
-                                                             <td className="border border-slate-400 px-1 py-3 text-center align-top font-medium text-[11px]">
-                                                                 {quotation?.selected_format === 'quotation3' ? `${(parseFloat(String(item.quantity).replace(/,/g, '')) || 0).toLocaleString()} ${item.unit}` : (item.unit || "Nos")}
-                                                             </td>
-                                                             {quotation?.selected_format !== 'quotation3' && (
-                                                                 <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold whitespace-nowrap text-[11px]">
-                                                                     {(parseFloat(String(item.quantity).replace(/,/g, '')) || 0).toLocaleString()}
-                                                                 </td>
-                                                             )}
-                                                             <td className="border border-slate-400 px-2 py-3 text-right align-top font-medium italic whitespace-nowrap text-[11px]">
-                                                                 {item.unitPrice ? (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "Lumpsum"}
-                                                             </td>
-                                                             <td className="border border-slate-400 px-2 py-3 text-right align-top font-black text-black whitespace-nowrap text-[11px]">
-                                                                 {(parseFloat(String(item.amount || ((parseFloat(String(item.quantity).replace(/,/g, '')) || 0) * (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0)))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}
-                                                             </td>
-                                                         </tr>
-                                                     ))}
-                                                     {/* Total Row */}
-                                                     <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
-                                                         <td className="border border-slate-400 px-2 py-2 uppercase text-center text-[11px]" colSpan={2}>Grand Total</td>
-                                                         <td className="border border-slate-400 px-3 py-2 text-center text-[11px] leading-snug" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
-                                                             {numberToWords(netTotal).toUpperCase()}
-                                                         </td>
-                                                         <td className="border border-slate-400 px-2 py-2 text-right text-black bg-white whitespace-nowrap font-black text-[11px]">
-                                                             {Number(netTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                         </td>
-                                                     </tr>
+                                                            <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold text-[11px]">
+                                                                {item.customSrNo || (idx + 1).toString().padStart(2, '0')}
+                                                            </td>
+                                                            <td className="border border-slate-400 px-1.5 py-3 text-center align-top font-bold text-slate-700 break-words [overflow-wrap:anywhere] text-[11px]">
+                                                                {item.itemCode || item.item_code || "-"}
+                                                            </td>
+                                                            <td className="border border-slate-400 px-3 py-3 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed font-semibold text-black">
+                                                                {item.description}
+                                                            </td>
+                                                            <td className="border border-slate-400 px-1 py-3 text-center align-top font-medium text-[11px]">
+                                                                {quotation?.selected_format === 'quotation3' ? `${(parseFloat(String(item.quantity).replace(/,/g, '')) || 0).toLocaleString()} ${item.unit}` : (item.unit || "Nos")}
+                                                            </td>
+                                                            {quotation?.selected_format !== 'quotation3' && (
+                                                                <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold whitespace-nowrap text-[11px]">
+                                                                    {(parseFloat(String(item.quantity).replace(/,/g, '')) || 0).toLocaleString()}
+                                                                </td>
+                                                            )}
+                                                            <td className="border border-slate-400 px-1.5 py-3 text-right align-top font-medium italic break-words [overflow-wrap:anywhere] leading-snug text-[11px]">
+                                                                {item.unitPrice ? (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "Lumpsum"}
+                                                            </td>
+                                                            <td className="border border-slate-400 px-1.5 py-3 text-right align-top font-black text-black break-words [overflow-wrap:anywhere] leading-snug text-[11px]">
+                                                                {(parseFloat(String(item.amount || ((parseFloat(String(item.quantity).replace(/,/g, '')) || 0) * (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0)))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                    {/* Total Row */}
+                                                    <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
+                                                        <td className="border border-slate-400 px-2 py-2 uppercase text-center text-[11px]" colSpan={2}>Grand Total</td>
+                                                        <td className="border border-slate-400 px-3 py-2 text-center text-[11px] leading-snug" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
+                                                            {numberToWords(netTotal).toUpperCase()}
+                                                        </td>
+                                                        <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-black text-[11px]">
+                                                            {Number(netTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                        </td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -343,12 +343,12 @@ export default function QuotationDetails() {
                     *, *::before, *::after {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
-                        color-adjust: exact !important;
+                        box-sizing: border-box !important;
                     }
                     body { 
                         background: white !important; 
                         margin: 0 !important; 
-                        padding: 0 !important;
+                        padding: 0 !important; 
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
@@ -356,10 +356,11 @@ export default function QuotationDetails() {
                     .p-6 { padding: 0 !important; }
                     .shadow-2xl { box-shadow: none !important; }
                     .w-\\[210mm\\] { 
-                        width: 210mm !important; 
+                        width: 100% !important; 
                         max-width: 100% !important; 
+                        min-height: auto !important;
                         box-shadow: none !important; 
-                        margin: 0 auto !important;
+                        margin: 0 !important;
                         display: block !important;
                     }
                     
@@ -410,7 +411,7 @@ export default function QuotationDetails() {
                     .text-brand-600 { color: #2563eb !important; }
                     @page { 
                         size: A4 portrait; 
-                        margin: 8mm 10mm 8mm 10mm; 
+                        margin: 6mm 8mm; 
                     }
                 }
 

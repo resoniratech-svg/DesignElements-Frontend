@@ -18,20 +18,22 @@ function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
       {/* Sidebar - Positioned fixed/absolute on mobile */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 print:hidden
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         <Sidebar onClose={() => setIsSidebarOpen(false)} />
       </div>
 
       {/* Main Area */}
-      <div className="flex-1 flex flex-col overflow-hidden print:overflow-visible print:block w-full">
+      <div className="flex-1 flex flex-col overflow-hidden print:overflow-visible print:block print:w-full print:m-0 print:p-0">
         {/* Navbar */}
-        <Navbar onToggleSidebar={() => setIsSidebarOpen(true)} />
+        <div className="print:hidden">
+          <Navbar onToggleSidebar={() => setIsSidebarOpen(true)} />
+        </div>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 print:overflow-visible print:p-0 print:block">
-          <div className="w-full h-full animate-fade-in print:h-auto">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 print:overflow-visible print:p-0 print:m-0 print:block print:w-full">
+          <div className="w-full h-full animate-fade-in print:h-auto print:w-full">
             {children || <Outlet />}
           </div>
         </main>
