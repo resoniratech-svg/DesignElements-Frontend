@@ -212,13 +212,13 @@ export default function QuotationDetails() {
                                             <table className="w-full border-collapse border border-slate-400 text-[12px] table-fixed">
                                                 <thead>
                                                     <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-10">Sr. No.</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-center w-36">Item Code</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center w-9">Sr. No.</th>
+                                                        <th className="border border-slate-400 px-2 py-2 text-center w-32">Item Code</th>
                                                         <th className="border border-slate-400 px-3 py-2 text-center font-bold">{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-12">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
-                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-14">Qty</th>}
-                                                        <th className="border border-slate-400 px-2 py-2 text-right w-20">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-right w-28">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center w-10">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
+                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-12">Qty</th>}
+                                                        <th className="border border-slate-400 px-2 py-2 text-right w-16">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-2 py-2 text-right w-20">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="text-slate-800">
