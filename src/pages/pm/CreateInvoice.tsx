@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../../components/PageHeader";
 import FormInput from "../../components/forms/FormInput";
-import { Plus, Trash2, Save, Loader2, RefreshCw } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, RefreshCw, X } from "lucide-react";
 import { useActivity } from "../../context/ActivityContext";
 import { useApprovals } from "../../context/ApprovalContext";
 import { useAuth } from "../../context/AuthContext";
@@ -77,6 +77,11 @@ export default function CreateInvoice() {
     ], []);
 
     const [isCustomInvoiceType, setIsCustomInvoiceType] = useState(false);
+    const [originalInvoiceNo, setOriginalInvoiceNo] = useState<string>("");
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [revisionChoice, setRevisionChoice] = useState<"keep" | "new">("keep");
+    const [customRevisionId, setCustomRevisionId] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const [items, setItems] = useState<InvoiceItem[]>([
         { id: "default-item-1", description: "", quantity: 1, unitPrice: 0, amount: 0 }
@@ -95,13 +100,16 @@ export default function CreateInvoice() {
             const dataObj: any = (invoice as any).invoice || invoice;
             const itemsArr = (invoice as any).items || invoice.items || [];
             const loadedInvType = dataObj.invoice_type || dataObj.invoiceType || "Credit";
+            const loadedInvNo = dataObj.invoice_number || dataObj.invoiceNo || "";
 
             if (loadedInvType && !INVOICE_TYPES.includes(loadedInvType)) {
                 setIsCustomInvoiceType(true);
             }
 
+            setOriginalInvoiceNo(loadedInvNo);
+
             setForm({
-                invoiceNo: dataObj.invoice_number || dataObj.invoiceNo || "",
+                invoiceNo: loadedInvNo,
                 company: dataObj.client_company || dataObj.company || "",
                 client: dataObj.client_name || dataObj.client || "",
                 customerCode: dataObj.client_id || dataObj.clientId || "",
@@ -379,6 +387,11 @@ export default function CreateInvoice() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!form.invoiceNo?.trim()) {
+            alert("Please enter an Invoice Number.");
+            return;
+        }
+
         if (!form.clientId) {
             alert("Please select a valid client from the dropdown list.");
             return;
@@ -394,6 +407,42 @@ export default function CreateInvoice() {
             return;
         }
 
+        if (isEditing) {
+            if (form.invoiceNo.trim() !== originalInvoiceNo.trim()) {
+                setRevisionChoice("new");
+                setCustomRevisionId(form.invoiceNo.trim());
+            } else {
+                setRevisionChoice("keep");
+                setCustomRevisionId("");
+            }
+            setIsUpdateModalOpen(true);
+            return;
+        }
+
+        executeSave(form.invoiceNo.trim());
+    };
+
+    const handleConfirmSave = () => {
+        if (revisionChoice === "new") {
+            const newId = customRevisionId.trim();
+            if (!newId) {
+                alert("Please enter a new Invoice Number.");
+                return;
+            }
+            if (newId === originalInvoiceNo.trim()) {
+                alert("The new Invoice Number must be different from the original. Choose 'Keep Invoice No' to update directly.");
+                return;
+            }
+            setIsUpdateModalOpen(false);
+            executeSave(newId);
+        } else {
+            setIsUpdateModalOpen(false);
+            executeSave(originalInvoiceNo || form.invoiceNo?.trim() || "");
+        }
+    };
+
+    const executeSave = async (finalInvoiceNo: string) => {
+        setIsSubmitting(true);
         const isApproved = user?.role === "SUPER_ADMIN";
         let invoiceStatus: InvoiceStatus = form.status || "Unpaid";
 
@@ -403,7 +452,7 @@ export default function CreateInvoice() {
         }
 
         const invoiceData: any = {
-            invoice_number: form.invoiceNo ? form.invoiceNo.trim() : "",
+            invoice_number: finalInvoiceNo ? finalInvoiceNo.trim() : "",
             division: form.division,
             client_id: form.clientId ? Number(form.clientId) : null,
             client_company: form.company,
@@ -438,18 +487,43 @@ export default function CreateInvoice() {
             }))
         };
 
-        if (!isApproved && !isEditing) {
+        const isNewRevision = isEditing && finalInvoiceNo !== originalInvoiceNo;
+
+        if (!isApproved && (!isEditing || isNewRevision)) {
             requestApproval({
                 type: "invoice",
                 itemId: `inv-${Date.now()}`,
-                itemNumber: form.invoiceNo || "AUTO",
+                itemNumber: finalInvoiceNo || "AUTO",
                 division: form.division!,
                 amount: totals.total,
                 notes: form.notes
             });
         }
 
-        mutation.mutate(invoiceData);
+        try {
+            if (isEditing && !isNewRevision) {
+                await financeService.updateInvoice(id!, invoiceData);
+                const activityMessage = isApproved
+                    ? `Updated Invoice ${finalInvoiceNo}`
+                    : `Updated Invoice ${finalInvoiceNo} (Pending Approval)`;
+                logActivity(activityMessage, "finance", "/invoices", finalInvoiceNo);
+            } else {
+                await financeService.createInvoice(invoiceData);
+                const activityMessage = isApproved
+                    ? isNewRevision ? `Created Invoice Version ${finalInvoiceNo}` : `Created Invoice ${finalInvoiceNo}`
+                    : isNewRevision ? `Created Invoice Version ${finalInvoiceNo} (Pending Approval)` : `Created Invoice ${finalInvoiceNo} (Pending Approval)`;
+                logActivity(activityMessage, "finance", "/invoices", finalInvoiceNo);
+            }
+
+            queryClient.invalidateQueries({ queryKey: ["invoices"] });
+            if (isEditing) queryClient.invalidateQueries({ queryKey: ["invoice", id] });
+            navigate("/invoices");
+        } catch (error: any) {
+            const serverMessage = error.response?.data?.message || error.message || 'Unknown error';
+            alert(`Failed to save invoice: ${serverMessage}`);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -475,11 +549,12 @@ export default function CreateInvoice() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-slate-50">
                         <FormInput
-                            label="Invoice No"
+                            label="Invoice No *"
                             name="invoiceNo"
                             value={form.invoiceNo}
                             onChange={handleFormChange}
-                            placeholder="e.g. TRD-INV-001 (or leave blank for auto)"
+                            placeholder="Enter invoice number (e.g. TRD-INV-001)"
+                            required
                         />
 
                         <div className="flex flex-col gap-1">
@@ -724,6 +799,128 @@ export default function CreateInvoice() {
                     </button>
                 </div>
             </form>
+
+            {/* Update Invoice Options Modal */}
+            {isUpdateModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 font-bold text-lg">
+                                    📝
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-800">Update Invoice Options</h3>
+                                    <p className="text-xs text-slate-500">Current Invoice No: <span className="font-semibold text-slate-700">{originalInvoiceNo || form.invoiceNo}</span></p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsUpdateModalOpen(false)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="py-5 space-y-3">
+                            <p className="text-sm text-slate-600">
+                                How would you like to apply your changes to this invoice?
+                            </p>
+
+                            {/* Option 1: Keep Invoice No & Update In-Place */}
+                            <div
+                                onClick={() => setRevisionChoice("keep")}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                    revisionChoice === "keep"
+                                        ? "border-brand-500 bg-brand-50/40 shadow-sm"
+                                        : "border-slate-200 hover:border-slate-300 bg-white"
+                                }`}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <input
+                                        type="radio"
+                                        name="invoiceRevisionChoice"
+                                        checked={revisionChoice === "keep"}
+                                        onChange={() => setRevisionChoice("keep")}
+                                        className="mt-1 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                    />
+                                    <div>
+                                        <div className="font-bold text-sm text-slate-800">
+                                            Keep Invoice No ({originalInvoiceNo || form.invoiceNo}) & Update
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                            Directly updates this invoice in-place with your changes.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Option 2: Change Invoice No */}
+                            <div
+                                onClick={() => setRevisionChoice("new")}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                    revisionChoice === "new"
+                                        ? "border-brand-500 bg-brand-50/40 shadow-sm"
+                                        : "border-slate-200 hover:border-slate-300 bg-white"
+                                }`}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <input
+                                        type="radio"
+                                        name="invoiceRevisionChoice"
+                                        checked={revisionChoice === "new"}
+                                        onChange={() => setRevisionChoice("new")}
+                                        className="mt-1 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-bold text-sm text-slate-800">
+                                            Change Invoice No / New Version
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                            Updates this invoice with a new custom Invoice Number.
+                                        </p>
+
+                                        {revisionChoice === "new" && (
+                                            <div className="mt-3 pt-3 border-t border-brand-100" onClick={e => e.stopPropagation()}>
+                                                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                                                    Enter New Invoice Number <span className="text-rose-500">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={customRevisionId}
+                                                    onChange={(e) => setCustomRevisionId(e.target.value)}
+                                                    placeholder={`e.g. ${(originalInvoiceNo || form.invoiceNo || "INV")}-REV1`}
+                                                    className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white font-medium shadow-inner"
+                                                    autoFocus
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                            <button
+                                type="button"
+                                onClick={() => setIsUpdateModalOpen(false)}
+                                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleConfirmSave}
+                                disabled={isSubmitting || mutation.isPending}
+                                className="px-5 py-2 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md shadow-brand-200 transition-colors disabled:opacity-50"
+                            >
+                                {isSubmitting || mutation.isPending ? "Saving..." : revisionChoice === "new" ? "Create New Version" : "Update Invoice"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

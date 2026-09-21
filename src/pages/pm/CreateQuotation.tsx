@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import FormInput from "../../components/forms/FormInput";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, X } from "lucide-react";
 import DivisionTiles from "../../components/forms/DivisionTiles";
 import { useDivision } from "../../context/DivisionContext";
 import { useApprovals } from "../../context/ApprovalContext";
@@ -105,6 +105,12 @@ export default function CreateQuotation() {
     const initialFormat = "quotation1";
     const initialDefaults = DEFAULTS[initialFormat as keyof typeof DEFAULTS];
 
+    const [originalQuoteId, setOriginalQuoteId] = useState<string>("");
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [revisionChoice, setRevisionChoice] = useState<"keep" | "new">("keep");
+    const [customRevisionId, setCustomRevisionId] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
     const [form, setForm] = useState({
         division: initialDivision,
         selectedFormat: initialFormat,
@@ -124,13 +130,6 @@ export default function CreateQuotation() {
     const allowedSectors = useMemo(() => {
         return isPM && user?.division ? [user.division.toUpperCase()] : [];
     }, [isPM, user]);
-
-    // Document number is now handled by the backend
-    useEffect(() => {
-        if (!isEditing) {
-            setForm(prev => ({ ...prev, quoteId: "" }));
-        }
-    }, [form.division, isEditing]);
 
     useEffect(() => {
         if (!isPM && !isEditing && activeDivision !== "all") {
@@ -216,6 +215,8 @@ export default function CreateQuotation() {
         if (isEditing && existingQuotation) {
             const found = existingQuotation;
             console.log("EDIT QUOTATION DATA:", found);
+            const loadedQtnNo = found.qtn_number || "";
+            setOriginalQuoteId(loadedQtnNo);
             setForm(prev => ({
                 ...prev,
                 division: (found.division || "CONTRACTING") as DivisionId,
@@ -223,7 +224,7 @@ export default function CreateQuotation() {
                 company: found.client_company || found.company || "",
                 client: found.client_name || found.client || "",
                 customerCode: found.client_id?.toString() || "",
-                quoteId: found.qtn_number || "",
+                quoteId: loadedQtnNo,
                 status: found.status || found.Status || prev.status,
                 date: new Date().toISOString().split('T')[0],
 
@@ -344,6 +345,49 @@ export default function CreateQuotation() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!form.quoteId?.trim()) {
+            alert("Please enter a Quote ID.");
+            return;
+        }
+
+        if (isEditing && editId) {
+            // Check if user changed the quoteId directly in the input box
+            if (form.quoteId.trim() !== originalQuoteId.trim()) {
+                setRevisionChoice("new");
+                setCustomRevisionId(form.quoteId.trim());
+            } else {
+                setRevisionChoice("keep");
+                setCustomRevisionId("");
+            }
+            setIsUpdateModalOpen(true);
+            return;
+        }
+
+        // New quotation creation
+        await executeSave(form.quoteId.trim());
+    };
+
+    const handleConfirmSave = async () => {
+        if (revisionChoice === "new") {
+            const newId = customRevisionId.trim();
+            if (!newId) {
+                alert("Please enter a new Quote ID for the revision.");
+                return;
+            }
+            if (newId === originalQuoteId.trim()) {
+                alert("The new revision Quote ID must be different from the original Quote ID. Choose 'Keep Quote ID' to update directly.");
+                return;
+            }
+            setIsUpdateModalOpen(false);
+            await executeSave(newId);
+        } else {
+            setIsUpdateModalOpen(false);
+            await executeSave(originalQuoteId || form.quoteId.trim());
+        }
+    };
+
+    const executeSave = async (finalQuoteNumber: string) => {
+        setIsSubmitting(true);
         // Calculate totals
         const calculatedItems = items.map(item => {
             const q = parseFloat(String(item.quantity).replace(/,/g, '')) || 0;
@@ -361,7 +405,7 @@ export default function CreateQuotation() {
         const isApproved = user?.role === "SUPER_ADMIN";
 
         const submissionData: any = {
-            qtn_number: form.quoteId?.trim() || "",
+            qtn_number: finalQuoteNumber,
             client_id: Number(form.customerCode) || 0,
             division: form.division.toUpperCase(),
             total_amount: netTotal,
@@ -397,14 +441,15 @@ export default function CreateQuotation() {
         try {
             if (isEditing && editId) {
                 const res = await quotationService.updateQuotation(editId, submissionData);
-                const newQtnNo = (res as any)?.qtn_number || (res as any)?.data?.qtn_number || form.quoteId;
+                const newQtnNo = (res as any)?.qtn_number || (res as any)?.data?.qtn_number || finalQuoteNumber;
+                const isRevision = finalQuoteNumber !== originalQuoteId;
                 const activityMessage = isApproved
-                    ? `Created Quotation Revision ${newQtnNo}`
-                    : `Created Quotation Revision ${newQtnNo} (Pending Approval)`;
+                    ? isRevision ? `Created Quotation Revision ${newQtnNo}` : `Updated Quotation ${newQtnNo}`
+                    : isRevision ? `Created Quotation Revision ${newQtnNo} (Pending Approval)` : `Updated Quotation ${newQtnNo} (Pending Approval)`;
                 logActivity(activityMessage, "project", "/quotations", newQtnNo);
             } else {
                 const res = await quotationService.createQuotation(submissionData);
-                const createdQtnNo = (res as any)?.qtn_number || (res as any)?.data?.qtn_number || form.quoteId;
+                const createdQtnNo = (res as any)?.qtn_number || (res as any)?.data?.qtn_number || finalQuoteNumber;
 
                 // If not admin, request approval
                 if (!isApproved) {
@@ -418,55 +463,62 @@ export default function CreateQuotation() {
                     });
                 }
 
-                const activityMessage = isApproved
-                    ? `Created Quotation ${createdQtnNo}`
-                    : `Created Quotation ${createdQtnNo} (Pending Approval)`;
-
-                logActivity(activityMessage, "project", "/quotations", createdQtnNo);
+                logActivity(
+                    isApproved
+                        ? `Created Quotation ${createdQtnNo}`
+                        : `Created Quotation ${createdQtnNo} (Pending Approval)`,
+                    "project",
+                    "/quotations",
+                    createdQtnNo
+                );
             }
 
+            // Invalidate queries so that Quotations page and details reflect changes immediately
             queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            if (isEditing && editId) {
-                queryClient.invalidateQueries({ queryKey: ["quotation", editId] });
-            }
+            queryClient.invalidateQueries({ queryKey: ["quotation", editId] });
 
-            navigate(`/quotations`);
+            navigate("/quotations");
         } catch (err: any) {
-            console.error("ERROR SAVING QUOTATION:", err);
-            const errorMsg = err.response?.data?.message || "Failed to save quotation to database.";
-            alert(`${errorMsg}\nPlease ensure you have selected a valid client from the dropdown.`);
+            console.error("Submission failed", err);
+            const serverMessage = err.response?.data?.message || err.message;
+            alert(`Failed to save quotation: ${serverMessage}`);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <div className="p-6">
-            <PageHeader showBack
-                title={isEditing ? "Edit Quotation" : "Create Quotation"}
-                subtitle="Generate a detailed cost estimate for Business, Contracting or Trading"
-            />
+            <div className="flex items-center gap-4 mb-6">
+                <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    {/* <ArrowLeft size={20} /> */}
+                </button>
+                <PageHeader showBack title={isEditing ? "Edit Quotation" : "Create Quotation"} />
+            </div>
 
-            <div className="bg-white p-8 rounded-lg border border-slate-100 shadow-sm max-w-5xl mt-6">
+            <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm max-w-7xl mx-auto space-y-8">
+                {/* Sector Selection (Visual Tiles) */}
+                <DivisionTiles
+                    label="Select Division / Sector"
+                    selectedId={form.division}
+                    onChange={handleDivisionChange}
+                    allowedIds={allowedSectors}
+                    showAll={false}
+                    disabled={isEditing}
+                />
+
                 <form onSubmit={handleSubmit} className="space-y-8">
-
-                    {/* Sector Selection (Visual Tiles) */}
-                    <DivisionTiles
-                        label="Select Division / Sector"
-                        selectedId={form.division}
-                        onChange={handleDivisionChange}
-                        allowedIds={allowedSectors}
-                        showAll={false}
-                        disabled={isEditing}
-                    />
-
-                    {/* Header Details */}
-                    <div className="pt-6 border-t border-slate-50 space-y-6">
-                        <h3 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2">Basic Information</h3>
+                    {/* Basic Information */}
+                    <div className="space-y-6">
+                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
+                            Basic Information
+                        </h3>
 
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Quotation Format *</label>
                                 <select
-                                    className="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                                    className="w-full bg-white border border-slate-200 rounded-lg p-3 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
                                     value={form.selectedFormat}
                                     onChange={(e) => handleFormatChange(e.target.value)}
                                 >
@@ -476,11 +528,12 @@ export default function CreateQuotation() {
                                 </select>
                             </div>
                             <FormInput
-                                label="Quote ID"
+                                label="Quote ID *"
                                 name="quoteId"
                                 value={form.quoteId}
                                 onChange={handleChange}
-                                placeholder="e.g. TRD-QUO-001 (or leave blank for auto)"
+                                placeholder="Enter quote ID (e.g. TRD-QUO-001)"
+                                required
                             />
                         </div>
 
@@ -785,6 +838,128 @@ export default function CreateQuotation() {
                     </div>
                 </form>
             </div>
+
+            {/* Update Quotation Options Modal */}
+            {isUpdateModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 font-bold text-lg">
+                                    📝
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-800">Update Quotation Options</h3>
+                                    <p className="text-xs text-slate-500">Current Quote ID: <span className="font-semibold text-slate-700">{originalQuoteId || form.quoteId}</span></p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsUpdateModalOpen(false)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="py-5 space-y-3">
+                            <p className="text-sm text-slate-600">
+                                How would you like to apply your changes to this quotation?
+                            </p>
+
+                            {/* Option 1: Keep Quote ID & Update In-Place */}
+                            <div
+                                onClick={() => setRevisionChoice("keep")}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                    revisionChoice === "keep"
+                                        ? "border-brand-500 bg-brand-50/40 shadow-sm"
+                                        : "border-slate-200 hover:border-slate-300 bg-white"
+                                }`}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <input
+                                        type="radio"
+                                        name="revisionChoice"
+                                        checked={revisionChoice === "keep"}
+                                        onChange={() => setRevisionChoice("keep")}
+                                        className="mt-1 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                    />
+                                    <div>
+                                        <div className="font-bold text-sm text-slate-800">
+                                            Keep Quote ID ({originalQuoteId || form.quoteId}) & Update
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                            Directly updates this quotation in-place with your changes. No new revision row will be added.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Option 2: Change Quote ID / Create New Revision */}
+                            <div
+                                onClick={() => setRevisionChoice("new")}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                    revisionChoice === "new"
+                                        ? "border-brand-500 bg-brand-50/40 shadow-sm"
+                                        : "border-slate-200 hover:border-slate-300 bg-white"
+                                }`}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <input
+                                        type="radio"
+                                        name="revisionChoice"
+                                        checked={revisionChoice === "new"}
+                                        onChange={() => setRevisionChoice("new")}
+                                        className="mt-1 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-bold text-sm text-slate-800">
+                                            Create New Revision (Change Quote ID)
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                            Keeps <span className="font-semibold text-slate-700">{originalQuoteId || form.quoteId}</span> in history and creates a new revision record with a custom Quote ID.
+                                        </p>
+
+                                        {revisionChoice === "new" && (
+                                            <div className="mt-3 pt-3 border-t border-brand-100" onClick={e => e.stopPropagation()}>
+                                                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                                                    Enter New Revision / Quote ID <span className="text-rose-500">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={customRevisionId}
+                                                    onChange={(e) => setCustomRevisionId(e.target.value)}
+                                                    placeholder={`e.g. ${(originalQuoteId || form.quoteId)}.1 or ${(originalQuoteId || form.quoteId)}-REV1`}
+                                                    className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white font-medium shadow-inner"
+                                                    autoFocus
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                            <button
+                                type="button"
+                                onClick={() => setIsUpdateModalOpen(false)}
+                                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleConfirmSave}
+                                disabled={isSubmitting}
+                                className="px-5 py-2 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md shadow-brand-200 transition-colors disabled:opacity-50"
+                            >
+                                {isSubmitting ? "Saving..." : revisionChoice === "new" ? "Create New Revision" : "Update Quotation"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

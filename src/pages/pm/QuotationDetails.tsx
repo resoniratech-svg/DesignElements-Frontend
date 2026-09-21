@@ -126,12 +126,25 @@ export default function QuotationDetails() {
                                             {quotation.client_company ? (
                                                 <>
                                                     <h2 className="font-black text-black uppercase">{quotation.client_company}</h2>
-                                                    {quotation.client_name && (
-                                                        <p className="font-bold text-slate-800 text-[13px]">Attn: <span className="uppercase">{quotation.client_name}</span></p>
+                                                    {(quotation.attn || quotation.client_name) && (
+                                                        <p className="font-bold text-slate-800 text-[13px]">
+                                                            Attn: <span className="uppercase">{quotation.attn || quotation.client_name}</span>
+                                                            {quotation.attn_designation && (
+                                                                <span className="text-slate-800 font-bold uppercase"> | {quotation.attn_designation}</span>
+                                                            )}
+                                                        </p>
                                                     )}
                                                 </>
                                             ) : (
-                                                <h2 className="font-black text-black uppercase">{quotation.client_name}</h2>
+                                                <>
+                                                    <h2 className="font-black text-black uppercase">{quotation.client_name}</h2>
+                                                    {quotation.attn_designation && (
+                                                        <p className="font-bold text-slate-800 text-[13px]">
+                                                            Attn: <span className="uppercase">{quotation.attn || quotation.client_name}</span>
+                                                            <span className="text-slate-800 font-bold uppercase"> | {quotation.attn_designation}</span>
+                                                        </p>
+                                                    )}
+                                                </>
                                             )}
                                             <p className="text-slate-600 italic">Doha, Qatar,</p>
                                             <p className="text-slate-600 font-medium">Mob: +974 {quotation.client_phone || 'XXXX XXXX'}</p>
@@ -199,13 +212,13 @@ export default function QuotationDetails() {
                                             <table className="w-full border-collapse border border-slate-400 text-[12px] table-fixed">
                                                 <thead>
                                                     <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-12">Sr. No.</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-center w-16">Item Code</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center w-10">Sr. No.</th>
+                                                        <th className="border border-slate-400 px-2 py-2 text-center w-36">Item Code</th>
                                                         <th className="border border-slate-400 px-3 py-2 text-center font-bold">{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
                                                         <th className="border border-slate-400 px-1 py-2 text-center w-12">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
-                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-20">Qty</th>}
-                                                        <th className="border border-slate-400 px-2 py-2 text-right w-24">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
-                                                        <th className="border border-slate-400 px-2 py-2 text-right w-44">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-2 py-2 text-center w-14">Qty</th>}
+                                                        <th className="border border-slate-400 px-2 py-2 text-right w-20">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-2 py-2 text-right w-28">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="text-slate-800">
