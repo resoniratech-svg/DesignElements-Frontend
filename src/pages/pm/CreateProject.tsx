@@ -28,6 +28,7 @@ function CreateProject() {
   const userDivision = (user?.division || "CONTRACTING").toUpperCase();
 
   const [form, setForm] = useState<any>({
+    project_id: "",
     name: "",
     company: "",
     client: "",
@@ -164,6 +165,7 @@ function CreateProject() {
 
     // Map frontend form fields to PostgreSQL column names
     const payload: any = {
+      project_id: form.project_id?.trim() || null,
       project_name: form.name,
       client_name: form.client,
       client_id: form.client_id || null,
@@ -222,6 +224,14 @@ function CreateProject() {
           </div>
 
           <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              label="Project ID"
+              name="project_id"
+              value={form.project_id}
+              onChange={handleChange}
+              placeholder="e.g. PRJ-2026-001"
+            />
+
             <FormInput
               label="Project Name"
               name="name"

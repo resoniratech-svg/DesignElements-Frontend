@@ -41,6 +41,19 @@ export default function QuotationDetails() {
 
     const items = quotation.items || [];
     const netTotal = quotation.total_amount || 0;
+    const subtotal = items.reduce((sum: number, item: any) => {
+        const q = parseFloat(String(item.quantity).replace(/,/g, '')) || 0;
+        const p = parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0;
+        const amt = parseFloat(String(item.amount)) || (q * p);
+        return sum + amt;
+    }, 0);
+
+    const discountPercent = parseFloat(String(quotation.discount || 0)) || 0;
+    const discountAmount = discountPercent > 0 
+        ? (subtotal * discountPercent) / 100 
+        : (subtotal > Number(netTotal) + 0.01 ? (subtotal - Number(netTotal)) : 0);
+
+    const hasDiscount = discountPercent > 0 || discountAmount > 0;
 
     const isDeleted = Boolean((quotation as any)?.deleted_at);
 
@@ -213,12 +226,12 @@ export default function QuotationDetails() {
                                                 <thead>
                                                     <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
                                                         <th className="border border-slate-400 px-1 py-2 text-center w-[5%]">Sr. No.</th>
-                                                        <th className="border border-slate-400 px-1.5 py-2 text-center w-[15%]">Item Code</th>
-                                                        <th className={`border border-slate-400 px-3 py-2 text-center font-bold ${quotation?.selected_format === 'quotation3' ? 'w-[56%]' : 'w-[48%]'}`}>{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-center w-[10%]">Item Code</th>
+                                                        <th className={`border border-slate-400 px-3 py-2 text-center font-bold ${quotation?.selected_format === 'quotation3' ? 'w-[54%]' : 'w-[48%]'}`}>{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
                                                         <th className="border border-slate-400 px-1 py-2 text-center w-[6%]">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
                                                         {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-1 py-2 text-center w-[6%]">Qty</th>}
                                                         <th className="border border-slate-400 px-1.5 py-2 text-right w-[10%]">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
-                                                        <th className="border border-slate-400 px-1.5 py-2 text-right w-[10%]">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-right w-[15%]">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="text-slate-800">
@@ -249,10 +262,32 @@ export default function QuotationDetails() {
                                                             </td>
                                                         </tr>
                                                     ))}
-                                                    {/* Total Row */}
-                                                    <tr className="font-black bg-slate-50 border-t-2 border-slate-400">
+                                                    {/* Sub Total & Discount Rows (if applicable) */}
+                                                    {hasDiscount && (
+                                                        <>
+                                                            <tr className="font-bold bg-white border-t-2 border-slate-400">
+                                                                <td className="border border-slate-400 px-3 py-2 text-center font-bold text-black text-[12px]" colSpan={quotation?.selected_format === 'quotation3' ? 5 : 6}>
+                                                                    Sub Total
+                                                                </td>
+                                                                <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-bold text-[11px]">
+                                                                    {Number(subtotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                </td>
+                                                            </tr>
+                                                            <tr className="font-bold bg-white border-t border-slate-400">
+                                                                <td className="border border-slate-400 px-3 py-2 text-center font-bold text-black text-[12px]" colSpan={quotation?.selected_format === 'quotation3' ? 5 : 6}>
+                                                                    Special Discount
+                                                                </td>
+                                                                <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-bold text-[11px]">
+                                                                    {Number(discountAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                </td>
+                                                            </tr>
+                                                        </>
+                                                    )}
+
+                                                    {/* Grand Total Row */}
+                                                    <tr className="font-black bg-slate-100 border-t-2 border-slate-400">
                                                         <td className="border border-slate-400 px-2 py-2 uppercase text-center text-[11px]" colSpan={2}>Grand Total</td>
-                                                        <td className="border border-slate-400 px-3 py-2 text-center text-[11px] leading-snug" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
+                                                        <td className="border border-slate-400 px-3 py-2 text-center text-[11px] leading-snug font-bold" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
                                                             {numberToWords(netTotal).toUpperCase()}
                                                         </td>
                                                         <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-black text-[11px]">

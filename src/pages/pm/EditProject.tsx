@@ -12,6 +12,7 @@ import { Loader2, AlertCircle, CheckCircle, Upload, FileText, X } from "lucide-r
 import type { Project } from "../../types/project";
 
 interface FormState {
+    project_id: string;
     name: string;
     company: string;
     client: string;
@@ -32,6 +33,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
     const { logActivity } = useActivity();
 
     const [form, setForm] = useState<FormState>({
+        project_id: (project as any).project_id || (project as any).projectId || "",
         name: project.name || project.projectName || "",
         company: (project as any).company || (project as any).client_company || "",
         client: project.client || project.clientName || "",
@@ -153,6 +155,7 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
 
         // Map frontend form fields to PostgreSQL column names
         const payload: any = {
+            project_id: form.project_id?.trim() || null,
             project_name: form.name,
             client_name: form.client,
             client_id: form.client_id || null,
@@ -190,6 +193,16 @@ function ProjectEditForm({ project, id }: { project: Project, id: string }) {
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-700">Project ID</label>
+                        <input
+                            name="project_id"
+                            value={form.project_id}
+                            onChange={handleChange}
+                            placeholder="e.g. PRJ-2026-001"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-brand-500 outline-none font-bold text-slate-800"
+                        />
+                    </div>
                     <div>
                         <label className="block text-sm font-medium mb-1 text-gray-700">Project Name <span className="text-rose-500">*</span></label>
                         <input

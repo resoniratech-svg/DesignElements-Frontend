@@ -13,6 +13,8 @@ export interface ProjectDocument {
 
 export interface Project {
   id: string;
+  project_id?: string;
+  projectId?: string;
   projectName: string;
   name?: string; // Compatibility
   client: string;

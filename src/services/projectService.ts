@@ -5,6 +5,8 @@ import type { Project } from "../types/project";
 function mapProject(row: any): Project {
   return {
     id: String(row.id),
+    project_id: row.project_id || row.projectId || "",
+    projectId: row.project_id || row.projectId || "",
     projectName: row.project_name || row.projectName || "",
     name: row.project_name || row.name || row.projectName || "",
     client: row.client_name || row.client || "",

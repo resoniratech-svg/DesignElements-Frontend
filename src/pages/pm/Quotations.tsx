@@ -104,8 +104,13 @@ function Quotations() {
   const tableData = useMemo<TableRow[]>(() => {
     if (activeTab === "quotations") {
       // Use the quotations fetched from backend
-      return quotations.map((item: any) => ({
+      return quotations.map((item: any, idx: number) => ({
         id: item.id,
+        "S.No": (
+          <span className="font-bold text-slate-500 text-xs">
+            {(idx + 1).toString().padStart(2, '0')}
+          </span>
+        ),
         "Date": item.created_at ? new Date(item.created_at).toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : "-"),
         "Quote ID": item.qtn_number || item["Quote ID"] || item.id,
         "Format": (
@@ -146,8 +151,13 @@ function Quotations() {
       }));
     } else {
       // Invoices from database
-      return invoices.map((invoice: any) => ({
+      return invoices.map((invoice: any, idx: number) => ({
         id: invoice.id,
+        "S.No": (
+          <span className="font-bold text-slate-500 text-xs">
+            {(idx + 1).toString().padStart(2, '0')}
+          </span>
+        ),
         "Invoice No": invoice.invoice_number || invoice.invoiceNo,
         "Client": invoice.client_name || invoice.client,
         "Sector": (
@@ -185,8 +195,8 @@ function Quotations() {
   const typeLabel = activeTab === "quotations" ? "Quotations" : "Invoices";
   const currentTitle = activeDivision === "all" ? `All ${typeLabel}` : `${currentDivision?.label} ${typeLabel}`;
 
-  const quoteColumns = ["Date", "Quote ID", "Format", "Company", "Client", "Project", "Sector", "Actions"];
-  const invoiceColumns = ["Invoice No", "Client", "Sector", "Ref Type", "Amount", "Status", "Date", "Actions"];
+  const quoteColumns = ["S.No", "Date", "Quote ID", "Format", "Company", "Client", "Project", "Sector", "Actions"];
+  const invoiceColumns = ["S.No", "Invoice No", "Client", "Sector", "Ref Type", "Amount", "Status", "Date", "Actions"];
 
   return (
     <>

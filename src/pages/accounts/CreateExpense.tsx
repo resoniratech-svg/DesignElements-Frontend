@@ -14,7 +14,6 @@ import type { DivisionId } from "../../constants/divisions";
 import FileUploader from "../../components/FileUploader";
 import { financeService } from "../../services/financeService";
 import { projectService } from "../../services/projectService";
-import { quotationService } from "../../services/quotationService";
 import { formatWithCommas, stripCommas } from "../../utils/numberFormat";
 
 const EXPENSE_CATEGORIES = [
@@ -164,7 +163,7 @@ function CreateExpense() {
     }
   }, [dbExpense]);
 
-  // Load reference options based on division
+  // Load reference options based on division (Projects only)
   useEffect(() => {
     const fetchOptions = async () => {
       try {
@@ -175,19 +174,14 @@ function CreateExpense() {
           const projRes = await projectService.getProjects(divString, 1, 1000);
           const projects = projRes.data || [];
 
-          const quoteRes = await quotationService.getQuotations(1, 1000, divString);
-          const quotations = quoteRes.data || [];
-
-          const options: ReferenceOption[] = [
-            ...projects.map((p: any) => ({
+          const options: ReferenceOption[] = projects.map((p: any) => {
+            const projectCode = p.project_id || p.projectId;
+            const projectName = p.name || p.projectName || "Unnamed Project";
+            return {
               id: p.id!,
-              label: `Project: ${p.name || p.projectName}`,
-            })),
-            ...quotations.map((q: any) => ({
-              id: q.id || q.qtn_number,
-              label: `Quote: ${q.project_name || q.project || 'No Project'} - ${q.client_name || q.client || 'No Client'}`,
-            })),
-          ];
+              label: projectCode ? `Project: [${projectCode}] ${projectName}` : `Project: ${projectName}`,
+            };
+          });
           setReferenceOptions(options);
         }
       } catch (err) {
@@ -531,7 +525,7 @@ function CreateExpense() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
                   <div className="flex flex-col gap-1">
                     <label className="text-sm text-gray-600">
-                      Link to Project / Proposal (Optional)
+                      Link to Project (Optional)
                     </label>
                     <select
                       name="referenceId"
