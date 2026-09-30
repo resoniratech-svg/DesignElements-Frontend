@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Tag, CreditCard, FileText, Paperclip, ExternalLink, PieChart, X, Building2 } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, CreditCard, FileText, Paperclip, ExternalLink, PieChart, X, Building2, Briefcase } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { financeService } from "../../services/financeService";
 import { getUploadUrl } from "../../services/api";
@@ -41,7 +41,9 @@ export default function ExpenseDetails() {
         }, {}) || {},
         divisionLabel: dbExpense.allocations && dbExpense.allocations.length === 1 ? dbExpense.allocations[0].division : (dbExpense.allocation_type || "N/A"),
         referenceType: dbExpense.expense_type,
-        description: dbExpense.description // Added for compatibility
+        description: dbExpense.description, // Added for compatibility
+        projectName: dbExpense.project_name || null,
+        projectCode: dbExpense.project_code || dbExpense.reference_id || null
     };
 
     const isSmartAllocation = expense.allocationType === "SMART";
@@ -106,6 +108,7 @@ export default function ExpenseDetails() {
                                 <DetailRow icon={<Calendar size={20} className="text-blue-500"/>} label="Expense Date" value={expense.date || "-"} color="blue" />
                                 <DetailRow icon={<Tag size={20} className="text-emerald-500" />} label="Category" value={expense.category || "-"} color="emerald" />
                                 <DetailRow icon={<Building2 size={20} className="text-purple-500" />} label="Department / Unit" value={expense.department || "-"} color="purple" />
+                                <DetailRow icon={<Briefcase size={20} className="text-cyan-500" />} label="Linked Project" value={expense.projectName ? `${expense.projectCode ? `[${expense.projectCode}] ` : ''}${expense.projectName}` : (expense.projectCode ? `Project ID: ${expense.projectCode}` : "None / General")} color="cyan" />
                                 <DetailRow icon={<CreditCard size={20} className="text-amber-500" />} label="Payment Method" value={expense.paymentMethod || "-"} color="amber" />
                                 <DetailRow icon={<FileText size={20} className="text-indigo-500" />} label="Vendor / Payee" value={expense.vendor || "-"} color="indigo" />
                             </div>
@@ -266,6 +269,8 @@ function DetailRow({ icon, label, value, color }: { icon: React.ReactNode; label
         emerald: "bg-emerald-50 text-emerald-600",
         amber: "bg-amber-50 text-amber-600",
         indigo: "bg-indigo-50 text-indigo-600",
+        purple: "bg-purple-50 text-purple-600",
+        cyan: "bg-cyan-50 text-cyan-600",
     };
 
     return (

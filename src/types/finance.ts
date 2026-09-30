@@ -111,6 +111,8 @@ export interface Expense {
     service: number;
   };
   referenceId?: string;
+  projectName?: string;
+  projectCode?: string;
   approvalStatus?: "pending" | "approved" | "rejected";
   createdAt?: string;
   referenceType?: string;

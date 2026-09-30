@@ -71,7 +71,9 @@ function Expenses() {
             : "pending",
       vendor: dbExp.vendor || "Internal",
       paymentMethod: dbExp.payment_method || "Transfer",
-      attachment: dbExp.attachment || null
+      attachment: dbExp.attachment || null,
+      projectName: dbExp.project_name || null,
+      projectCode: dbExp.project_code || dbExp.reference_id || null
     }));
 
     // Global Filtering logic
@@ -124,7 +126,16 @@ function Expenses() {
       return {
         ...expense,
         Date: expense.date || "-",
-        "Expense Name": expense.expenseName || expense.description || "-",
+        "Expense Name": (
+          <div className="flex flex-col gap-1 items-start py-0.5">
+            <span className="font-bold text-slate-800">{expense.expenseName || expense.description || "-"}</span>
+            {expense.projectName && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-700 bg-brand-50 border border-brand-200/80 px-1.5 py-0.5 rounded">
+                📁 {expense.projectCode ? `[${expense.projectCode}] ` : ''}{expense.projectName}
+              </span>
+            )}
+          </div>
+        ),
         Category: expense.category || "-",
         Division: (
           <div className="flex flex-col gap-1 items-start py-0.5">
