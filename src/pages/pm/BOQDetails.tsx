@@ -188,8 +188,8 @@ export default function BOQDetails() {
                                     <td className="px-6 py-4 text-gray-700 font-medium">{item.description}</td>
                                     <td className="px-6 py-4 text-center text-gray-600">{item.quantity}</td>
                                     <td className="px-6 py-4 text-center text-gray-600">{item.unit}</td>
-                                    <td className="px-6 py-4 text-right text-gray-600">QAR {Number(item.rate).toLocaleString()}</td>
-                                    <td className="px-6 py-4 text-right text-gray-900 font-bold">QAR {Number(item.amount).toLocaleString()}</td>
+                                    <td className="px-6 py-4 text-right text-gray-600">QAR {Number(item.rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td className="px-6 py-4 text-right text-gray-900 font-bold">QAR {Number(item.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 </tr>
                             )) : (
                                 <tr>
@@ -200,7 +200,7 @@ export default function BOQDetails() {
                         <tfoot>
                             <tr className="bg-brand-50/30 border-t border-brand-100">
                                 <td colSpan={4} className="px-6 py-4 text-right font-bold text-gray-700">Net Estimated Total</td>
-                                <td className="px-6 py-4 text-right font-bold text-brand-600 text-lg">QAR {totalAmount.toLocaleString()}</td>
+                                <td className="px-6 py-4 text-right font-bold text-brand-600 text-lg">QAR {totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                             </tr>
                         </tfoot>
                     </table>

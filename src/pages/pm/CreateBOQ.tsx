@@ -8,6 +8,7 @@ import PageHeader from "../../components/PageHeader";
 import FormInput from "../../components/forms/FormInput";
 import DivisionTiles from "../../components/forms/DivisionTiles";
 import type { DivisionId } from "../../constants/divisions";
+import { formatWithCommas, stripCommas } from "../../utils/numberFormat";
 import { Plus, Trash2 } from "lucide-react";
 
 interface BOQItem {
@@ -52,7 +53,7 @@ export default function CreateBOQ() {
         client_id: "",
         sector: isPM ? userDivision : "TRADING",
         status: "UNPAID",
-        totalAmount: "0",
+        totalAmount: "0.00",
         date: new Date().toISOString().split('T')[0]
     });
 
@@ -77,7 +78,7 @@ export default function CreateBOQ() {
                 client_id: boq.client_id?.toString() || "",
                 sector: boq.sector?.toUpperCase() || "TRADING",
                 status: loadedStatus,
-                totalAmount: boq.total_amount?.toString() || "0",
+                totalAmount: boq.total_amount !== undefined && boq.total_amount !== null ? Number(boq.total_amount).toFixed(2) : "0.00",
                 date: boq.date
                     ? new Date(boq.date)
                         .toISOString()
@@ -120,24 +121,31 @@ export default function CreateBOQ() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setForm(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        if (name === "totalAmount") {
+            setForm(prev => ({
+                ...prev,
+                totalAmount: formatWithCommas(value)
+            }));
+        } else {
+            setForm(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const updateItem = (index: number, field: keyof BOQItem, value: string | number) => {
         const newItems = [...items];
         const item = { ...newItems[index], [field]: value };
         if (field === "quantity" || field === "rate") {
-            item.amount = Number(item.quantity) * Number(item.rate);
+            item.amount = Number(item.quantity || 0) * Number(item.rate || 0);
         }
         newItems[index] = item;
         setItems(newItems);
 
         // Update total header amount based on items sum
-        const total = newItems.reduce((sum, i) => sum + i.amount, 0);
-        setForm(prev => ({ ...prev, totalAmount: total.toString() }));
+        const total = newItems.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+        setForm(prev => ({ ...prev, totalAmount: total.toFixed(2) }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -162,7 +170,7 @@ export default function CreateBOQ() {
             client_name: form.client_name,
             client_id: form.client_id ? parseInt(form.client_id) : null,
             status: form.status,
-            total_amount: parseFloat(form.totalAmount) || 0,
+            total_amount: parseFloat(stripCommas(form.totalAmount)) || 0,
             date: form.date,
             sector: form.sector,
             items: items
@@ -320,12 +328,17 @@ export default function CreateBOQ() {
                                                 />
                                             </td>
                                             <td className="p-2 text-right font-bold text-slate-800">
-                                                QAR {item.amount.toLocaleString()}
+                                                QAR {Number(item.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </td>
                                             <td className="p-2 text-center">
                                                 <button
                                                     type="button"
-                                                    onClick={() => setItems(items.filter((_, i) => i !== index))}
+                                                    onClick={() => {
+                                                        const updated = items.filter((_, i) => i !== index);
+                                                        setItems(updated);
+                                                        const total = updated.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+                                                        setForm(prev => ({ ...prev, totalAmount: total.toFixed(2) }));
+                                                    }}
                                                     className="text-red-500 hover:text-red-700"
                                                 >
                                                     <Trash2 size={16} />
@@ -347,11 +360,11 @@ export default function CreateBOQ() {
                             <FormInput
                                 label="Total Amount (QAR)"
                                 name="totalAmount"
-                                type="number"
-                                value={form.totalAmount}
+                                type="text"
+                                value={formatWithCommas(form.totalAmount)}
                                 placeholder="0.00"
                                 onChange={handleChange}
-                                className="no-spinner font-bold"
+                                className="font-bold text-right"
                             />
                         </div>
                     </div>

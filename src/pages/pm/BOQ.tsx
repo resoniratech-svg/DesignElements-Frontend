@@ -86,7 +86,7 @@ function BOQ() {
           </span>
         ),
         "Client Company": clientDisplay,
-        "Total Amount": `QAR ${Number(item.total_amount).toLocaleString()}`,
+        "Total Amount": `QAR ${Number(item.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         "Date": new Date(item.date).toLocaleDateString(),
         "Status": <StatusBadge status={item.status} />,
         "Actions": (
