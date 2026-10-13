@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import PageHeader from "../../components/PageHeader";
 import PageLoader from "../../components/PageLoader";
+import ScrollableTableWrapper from "../../components/ScrollableTableWrapper";
 import { useDivision } from "../../context/DivisionContext";
 import { DIVISIONS } from "../../constants/divisions";
 import { ArrowUpRight, ArrowDownLeft, Search } from "lucide-react";
@@ -343,7 +344,7 @@ export default function Ledger() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <ScrollableTableWrapper>
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
@@ -396,7 +397,7 @@ export default function Ledger() {
                             )}
                         </tbody>
                     </table>
-                </div>
+                </ScrollableTableWrapper>
             </div>
         </div>
     );

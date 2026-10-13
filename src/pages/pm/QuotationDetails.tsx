@@ -225,39 +225,39 @@ export default function QuotationDetails() {
                                             <table className="w-full border-collapse border border-slate-400 text-[12px] table-fixed">
                                                 <thead>
                                                     <tr className="bg-slate-100 text-black font-black uppercase border-b border-slate-400 text-[10px]">
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-[5%]">Sr. No.</th>
-                                                        <th className="border border-slate-400 px-1.5 py-2 text-center w-[10%]">Item Code</th>
-                                                        <th className={`border border-slate-400 px-3 py-2 text-center font-bold ${quotation?.selected_format === 'quotation3' ? 'w-[54%]' : 'w-[48%]'}`}>{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
-                                                        <th className="border border-slate-400 px-1 py-2 text-center w-[6%]">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
-                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-1 py-2 text-center w-[6%]">Qty</th>}
-                                                        <th className="border border-slate-400 px-1.5 py-2 text-right w-[10%]">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
-                                                        <th className="border border-slate-400 px-1.5 py-2 text-right w-[15%]">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center align-middle w-[5%]">Sr. No.</th>
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-center align-middle w-[10%]">Item Code</th>
+                                                        <th className={`border border-slate-400 px-3 py-2 text-center align-middle font-bold ${quotation?.selected_format === 'quotation3' ? 'w-[54%]' : 'w-[48%]'}`}>{quotation?.selected_format === 'quotation3' ? 'Particulars' : 'Item Description'}</th>
+                                                        <th className="border border-slate-400 px-1 py-2 text-center align-middle w-[6%]">{quotation?.selected_format === 'quotation3' ? 'Qty m2' : 'Unit'}</th>
+                                                        {quotation?.selected_format !== 'quotation3' && <th className="border border-slate-400 px-1 py-2 text-center align-middle w-[6%]">Qty</th>}
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-right align-middle w-[10%]">Rate {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
+                                                        <th className="border border-slate-400 px-1.5 py-2 text-right align-middle w-[15%]">Amount {quotation?.selected_format === 'quotation3' ? 'in QAR' : ''}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="text-slate-800">
                                                     {items.map((item: any, idx: number) => (
                                                         <tr key={idx} className="border-b border-slate-300">
-                                                            <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold text-[11px]">
+                                                            <td className="border border-slate-400 px-1 py-3 text-center align-middle font-bold text-[11px]">
                                                                 {item.customSrNo || (idx + 1).toString().padStart(2, '0')}
                                                             </td>
-                                                            <td className="border border-slate-400 px-1.5 py-3 text-center align-top font-bold text-slate-700 break-words [overflow-wrap:anywhere] text-[11px]">
+                                                            <td className="border border-slate-400 px-1.5 py-3 text-center align-middle font-bold text-slate-700 break-words [overflow-wrap:anywhere] text-[11px]">
                                                                 {item.itemCode || item.item_code || "-"}
                                                             </td>
-                                                            <td className="border border-slate-400 px-3 py-3 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed font-semibold text-black">
+                                                            <td className="border border-slate-400 px-3 py-3 align-middle whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed font-semibold text-black">
                                                                 {item.description}
                                                             </td>
-                                                            <td className="border border-slate-400 px-1 py-3 text-center align-top font-medium text-[11px]">
+                                                            <td className="border border-slate-400 px-1 py-3 text-center align-middle font-medium text-[11px]">
                                                                 {quotation?.selected_format === 'quotation3' ? `${(parseFloat(String(item.quantity).replace(/,/g, '')) || 0).toLocaleString()} ${item.unit}` : (item.unit || "Nos")}
                                                             </td>
                                                             {quotation?.selected_format !== 'quotation3' && (
-                                                                <td className="border border-slate-400 px-1 py-3 text-center align-top font-bold whitespace-nowrap text-[11px]">
+                                                                <td className="border border-slate-400 px-1 py-3 text-center align-middle font-bold whitespace-nowrap text-[11px]">
                                                                     {(parseFloat(String(item.quantity).replace(/,/g, '')) || 0).toLocaleString()}
                                                                 </td>
                                                             )}
-                                                            <td className="border border-slate-400 px-1.5 py-3 text-right align-top font-medium italic break-words [overflow-wrap:anywhere] leading-snug text-[11px]">
+                                                            <td className="border border-slate-400 px-1.5 py-3 text-right align-middle font-medium italic break-words [overflow-wrap:anywhere] leading-snug text-[11px]">
                                                                 {item.unitPrice ? (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "Lumpsum"}
                                                             </td>
-                                                            <td className="border border-slate-400 px-1.5 py-3 text-right align-top font-black text-black break-words [overflow-wrap:anywhere] leading-snug text-[11px]">
+                                                            <td className="border border-slate-400 px-1.5 py-3 text-right align-middle font-black text-black break-words [overflow-wrap:anywhere] leading-snug text-[11px]">
                                                                 {(parseFloat(String(item.amount || ((parseFloat(String(item.quantity).replace(/,/g, '')) || 0) * (parseFloat(String(item.unitPrice).replace(/,/g, '')) || 0)))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}
                                                             </td>
                                                         </tr>
@@ -266,18 +266,18 @@ export default function QuotationDetails() {
                                                     {hasDiscount && (
                                                         <>
                                                             <tr className="font-bold bg-white border-t-2 border-slate-400">
-                                                                <td className="border border-slate-400 px-3 py-2 text-center font-bold text-black text-[12px]" colSpan={quotation?.selected_format === 'quotation3' ? 5 : 6}>
+                                                                <td className="border border-slate-400 px-3 py-2 text-center align-middle font-bold text-black text-[12px]" colSpan={quotation?.selected_format === 'quotation3' ? 5 : 6}>
                                                                     Sub Total
                                                                 </td>
-                                                                <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-bold text-[11px]">
+                                                                <td className="border border-slate-400 px-1.5 py-2 text-right align-middle text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-bold text-[11px]">
                                                                     {Number(subtotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                                 </td>
                                                             </tr>
                                                             <tr className="font-bold bg-white border-t border-slate-400">
-                                                                <td className="border border-slate-400 px-3 py-2 text-center font-bold text-black text-[12px]" colSpan={quotation?.selected_format === 'quotation3' ? 5 : 6}>
+                                                                <td className="border border-slate-400 px-3 py-2 text-center align-middle font-bold text-black text-[12px]" colSpan={quotation?.selected_format === 'quotation3' ? 5 : 6}>
                                                                     Special Discount
                                                                 </td>
-                                                                <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-bold text-[11px]">
+                                                                <td className="border border-slate-400 px-1.5 py-2 text-right align-middle text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-bold text-[11px]">
                                                                     {Number(discountAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                                 </td>
                                                             </tr>
@@ -286,11 +286,11 @@ export default function QuotationDetails() {
 
                                                     {/* Grand Total Row */}
                                                     <tr className="font-black bg-slate-100 border-t-2 border-slate-400">
-                                                        <td className="border border-slate-400 px-2 py-2 uppercase text-center text-[11px]" colSpan={2}>Grand Total</td>
-                                                        <td className="border border-slate-400 px-3 py-2 text-center text-[11px] leading-snug font-bold" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
+                                                        <td className="border border-slate-400 px-2 py-2 uppercase text-center align-middle text-[11px]" colSpan={2}>Grand Total</td>
+                                                        <td className="border border-slate-400 px-3 py-2 text-center align-middle text-[11px] leading-snug font-bold" colSpan={quotation?.selected_format === 'quotation3' ? 3 : 4}>
                                                             {numberToWords(netTotal).toUpperCase()}
                                                         </td>
-                                                        <td className="border border-slate-400 px-1.5 py-2 text-right text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-black text-[11px]">
+                                                        <td className="border border-slate-400 px-1.5 py-2 text-right align-middle text-black bg-white break-words [overflow-wrap:anywhere] leading-snug font-black text-[11px]">
                                                             {Number(netTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                         </td>
                                                     </tr>

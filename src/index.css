@@ -10,7 +10,7 @@
 
   /* Smooth scrollbar for WebKit */
   ::-webkit-scrollbar {
-    @apply w-1.5;
+    @apply w-1.5 h-3;
   }
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
@@ -20,6 +20,21 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-400;
+  }
+
+  .sticky-horizontal-scrollbar::-webkit-scrollbar {
+    height: 12px;
+  }
+  .sticky-horizontal-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 9999px;
+  }
+  .sticky-horizontal-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  .sticky-horizontal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 }
 

@@ -20,6 +20,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import AddPaymentModal from "../../components/modals/AddPaymentModal";
 import InvoiceDetailDrawer from "../../components/drawers/InvoiceDetailDrawer";
+import ScrollableTableWrapper from "../../components/ScrollableTableWrapper";
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -191,7 +192,7 @@ export default function CreditControl() {
               </div>
             </div>
 
-            <div className="overflow-x-auto min-h-[300px]">
+            <ScrollableTableWrapper className="min-h-[300px]">
               {loading ? (
                 <div className="flex items-center justify-center h-full py-20">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
@@ -253,7 +254,7 @@ export default function CreditControl() {
                   </tbody>
                 </table>
               )}
-            </div>
+            </ScrollableTableWrapper>
           </div>
         </div>
 

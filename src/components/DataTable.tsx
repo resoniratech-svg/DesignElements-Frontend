@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
+import ScrollableTableWrapper from "./ScrollableTableWrapper";
 
 interface Props<T> {
   columns: string[];
@@ -54,7 +55,7 @@ function DataTable<T extends Record<string, any>>({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <ScrollableTableWrapper>
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-surface-muted border-b border-gray-100">
@@ -98,7 +99,7 @@ function DataTable<T extends Record<string, any>>({
             )}
           </tbody>
         </table>
-      </div>
+      </ScrollableTableWrapper>
 
       {/* View More Button */}
       {hasMore && (

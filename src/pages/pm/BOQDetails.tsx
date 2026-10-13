@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import PageHeader from "../../components/PageHeader";
 import StatusBadge from "../../components/StatusBadge";
+import ScrollableTableWrapper from "../../components/ScrollableTableWrapper";
 import { Printer, Download, Plus, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { exportToCSV } from "../../utils/exportUtils";
 import { boqService } from "../../services/boqService";
@@ -171,7 +172,7 @@ export default function BOQDetails() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <ScrollableTableWrapper>
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
@@ -204,7 +205,7 @@ export default function BOQDetails() {
                             </tr>
                         </tfoot>
                     </table>
-                </div>
+                </ScrollableTableWrapper>
             </div>
         </div>
     );

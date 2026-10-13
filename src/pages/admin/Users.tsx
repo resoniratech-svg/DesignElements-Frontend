@@ -5,6 +5,7 @@ import { Edit, Trash2, Plus, ShieldAlert, Eye, EyeOff, Loader2 } from "lucide-re
 import { useActivity } from "../../context/ActivityContext";
 import { useDivision } from "../../context/DivisionContext";
 import { userService } from "../../services/userService";
+import ScrollableTableWrapper from "../../components/ScrollableTableWrapper";
 
 function Users() {
   const { logActivity } = useActivity();
@@ -81,7 +82,7 @@ function Users() {
             <span className="text-slate-500 font-medium italic">Loading users...</span>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <ScrollableTableWrapper>
             <table className="w-full text-sm border-collapse">
               <thead className="bg-slate-50 border-b border-slate-100">
                 <tr>
@@ -153,7 +154,7 @@ function Users() {
             {staffUsers.length === 0 && !isLoading && (
               <div className="p-12 text-center text-slate-400 italic">No staff users found.</div>
             )}
-          </div>
+          </ScrollableTableWrapper>
         )}
       </div>
 

@@ -10,6 +10,7 @@ import FilterPanel from '../components/FilterPanel';
 import StatusBadge from '../components/StatusBadge';
 import PriorityBadge from '../components/PriorityBadge';
 import PageLoader from '../../../components/PageLoader';
+import ScrollableTableWrapper from '../../../components/ScrollableTableWrapper';
 import { useDivision } from '../../../context/DivisionContext';
 import { getDivisionById } from '../../../constants/divisions';
 import type { Lead } from '../types';
@@ -110,7 +111,7 @@ const LeadsList: React.FC = () => {
 
       {/* Leads Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="overflow-x-auto text-[13px]">
+        <ScrollableTableWrapper className="text-[13px]">
           <table className="w-full text-left">
             <thead className="bg-slate-50/50">
               <tr className="border-b border-slate-50">
@@ -194,7 +195,7 @@ const LeadsList: React.FC = () => {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollableTableWrapper>
 
         {/* Pagination */}
         {filteredLeads.length > itemsPerPage && (

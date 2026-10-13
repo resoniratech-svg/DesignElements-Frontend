@@ -19,6 +19,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { proService } from "../../services/proService";
 import { employeeService } from "../../services/employeeService";
 import StatCard from "../../components/StatCard";
+import ScrollableTableWrapper from "../../components/ScrollableTableWrapper";
 import { useDivision } from "../../context/DivisionContext";
 
 export default function AdminPROTracking() {
@@ -187,7 +188,7 @@ export default function AdminPROTracking() {
               </div>
               <span className="px-3 py-1 bg-brand-50 text-brand-700 rounded-full text-[10px] font-black">{filteredContracts.length} Total Staff</span>
             </div>
-            <div className="overflow-x-auto">
+            <ScrollableTableWrapper>
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50">
@@ -255,7 +256,7 @@ export default function AdminPROTracking() {
                   })}
                 </tbody>
               </table>
-            </div>
+            </ScrollableTableWrapper>
           </div>
         </div>
       </div>
