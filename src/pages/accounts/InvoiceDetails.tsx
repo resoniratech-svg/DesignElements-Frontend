@@ -200,6 +200,14 @@ export default function InvoiceDetails() {
 
     const balance = totalAmount - advancePaid;
 
+    const advancePercentage = totalAmount > 0 && advancePaid > 0
+        ? Math.round((advancePaid / totalAmount) * 100)
+        : 0;
+    const invTypeMatch = (invoice.invoiceType || "").match(/^(\d+)%\s+Advance/i);
+    const advanceLabel = invTypeMatch 
+        ? `${invTypeMatch[1]}% Advance Payment` 
+        : (advancePercentage > 0 ? `${advancePercentage}% Advance Payment` : "Advance Payment");
+
     const isDeleted = Boolean((invoice as any)?.deleted_at);
 
     return (
@@ -401,7 +409,7 @@ export default function InvoiceDetails() {
                                                 <thead>
                                                     <tr className="font-bold">
                                                         <th className="border border-black p-1 w-[8%] text-center uppercase font-bold text-[10px]">SL. NO.</th>
-                                                        <th className="border border-black p-1 w-[47%] text-center uppercase font-bold text-[10px]">Description</th>
+                                                        <th className="border border-black p-1 w-[47%] text-center uppercase font-bold text-[10px] align-middle">Description</th>
                                                         <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">UOM</th>
                                                         <th className="border border-black p-1 w-[10%] text-center uppercase font-bold text-[10px]">QTY</th>
                                                         <th className="border border-black p-1 w-[12%] text-center uppercase font-bold text-[10px]">UNIT PRICE</th>
@@ -410,13 +418,13 @@ export default function InvoiceDetails() {
                                                 </thead>
                                                 <tbody>
                                                     {items.length > 0 ? items.map((item, idx: number) => (
-                                                        <tr key={idx} className="align-top font-bold text-[11px]">
-                                                            <td className="border border-black p-1 text-center h-20 pt-2">{idx + 1}</td>
-                                                            <td className="border border-black p-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] pt-2 px-2 text-[10px]">{item.description}</td>
-                                                            <td className="border border-black p-1 text-center uppercase pt-2">{item.uom || "Nos"}</td>
-                                                            <td className="border border-black p-1 text-center pt-2">{item.quantity}</td>
-                                                            <td className="border border-black p-1 text-center uppercase pt-2">{item.unitPrice === 0 ? "LUMPSUM" : Number(item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                                            <td className="border border-black p-1 text-right pt-2 pr-2">{Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                        <tr key={idx} className="align-middle font-bold text-[11px]">
+                                                            <td className="border border-black p-1 text-center align-middle h-20">{idx + 1}</td>
+                                                            <td className="border border-black p-1 text-center align-middle whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] px-2 text-[10px]">{item.description}</td>
+                                                            <td className="border border-black p-1 text-center align-middle uppercase">{item.uom || "Nos"}</td>
+                                                            <td className="border border-black p-1 text-center align-middle">{item.quantity}</td>
+                                                            <td className="border border-black p-1 text-center align-middle uppercase">{item.unitPrice === 0 ? "LUMPSUM" : Number(item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                            <td className="border border-black p-1 text-right align-middle pr-2">{Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                         </tr>
                                                     )) : (
                                                         <tr className="h-20 font-bold">
@@ -428,19 +436,69 @@ export default function InvoiceDetails() {
                                                             <td className="border border-black p-1"></td>
                                                         </tr>
                                                     )}
-                                                    {/* Total Row */}
-                                                    <tr className="font-bold border border-black text-[11px]">
-                                                        <td className="border-r border-black p-1 pl-2">Grand Total</td>
-                                                        <td colSpan={4} className="border-r border-black p-1 text-center uppercase px-4">
-                                                            {numberToWords(balance)}
-                                                        </td>
-                                                        <td className="p-1 pr-2 text-right">
-                                                            {Number(balance).toLocaleString(undefined, {
-                                                                minimumFractionDigits: 2,
-                                                                maximumFractionDigits: 2
-                                                            })}
-                                                        </td>
-                                                    </tr>
+                                                    {advancePaid > 0 ? (
+                                                        <>
+                                                            {/* Total Row (Gross) */}
+                                                            <tr className="font-bold border border-black text-[11px] align-middle">
+                                                                <td className="border-r border-black p-1 pl-2 text-center align-middle uppercase font-bold">TOTAL</td>
+                                                                <td colSpan={4} className="border-r border-black p-1 text-center align-middle"></td>
+                                                                <td className="p-1 pr-2 text-right align-middle font-bold">
+                                                                    {Number(totalAmount).toLocaleString(undefined, {
+                                                                        minimumFractionDigits: 2,
+                                                                        maximumFractionDigits: 2
+                                                                    })}
+                                                                </td>
+                                                            </tr>
+
+                                                            {/* Less Advance Payment Row */}
+                                                            <tr className="font-bold border border-black text-[11px] align-middle">
+                                                                <td className="border-r border-black p-1 text-center align-middle text-[10px] font-bold leading-tight">
+                                                                    Less<br />Advance<br />Payment
+                                                                </td>
+                                                                <td colSpan={4} className="border-r border-black p-1 text-center align-middle text-red-600 font-bold px-4">
+                                                                    {advanceLabel}
+                                                                </td>
+                                                                <td className="p-1 pr-2 text-right align-middle font-bold">
+                                                                    {Number(advancePaid).toLocaleString(undefined, {
+                                                                        minimumFractionDigits: 2,
+                                                                        maximumFractionDigits: 2
+                                                                    })}
+                                                                </td>
+                                                            </tr>
+
+                                                            {/* Grand Total Row (Net Balance) */}
+                                                            <tr className="font-bold border border-black text-[11px] align-middle">
+                                                                <td className="border-r border-black p-1 pl-2 text-center align-middle uppercase font-bold text-[10px] leading-tight">
+                                                                    GRAND<br />TOTAL
+                                                                </td>
+                                                                <td colSpan={4} className="border-r border-black p-1 text-center align-middle uppercase px-4 font-bold">
+                                                                    {numberToWords(balance)}
+                                                                </td>
+                                                                <td className="p-1 pr-2 text-right align-middle font-bold">
+                                                                    {Number(balance).toLocaleString(undefined, {
+                                                                        minimumFractionDigits: 2,
+                                                                        maximumFractionDigits: 2
+                                                                    })}
+                                                                </td>
+                                                            </tr>
+                                                        </>
+                                                    ) : (
+                                                        /* Standard Single Grand Total Row */
+                                                        <tr className="font-bold border border-black text-[11px] align-middle">
+                                                            <td className="border-r border-black p-1 pl-2 text-center align-middle uppercase font-bold text-[10px] leading-tight">
+                                                                GRAND<br />TOTAL
+                                                            </td>
+                                                            <td colSpan={4} className="border-r border-black p-1 text-center align-middle uppercase px-4 font-bold">
+                                                                {numberToWords(totalAmount)}
+                                                            </td>
+                                                            <td className="p-1 pr-2 text-right align-middle font-bold">
+                                                                {Number(totalAmount).toLocaleString(undefined, {
+                                                                    minimumFractionDigits: 2,
+                                                                    maximumFractionDigits: 2
+                                                                })}
+                                                            </td>
+                                                        </tr>
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>

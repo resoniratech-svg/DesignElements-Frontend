@@ -65,6 +65,10 @@ export default function CreateInvoice() {
     const INVOICE_TYPES = useMemo(() => [
         "Credit",
         "Cash",
+        "50% Advance payment",
+        "30% Advance payment",
+        "25% Advance payment",
+        "20% Advance payment",
         "100% Advance payment",
         "30 days credit",
         "45 days credit",
@@ -192,9 +196,26 @@ export default function CreateInvoice() {
         const total =
             taxableAmount + taxAmount;
 
+        // Check if invoiceType is an advance percentage (e.g. 50% Advance payment)
+        const advMatch = (form.invoiceType || "").match(/^(\d+)%\s+Advance/i);
+        let effectiveAdvance = form.advance || 0;
+
+        if (advMatch) {
+            const pct = parseFloat(advMatch[1]);
+            const calculatedAdv = Math.round((total * (pct / 100)) * 100) / 100;
+            if (calculatedAdv !== form.advance) {
+                effectiveAdvance = calculatedAdv;
+                setForm(prev => ({
+                    ...prev,
+                    advance: calculatedAdv,
+                    status: pct >= 100 ? "Paid" : (pct > 0 ? "Due" : prev.status)
+                }));
+            }
+        }
+
         // Remaining balance
         const balance =
-            total - (form.advance || 0);
+            total - effectiveAdvance;
 
         setTotals({
             subtotal,
@@ -203,7 +224,7 @@ export default function CreateInvoice() {
             balance
         });
 
-    }, [items, form.taxRate, form.discount, form.advance]);
+    }, [items, form.taxRate, form.discount, form.advance, form.invoiceType]);
     // 2. Mutation for create/update
     const mutation = useMutation({
         mutationFn: (data: Partial<Invoice>) => isEditing ? financeService.updateInvoice(id!, data) : financeService.createInvoice(data),
@@ -246,7 +267,17 @@ export default function CreateInvoice() {
             const adv = Number(value) || 0;
             setForm(prev => {
                 const nextForm = { ...prev, advance: adv };
-                if (adv >= totals.total) {
+                // If user manually modifies advance amount away from a fixed % type, switch to custom type
+                const advMatch = (prev.invoiceType || "").match(/^(\d+)%\s+Advance/i);
+                if (advMatch) {
+                    const pct = parseFloat(advMatch[1]);
+                    const expected = Math.round((totals.total * (pct / 100)) * 100) / 100;
+                    if (adv !== expected) {
+                        nextForm.invoiceType = "CUSTOM";
+                        setIsCustomInvoiceType(true);
+                    }
+                }
+                if (adv >= totals.total && totals.total > 0) {
                     nextForm.status = "Paid";
                 } else if (adv > 0) {
                     nextForm.status = "Due";
@@ -270,7 +301,9 @@ export default function CreateInvoice() {
 
         setIsCustomInvoiceType(false);
         let terms = form.creditTerms ?? 0;
-        if (val === "100% Advance payment" || val === "Cash") {
+        const advMatch = val.match(/^(\d+)%\s+Advance/i);
+
+        if (advMatch || val === "Cash") {
             terms = 0;
         } else if (val.includes("30 days")) {
             terms = 30;
@@ -282,11 +315,26 @@ export default function CreateInvoice() {
             terms = 90;
         }
 
-        setForm(prev => ({
-            ...prev,
-            invoiceType: val,
-            creditTerms: terms
-        }));
+        setForm(prev => {
+            let adv = prev.advance;
+            let st = prev.status;
+            if (advMatch) {
+                const pct = parseFloat(advMatch[1]);
+                adv = Math.round((totals.total * (pct / 100)) * 100) / 100;
+                if (pct >= 100) {
+                    st = "Paid";
+                } else if (pct > 0) {
+                    st = "Due";
+                }
+            }
+            return {
+                ...prev,
+                invoiceType: val,
+                creditTerms: terms,
+                advance: adv,
+                status: st
+            };
+        });
     };
 
     const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
@@ -673,6 +721,10 @@ export default function CreateInvoice() {
                                 >
                                     <option value="Credit">Credit</option>
                                     <option value="Cash">Cash</option>
+                                    <option value="50% Advance payment">50% Advance payment</option>
+                                    <option value="30% Advance payment">30% Advance payment</option>
+                                    <option value="25% Advance payment">25% Advance payment</option>
+                                    <option value="20% Advance payment">20% Advance payment</option>
                                     <option value="100% Advance payment">100% Advance payment</option>
                                     <option value="30 days credit">30 days credit</option>
                                     <option value="45 days credit">45 days credit</option>
